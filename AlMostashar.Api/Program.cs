@@ -1,5 +1,3 @@
-using FirebaseAdmin;
-using Google.Apis.Auth.OAuth2;
 using AlMostashar.Api.Helpers;
 using AlMostashar.Api.Middlewares;
 using AlMostashar.Api.SignalR;
