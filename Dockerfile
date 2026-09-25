@@ -3,9 +3,9 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 COPY ["AlMostashar.Api/Minicato.Api.csproj", "AlMostashar.Api/"]
-COPY ["AlMostashar.Application/AlMostashar.Application.csproj", "AlMostashar.Application/"]
-COPY ["AlMostashar.Domain/AlMostashar.Domain.csproj", "AlMostashar.Domain/"]
-COPY ["AlMostashar.Infrastructure/AlMostashar.Infrastructure.csproj", "AlMostashar.Infrastructure/"]
+COPY ["AlMostashar.Application/Minicato.Application.csproj", "AlMostashar.Application/"]
+COPY ["AlMostashar.Domain/Minicato.Domain.csproj", "AlMostashar.Domain/"]
+COPY ["AlMostashar.Infrastructure/Minicato.Infrastructure.csproj", "AlMostashar.Infrastructure/"]
 
 RUN dotnet restore "AlMostashar.Api/Minicato.Api.csproj"
 
