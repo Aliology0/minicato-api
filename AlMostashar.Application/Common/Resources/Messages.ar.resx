@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter</value></resheader>
+
+  <!-- Auth: Errors -->
+  <data name="Auth_InvalidCredentials"><value>البريد الإلكتروني أو كلمة المرور غير صحيحة. يرجى المحاولة مرة أخرى.</value></data>
+  <data name="Auth_EmailNotVerified"><value>لم يتم تأكيد بريدك الإلكتروني بعد. يرجى تأكيد بريدك أولاً لتتمكن من تسجيل الدخول.</value></data>
+  <data name="Auth_EmailAlreadyRegistered"><value>هذا البريد الإلكتروني مسجل بالفعل. يمكنك تسجيل الدخول أو استعادة كلمة المرور.</value></data>
+  <data name="Auth_AlreadyVerified"><value>تم تأكيد بريدك الإلكتروني مسبقاً. يمكنك تسجيل الدخول مباشرةً.</value></data>
+  <data name="Auth_InvalidOtp"><value>كود التحقق غير صحيح. يرجى التأكد من الكود والمحاولة مرة أخرى.</value></data>
+  <data name="Auth_OtpExpired"><value>انتهت صلاحية كود التحقق. يرجى طلب كود جديد.</value></data>
+  <data name="Auth_InvalidResetToken"><value>انتهت صلاحية رابط إعادة التعيين. يرجى طلب رابط جديد.</value></data>
+  <data name="Auth_UserNotFound"><value>لم يتم العثور على هذا الحساب.</value></data>
+  <data name="Auth_InvalidRefreshToken"><value>انتهت صلاحية الجلسة. يرجى تسجيل الدخول مرة أخرى.</value></data>
+
+  <!-- Auth: Success -->
+  <data name="Auth_OtpSent"><value>تم إرسال كود التحقق بنجاح. يرجى التحقق من بريدك الإلكتروني.</value></data>
+  <data name="Auth_PasswordReset"><value>تم تغيير كلمة المرور بنجاح. يمكنك الآن تسجيل الدخول.</value></data>
+  <data name="Auth_VerificationSent"><value>تم إرسال كود التحقق إلى بريدك الإلكتروني بنجاح.</value></data>
+  <data name="Auth_ResendSuccess"><value>تم إرسال كود تحقق جديد بنجاح. يرجى التحقق من بريدك الإلكتروني.</value></data>
+
+  <!-- Validation -->
+  <data name="Validation_FirstNameRequired"><value>يرجى إدخال الاسم الأول.</value></data>
+  <data name="Validation_FirstNameMaxLength"><value>الاسم الأول يجب ألا يتجاوز 50 حرفاً.</value></data>
+  <data name="Validation_LastNameRequired"><value>يرجى إدخال الاسم الأخير.</value></data>
+  <data name="Validation_LastNameMaxLength"><value>الاسم الأخير يجب ألا يتجاوز 50 حرفاً.</value></data>
+  <data name="Validation_EmailRequired"><value>يرجى إدخال البريد الإلكتروني.</value></data>
+  <data name="Validation_EmailInvalid"><value>يرجى إدخال بريد إلكتروني صحيح.</value></data>
+  <data name="Validation_PasswordRequired"><value>يرجى إدخال كلمة المرور.</value></data>
+  <data name="Validation_PasswordMinLength"><value>كلمة المرور يجب أن تكون 6 أحرف على الأقل.</value></data>
+  <data name="Validation_PasswordUppercase"><value>كلمة المرور يجب أن تحتوي على حرف كبير واحد على الأقل.</value></data>
+  <data name="Validation_PasswordLowercase"><value>كلمة المرور يجب أن تحتوي على حرف صغير واحد على الأقل.</value></data>
+  <data name="Validation_PasswordDigit"><value>كلمة المرور يجب أن تحتوي على رقم واحد على الأقل.</value></data>
+  <data name="Validation_PhoneRequired"><value>يرجى إدخال رقم الهاتف.</value></data>
+  <data name="Validation_PhoneInvalid"><value>يرجى إدخال رقم هاتف صحيح (من 7 إلى 15 رقم).</value></data>
+  <data name="Validation_GovernorateRequired"><value>يرجى اختيار المحافظة.</value></data>
+  <data name="Validation_GovernorateInvalid"><value>المحافظة غير صالحة. يرجى استخدام قيمة معتمدة من القائمة.</value></data>
+  <data name="Validation_CityRequired"><value>يرجى اختيار المدينة.</value></data>
+  <data name="Validation_GovernorateLookupNotFound"><value>المحافظة المختارة غير صالحة.</value></data>
+  <data name="Validation_CityLookupNotFound"><value>المدينة المختارة غير صالحة.</value></data>
+  <data name="Validation_CityGovernorateMismatch"><value>المدينة المختارة لا تتبع المحافظة المحددة.</value></data>
+  <data name="Validation_SyndicateIdRequired"><value>يرجى إدخال رقم القيد بالنقابة.</value></data>
+  <data name="Validation_OtpRequired"><value>يرجى إدخال كود التحقق.</value></data>
+  <data name="Validation_OtpLength"><value>كود التحقق يجب أن يتكون من 6 أرقام.</value></data>
+  <data name="Validation_ResetTokenRequired"><value>رمز إعادة التعيين مطلوب.</value></data>
+  <data name="Validation_NewPasswordRequired"><value>يرجى إدخال كلمة المرور الجديدة.</value></data>
+  <data name="Validation_RefreshTokenRequired"><value>رمز الجلسة مطلوب.</value></data>
+  <data name="Validation_UserIdRequired"><value>معرف المستخدم مطلوب.</value></data>
+
+  <!-- Admin -->
+  <data name="Admin_LawyerNotFound"><value>لم يتم العثور على المحامي المطلوب.</value></data>
+  <data name="Admin_LawyerAlreadyVerified"><value>هذا المحامي موثق بالفعل.</value></data>
+  <data name="Admin_LawyerVerified"><value>تم توثيق المحامي وتفعيل حسابه بنجاح.</value></data>
+
+  <!-- Generic (reusable templates with {0}, {1} placeholders) -->
+  <data name="Generic_Required"><value>'{0}' مطلوب.</value></data>
+  <data name="Generic_NotFound"><value>لم يتم العثور على '{0}'.</value></data>
+  <data name="Generic_AlreadyExists"><value>'{0}' موجود بالفعل.</value></data>
+  <data name="Generic_NotVerified"><value>'{0}' غير موثق.</value></data>
+  <data name="Generic_MaxLength"><value>'{0}' يجب ألا يتجاوز {1} حرفاً.</value></data>
+  <data name="Generic_Negative"><value>'{0}' يجب ألا يكون سالباً.</value></data>
+  <data name="Generic_InvalidId"><value>'{0}' يجب أن يكون معرّفاً صحيحاً.</value></data>
+  <data name="Generic_InvalidEnumValue"><value>'{0}' يحتوي على قيمة غير صالحة.</value></data>
+
+  <!-- Field display names -->
+  <data name="Field_ServiceId"><value>معرّف الخدمة</value></data>
+  <data name="Field_Price"><value>السعر</value></data>
+  <data name="Field_Duration"><value>المدة</value></data>
+  <data name="Field_Lawyer"><value>المحامي</value></data>
+  <data name="Field_Service"><value>الخدمة</value></data>
+  <data name="Field_ServiceTitle"><value>عنوان الخدمة</value></data>
+  <data name="Field_ServiceSummary"><value>ملخص الخدمة</value></data>
+  <data name="Field_ServiceFullDescription"><value>الوصف الكامل للخدمة</value></data>
+  <data name="Field_ServiceType"><value>نوع الخدمة</value></data>
+  <data name="Field_ExpectedDuration"><value>المدة المتوقعة</value></data>
+  <data name="Field_SSN"><value>الرقم القومي</value></data>
+  <data name="Field_SyndicateCard"><value>بطاقة القيد بالنقابة</value></data>
+  <data name="Field_PracticeCertificates"><value>شهادات مزاولة المهنة</value></data>
+
+  <!-- Validation: File uploads -->
+  <data name="Validation_AtLeastOneFileRequired"><value>يجب إرفاق ملف واحد على الأقل.</value></data>
+  <data name="Validation_FileTooLarge"><value>حجم الملف يجب ألا يتجاوز 5 ميجابايت.</value></data>
+  <data name="Validation_FileTypeNotAllowed"><value>نوع الملف غير مسموح به. الأنواع المقبولة: PDF، JPG، PNG، WEBP، HEIC.</value></data>
+  <data name="Validation_FileRequired"><value>يرجى إرفاق الملف المطلوب.</value></data>
+
+  <!-- Field display names: Documents -->
+  <data name="Field_FilePath"><value>مسار الملف</value></data>
+  <data name="Field_CaseId"><value>معرّف القضية</value></data>
+  <data name="Field_CaseTitle"><value>العنوان</value></data>
+  <data name="Field_CaseDescription"><value>الوصف</value></data>
+  <data name="Field_CaseStatus"><value>حالة القضية</value></data>
+  <data name="Field_NoteContent"><value>محتوى الملاحظة</value></data>
+  <data name="Field_TimelineTitle"><value>عنوان الجدول الزمني</value></data>
+  <data name="Field_TimelineContent"><value>محتوى الجدول الزمني</value></data>
+  <data name="Field_DocumentName"><value>اسم المستند</value></data>
+  <data name="Field_DocumentUrl"><value>رابط المستند</value></data>
+
+  <!-- Enums: ServiceType -->
+  <data name="Enum_ServiceType_Consultation"><value>استشارة قانونية</value></data>
+  <data name="Enum_ServiceType_Contract"><value>صياغة عقود</value></data>
+  <data name="Enum_ServiceType_CompanyFormation"><value>تأسيس شركات</value></data>
+  <data name="Enum_ServiceType_Lawsuit"><value>رفع دعوى (تقاضي)</value></data>
+  <data name="Enum_ServiceType_Base"><value>خدمات قانونية عامة</value></data>
+  <data name="Enum_ServiceType_IntellectualProperty"><value>الملكية الفكرية</value></data>
+  <data name="Enum_ServiceType_LegalTranslation"><value>ترجمة قانونية</value></data>
+  <data name="Enum_ServiceType_DueDiligence"><value>الفحص النافي للجهالة</value></data>
+  <data name="Enum_ServiceType_DebtCollection"><value>تحصيل الديون</value></data>
+  <data name="Enum_ServiceType_Mediation"><value>وساطة وتسوية</value></data>
+  <data name="Enum_ServiceType_LegalReview"><value>مراجعة عقود ومستندات</value></data>
+  <data name="Enum_ServiceType_Compliance"><value>امتثال وحوكمة</value></data>
+
+  <!-- Feedback -->
+  <data name="Success_FeedbackSent"><value>تم إرسال التقييم بنجاح.</value></data>
+  <data name="Validation_RatingMustBeBetween1And5"><value>التقييم يجب أن يكون بين 1 و 5.</value></data>
+  <data name="Field_FeedbackRating"><value>التقييم</value></data>
+  <data name="Field_FeedbackContent"><value>المحتوى</value></data>
+
+  <!-- Notifications -->
+  <data name="Notification_RequestAccepted_Title"><value>تم قبول الطلب</value></data>
+  <data name="Notification_RequestAccepted_Body"><value>قام المحامي {0} بقبول طلبك. يرجى المتابعة لدفع الفاتورة.</value></data>
+  <data name="Notification_NewDirectRequest_Title"><value>طلب مباشر جديد</value></data>
+  <data name="Notification_NewDirectRequest_Body"><value>لقد تلقيت طلب مباشر جديد.</value></data>
+  <data name="Notification_CaseStarted_Title"><value>القضية جاهزة</value></data>
+  <data name="Notification_CaseStarted_Body"><value>قام العميل {0} بالدفع. يمكنك الآن البدء في العمل على القضية.</value></data>
+  <data name="Notification_ChatAvailable_Title"><value>المحادثة متاحة</value></data>
+  <data name="Notification_ChatAvailable_Body"><value>يمكنك الآن إرسال رسائل للمحامي {0}.</value></data>
+  <data name="Notification_NewMessage_Title"><value>رسالة جديدة</value></data>
+  <data name="Notification_NewMessage_Body"><value>لديك رسالة جديدة من {0}.</value></data>
+  <data name="Notification_NewService_Title"><value>خدمة جديدة متاحة</value></data>
+  <data name="Notification_NewService_Body"><value>تمت إضافة خدمة جديدة على المنصة: {0}</value></data>
+  <data name="Notification_CaseCompleted_Title"><value>اكتملت الخدمة/القضية</value></data>
+  <data name="Notification_CaseCompleted_Body"><value>قام العميل {0} بتأكيد اكتمال الخدمة/القضية "{1}".</value></data>
+  <data name="Notification_CaseStatusUpdated_Title"><value>تحديث حالة القضية</value></data>
+  <data name="Notification_CaseStatusUpdated_Body"><value>تم تحديث حالة قضيتك "{0}" إلى "{1}".</value></data>
+  <data name="Enum_CaseStatus_Open"><value>مفتوحة</value></data>
+  <data name="Enum_CaseStatus_InProgress"><value>قيد العمل</value></data>
+  <data name="Enum_CaseStatus_Closed"><value>مغلقة</value></data>
+  <data name="Enum_CaseStatus_Dismissed"><value>مستبعدة</value></data>
+  <data name="Enum_CaseStatus_OnHold"><value>قيد الانتظار المؤقت</value></data>
+  <data name="Enum_CaseStatus_Canceled"><value>ملغاة</value></data>
+  <data name="Enum_CaseStatus_PendingConfirmation"><value>في انتظار التأكيد</value></data>
+  <!-- Added Keys -->
+  <data name="Auth_NotCaseOwner"><value>أنت لا تملك هذه القضية.</value></data>
+  <data name="Auth_CannotUploadToCase"><value>غير مصرح لك برفع مستندات لهذه القضية.</value></data>
+  <data name="Auth_CannotViewCase"><value>غير مصرح لك بعرض هذه القضية.</value></data>
+  <data name="Auth_NotChatParticipant"><value>أنت لست مشاركاً في هذه المحادثة.</value></data>
+  <data name="Auth_OnlyLawyersCanSendOffers"><value>المحامون فقط هم من يمكنهم إرسال العروض.</value></data>
+  <data name="Cases_NotFound"><value>القضية غير موجودة.</value></data>
+  <data name="Cases_DocumentNotFound"><value>المستند غير موجود.</value></data>
+  <data name="Cases_NoteNotFound"><value>الملاحظة غير موجودة.</value></data>
+  <data name="Chat_NotFound"><value>المحادثة غير موجودة.</value></data>
+  <data name="Chat_OtherParticipantNotFound"><value>تعذر العثور على المشارك الآخر.</value></data>
+  <data name="Offers_NotYourRequest"><value>هذا العرض لا ينتمي لطلباتك.</value></data>
+  <data name="Offers_OnlyPendingCanBeAccepted"><value>يمكن قبول العروض قيد الانتظار فقط.</value></data>
+  <data name="Offers_OnlyPendingCanBeRejected"><value>يمكن رفض العروض قيد الانتظار فقط.</value></data>
+  <data name="Offers_CannotAcceptNonPending"><value>لا يمكن قبول عرض لطلب ليس قيد الانتظار.</value></data>
+  <data name="Offers_CannotRejectNonPending"><value>لا يمكن رفض عرض لطلب ليس قيد الانتظار.</value></data>
+  <data name="Offers_CannotSendNonPending"><value>لا يمكن إرسال عرض لطلب ليس قيد الانتظار.</value></data>
+  <data name="Offers_PendingOfferExists"><value>يوجد عرض قيد الانتظار بالفعل لهذا الطلب.</value></data>
+  <data name="Offers_UnsupportedRequestType"><value>نوع الطلب غير مدعوم.</value></data>
+  <data name="Success_DocumentDeleted"><value>تم حذف المستند بنجاح.</value></data>
+  <data name="Success_NoteDeleted"><value>تم حذف الملاحظة بنجاح.</value></data>
+  <data name="Success_OfferAccepted"><value>تم قبول العرض بنجاح. بانتظار سداد الفاتورة لبدء الخدمة.</value></data>
+  <data name="Success_RequestAccepted"><value>تم قبول الطلب بنجاح. في انتظار دفع العميل.</value></data>
+  <data name="Success_RequestCanceled"><value>تم إلغاء الطلب بنجاح.</value></data>
+  <data name="Success_InvoicePaid"><value>تم الدفع بنجاح. جاري تحويل الحالة للمحادثة.</value></data>
+  <data name="Success_OfferRejected"><value>تم رفض العرض.</value></data>
+  <data name="Success_RequestRejected"><value>تم رفض الطلب.</value></data>
+  <data name="Success_ReportSubmitted"><value>تم إرسال بلاغك بنجاح. سيقوم فريقنا بمراجعته قريباً.</value></data>
+  <data name="Invoices_Unauthorized"><value>هذه الفاتورة ليست لك.</value></data>
+  <data name="Invoices_AlreadyPaid"><value>تم دفع هذه الفاتورة بالفعل.</value></data>
+  <data name="Invoices_RequestNotAccepted"><value>لا يمكن الدفع قبل قبول الطلب من المحامي.</value></data>
+  <!-- Call -->
+  <data name="Call_Accepted"><value>تم قبول المكالمة.</value></data>
+  <data name="Call_Rejected"><value>تم رفض المكالمة.</value></data>
+  <data name="Call_Ended"><value>انتهت المكالمة.</value></data>
+  <data name="Call_NotFound" xml:space="preserve">
+    <value>جلسة المكالمة غير موجودة.</value>
+  </data>
+  <data name="Call_NotParticipant" xml:space="preserve">
+    <value>أنت لست مشاركاً في هذه المكالمة.</value>
+  </data>
+  <data name="Call_InvalidTransition" xml:space="preserve">
+    <value>انتقال حالة المكالمة غير صالح.</value>
+  </data>
+</root>

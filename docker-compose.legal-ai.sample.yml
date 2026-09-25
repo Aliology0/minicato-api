@@ -1,0 +1,32 @@
+services:
+  almostashar-api:
+    environment:
+      LegalAi__BaseUrl: http://legal-rag-api:7860
+      LegalAi__ApiKey: ${LEGAL_AI_INTERNAL_TOKEN}
+      LegalAi__HeaderName: X-Internal-Service-Token
+      LegalAi__TimeoutSeconds: 120
+    depends_on:
+      - legal-rag-api
+
+  legal-rag-api:
+    build: ./ai-service
+    expose:
+      - "7860"
+    environment:
+      API_PORT: "7860"
+      REQUIRE_INTERNAL_API_TOKEN: "true"
+      INTERNAL_API_TOKEN: ${LEGAL_AI_INTERNAL_TOKEN}
+      INTERNAL_API_TOKEN_HEADER: X-Internal-Service-Token
+      HF_ASSETS_DOWNLOAD_ENABLED: "true"
+      HF_ASSETS_REPO_ID: loaywael10/al-mostashar-legal-rag-assets
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      LLM_PROVIDER_NAME: gemini
+      LLM_FALLBACK_PROVIDER_NAME: groq
+    volumes:
+      - legal-rag-model:/app/model
+      - legal-rag-qdrant:/app/qdrant_db_legal
+
+volumes:
+  legal-rag-model:
+  legal-rag-qdrant:

@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.24" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
+    <PackageReference Include="Moq" Version="4.20.72" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AlMostashar.Api\AlMostashar.Api.csproj" />
+    <ProjectReference Include="..\AlMostashar.Application\AlMostashar.Application.csproj" />
+    <ProjectReference Include="..\AlMostashar.Application\Minicato.Application.csproj" />
+    <ProjectReference Include="..\AlMostashar.Domain\AlMostashar.Domain.csproj" />
+    <ProjectReference Include="..\AlMostashar.Domain\Minicato.Domain.csproj" />
+    <ProjectReference Include="..\AlMostashar.Infrastructure\AlMostashar.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

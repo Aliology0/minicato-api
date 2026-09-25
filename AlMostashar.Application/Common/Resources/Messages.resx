@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="0" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter</value></resheader>
+
+  <!-- Auth: Errors -->
+  <data name="Auth_InvalidCredentials"><value>Invalid email or password.</value></data>
+  <data name="Auth_EmailNotVerified"><value>Please verify your email before logging in.</value></data>
+  <data name="Auth_EmailAlreadyRegistered"><value>Email is already registered.</value></data>
+  <data name="Auth_AlreadyVerified"><value>Email is already verified. Please login.</value></data>
+  <data name="Auth_InvalidOtp"><value>Invalid or expired OTP code.</value></data>
+  <data name="Auth_OtpExpired"><value>OTP code has expired. Please request a new one.</value></data>
+  <data name="Auth_InvalidResetToken"><value>Reset token is invalid or has expired.</value></data>
+  <data name="Auth_UserNotFound"><value>User not found.</value></data>
+  <data name="Auth_InvalidRefreshToken"><value>Refresh token is invalid or has expired.</value></data>
+
+  <!-- Auth: Success -->
+  <data name="Auth_OtpSent"><value>If this email is registered, you will receive an OTP shortly.</value></data>
+  <data name="Auth_PasswordReset"><value>Password has been reset successfully.</value></data>
+  <data name="Auth_VerificationSent"><value>A verification code has been sent to your email.</value></data>
+  <data name="Auth_ResendSuccess"><value>If this email is registered and not verified, a new code will be sent.</value></data>
+
+  <!-- Validation -->
+  <data name="Validation_FirstNameRequired"><value>First name is required.</value></data>
+  <data name="Validation_FirstNameMaxLength"><value>First name must not exceed 50 characters.</value></data>
+  <data name="Validation_LastNameRequired"><value>Last name is required.</value></data>
+  <data name="Validation_LastNameMaxLength"><value>Last name must not exceed 50 characters.</value></data>
+  <data name="Validation_EmailRequired"><value>Email is required.</value></data>
+  <data name="Validation_EmailInvalid"><value>Invalid email format.</value></data>
+  <data name="Validation_PasswordRequired"><value>Password is required.</value></data>
+  <data name="Validation_PasswordMinLength"><value>Password must be at least 6 characters.</value></data>
+  <data name="Validation_PasswordUppercase"><value>Password must contain at least one uppercase letter.</value></data>
+  <data name="Validation_PasswordLowercase"><value>Password must contain at least one lowercase letter.</value></data>
+  <data name="Validation_PasswordDigit"><value>Password must contain at least one digit.</value></data>
+  <data name="Validation_PhoneRequired"><value>Phone number is required.</value></data>
+  <data name="Validation_PhoneInvalid"><value>Phone number must be a valid format (7-15 digits).</value></data>
+  <data name="Validation_GovernorateRequired"><value>Governorate is required.</value></data>
+  <data name="Validation_GovernorateInvalid"><value>Governorate must be one of the supported canonical values.</value></data>
+  <data name="Validation_CityRequired"><value>City is required.</value></data>
+  <data name="Validation_GovernorateLookupNotFound"><value>Selected governorate is invalid.</value></data>
+  <data name="Validation_CityLookupNotFound"><value>Selected city is invalid.</value></data>
+  <data name="Validation_CityGovernorateMismatch"><value>Selected city does not belong to the selected governorate.</value></data>
+  <data name="Validation_SyndicateIdRequired"><value>A valid Syndicate ID is required.</value></data>
+  <data name="Validation_OtpRequired"><value>OTP code is required.</value></data>
+  <data name="Validation_OtpLength"><value>OTP code must be 6 digits.</value></data>
+  <data name="Validation_ResetTokenRequired"><value>Reset token is required.</value></data>
+  <data name="Validation_NewPasswordRequired"><value>New password is required.</value></data>
+  <data name="Validation_RefreshTokenRequired"><value>Refresh token is required.</value></data>
+  <data name="Validation_UserIdRequired"><value>User ID is required.</value></data>
+
+  <!-- Admin -->
+  <data name="Admin_LawyerNotFound"><value>Lawyer not found.</value></data>
+  <data name="Admin_LawyerAlreadyVerified"><value>Lawyer is already verified.</value></data>
+  <data name="Admin_LawyerVerified"><value>Lawyer has been verified successfully.</value></data>
+
+  <!-- Generic (reusable templates with {0}, {1} placeholders) -->
+  <data name="Generic_Required"><value>'{0}' is required.</value></data>
+  <data name="Generic_NotFound"><value>'{0}' was not found.</value></data>
+  <data name="Generic_AlreadyExists"><value>'{0}' already exists.</value></data>
+  <data name="Generic_NotVerified"><value>'{0}' is not verified.</value></data>
+  <data name="Generic_MaxLength"><value>'{0}' must not exceed {1} characters.</value></data>
+  <data name="Generic_Negative"><value>'{0}' must not be negative.</value></data>
+  <data name="Generic_InvalidId"><value>'{0}' must be a valid positive ID.</value></data>
+  <data name="Generic_InvalidEnumValue"><value>'{0}' has an invalid value.</value></data>
+
+  <!-- Field display names -->
+  <data name="Field_ServiceId"><value>Service ID</value></data>
+  <data name="Field_Price"><value>Price</value></data>
+  <data name="Field_Duration"><value>Duration</value></data>
+  <data name="Field_Lawyer"><value>Lawyer</value></data>
+  <data name="Field_Service"><value>Service</value></data>
+  <data name="Field_ServiceTitle"><value>Service Title</value></data>
+  <data name="Field_ServiceSummary"><value>Service Summary</value></data>
+  <data name="Field_ServiceFullDescription"><value>Service Full Description</value></data>
+  <data name="Field_ServiceType"><value>Service Type</value></data>
+  <data name="Field_ExpectedDuration"><value>Expected Duration</value></data>
+  <data name="Field_SSN"><value>SSN</value></data>
+  <data name="Field_SyndicateCard"><value>Syndicate Card</value></data>
+  <data name="Field_PracticeCertificates"><value>Practice Certificates</value></data>
+
+  <!-- Validation: File uploads -->
+  <data name="Validation_AtLeastOneFileRequired"><value>At least one file must be provided.</value></data>
+  <data name="Validation_FileTooLarge"><value>File size must not exceed 5 MB.</value></data>
+  <data name="Validation_FileTypeNotAllowed"><value>File type is not allowed. Accepted types: PDF, JPG, PNG, WEBP, HEIC.</value></data>
+  <data name="Validation_FileRequired"><value>File is required.</value></data>
+
+  <!-- Field display names: Documents -->
+  <data name="Field_FilePath"><value>File Path</value></data>
+  <data name="Field_CaseId"><value>Case ID</value></data>
+  <data name="Field_CaseTitle"><value>Title</value></data>
+  <data name="Field_CaseDescription"><value>Description</value></data>
+  <data name="Field_CaseStatus"><value>Case Status</value></data>
+  <data name="Field_NoteContent"><value>Note Content</value></data>
+  <data name="Field_TimelineTitle"><value>Timeline Title</value></data>
+  <data name="Field_TimelineContent"><value>Timeline Content</value></data>
+  <data name="Field_DocumentName"><value>Document Name</value></data>
+  <data name="Field_DocumentUrl"><value>Document URL</value></data>
+
+  <!-- Enums: ServiceType -->
+  <data name="Enum_ServiceType_Consultation"><value>Consultation</value></data>
+  <data name="Enum_ServiceType_Contract"><value>Contract</value></data>
+  <data name="Enum_ServiceType_CompanyFormation"><value>Company Formation</value></data>
+  <data name="Enum_ServiceType_Lawsuit"><value>Lawsuit</value></data>
+  <data name="Enum_ServiceType_Base"><value>General Legal Services</value></data>
+  <data name="Enum_ServiceType_IntellectualProperty"><value>Intellectual Property</value></data>
+  <data name="Enum_ServiceType_LegalTranslation"><value>Legal Translation</value></data>
+  <data name="Enum_ServiceType_DueDiligence"><value>Due Diligence</value></data>
+  <data name="Enum_ServiceType_DebtCollection"><value>Debt Collection</value></data>
+  <data name="Enum_ServiceType_Mediation"><value>Mediation</value></data>
+  <data name="Enum_ServiceType_LegalReview"><value>Legal Review</value></data>
+  <data name="Enum_ServiceType_Compliance"><value>Compliance</value></data>
+
+  <!-- Feedback -->
+  <data name="Success_FeedbackSent"><value>Feedback sent successfully.</value></data>
+  <data name="Validation_RatingMustBeBetween1And5"><value>Rating must be between 1 and 5.</value></data>
+  <data name="Field_FeedbackRating"><value>Rating</value></data>
+  <data name="Field_FeedbackContent"><value>Content</value></data>
+
+  <!-- Notifications -->
+  <data name="Notification_RequestAccepted_Title"><value>Request Accepted</value></data>
+  <data name="Notification_RequestAccepted_Body"><value>Lawyer {0} has accepted your request. Please proceed with payment.</value></data>
+  <data name="Notification_NewDirectRequest_Title"><value>New Direct Request</value></data>
+  <data name="Notification_NewDirectRequest_Body"><value>You have received a new direct request from client.</value></data>
+  <data name="Notification_CaseStarted_Title"><value>Case Ready</value></data>
+  <data name="Notification_CaseStarted_Body"><value>Client {0} has made the payment. You can now start working on the case.</value></data>
+  <data name="Notification_ChatAvailable_Title"><value>Chat Available</value></data>
+  <data name="Notification_ChatAvailable_Body"><value>You can now send messages to lawyer {0}.</value></data>
+  <data name="Notification_NewMessage_Title"><value>New Message</value></data>
+  <data name="Notification_NewMessage_Body"><value>You have received a new message from {0}.</value></data>
+  <data name="Notification_NewService_Title"><value>New Service Available</value></data>
+  <data name="Notification_NewService_Body"><value>A new service has been added to the platform: {0}</value></data>
+  <data name="Notification_CaseCompleted_Title"><value>Case Completed</value></data>
+  <data name="Notification_CaseCompleted_Body"><value>Client {0} has confirmed completion of the case "{1}".</value></data>
+  <data name="Notification_CaseStatusUpdated_Title"><value>Case Status Updated</value></data>
+  <data name="Notification_CaseStatusUpdated_Body"><value>The status of your case "{0}" has been updated to "{1}".</value></data>
+  <data name="Enum_CaseStatus_Open"><value>Open</value></data>
+  <data name="Enum_CaseStatus_InProgress"><value>In Progress</value></data>
+  <data name="Enum_CaseStatus_Closed"><value>Closed</value></data>
+  <data name="Enum_CaseStatus_Dismissed"><value>Dismissed</value></data>
+  <data name="Enum_CaseStatus_OnHold"><value>On Hold</value></data>
+  <data name="Enum_CaseStatus_Canceled"><value>Canceled</value></data>
+  <data name="Enum_CaseStatus_PendingConfirmation"><value>Pending Confirmation</value></data>
+  <!-- Added Keys -->
+  <data name="Auth_NotCaseOwner"><value>You do not own this case.</value></data>
+  <data name="Auth_CannotUploadToCase"><value>You are not authorized to upload documents to this case.</value></data>
+  <data name="Auth_CannotViewCase"><value>You are not authorized to view this case.</value></data>
+  <data name="Auth_NotChatParticipant"><value>You are not a participant.</value></data>
+  <data name="Auth_OnlyLawyersCanSendOffers"><value>Only lawyers can send offers.</value></data>
+  <data name="Cases_NotFound"><value>Case not found.</value></data>
+  <data name="Cases_DocumentNotFound"><value>Document not found.</value></data>
+  <data name="Cases_NoteNotFound"><value>Note not found.</value></data>
+  <data name="Chat_NotFound"><value>Chat does not exist.</value></data>
+  <data name="Chat_OtherParticipantNotFound"><value>Could not find the other participant.</value></data>
+  <data name="Offers_NotYourRequest"><value>This offer does not belong to your requests.</value></data>
+  <data name="Offers_OnlyPendingCanBeAccepted"><value>Only pending offers can be accepted.</value></data>
+  <data name="Offers_OnlyPendingCanBeRejected"><value>Only pending offers can be rejected.</value></data>
+  <data name="Offers_CannotAcceptNonPending"><value>Cannot accept an offer for a non-pending request.</value></data>
+  <data name="Offers_CannotRejectNonPending"><value>Cannot reject an offer for a non-pending request.</value></data>
+  <data name="Offers_CannotSendNonPending"><value>Cannot send offer for a non-pending request.</value></data>
+  <data name="Offers_PendingOfferExists"><value>A pending offer already exists for this request.</value></data>
+  <data name="Offers_UnsupportedRequestType"><value>Unsupported request type.</value></data>
+  <data name="Success_DocumentDeleted"><value>Document deleted.</value></data>
+  <data name="Success_NoteDeleted"><value>Note deleted.</value></data>
+  <data name="Success_OfferAccepted"><value>The offer has been accepted successfully. Please pay the invoice to start the service.</value></data>
+  <data name="Success_RequestAccepted"><value>Request accepted successfully. Awaiting client payment.</value></data>
+  <data name="Success_RequestCanceled"><value>Request canceled successfully.</value></data>
+  <data name="Success_InvoicePaid"><value>Payment successful. Transferring to chat.</value></data>
+  <data name="Success_OfferRejected"><value>Offer rejected.</value></data>
+  <data name="Success_RequestRejected"><value>Request rejected.</value></data>
+  <data name="Success_ReportSubmitted"><value>Your report has been submitted successfully. Our team will review it shortly.</value></data>
+  <data name="Invoices_Unauthorized"><value>This invoice does not belong to you.</value></data>
+  <data name="Invoices_AlreadyPaid"><value>This invoice has already been paid.</value></data>
+  <data name="Invoices_RequestNotAccepted"><value>Cannot pay before the request is accepted by the lawyer.</value></data>
+  <!-- Call -->
+  <data name="Call_Accepted"><value>Call accepted.</value></data>
+  <data name="Call_Rejected"><value>Call rejected.</value></data>
+  <data name="Call_Ended"><value>Call ended.</value></data>
+  <data name="Call_NotFound" xml:space="preserve">
+    <value>Call session not found.</value>
+  </data>
+  <data name="Call_NotParticipant" xml:space="preserve">
+    <value>You are not a participant in this call.</value>
+  </data>
+  <data name="Call_InvalidTransition" xml:space="preserve">
+    <value>Call status transition is invalid.</value>
+  </data>
+</root>

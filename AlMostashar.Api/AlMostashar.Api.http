@@ -1,0 +1,6 @@
+@AlMostashar.Api_HostAddress = http://localhost:5234
+
+GET {{AlMostashar.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

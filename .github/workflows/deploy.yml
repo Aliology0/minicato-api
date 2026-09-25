@@ -1,0 +1,41 @@
+name: Deploy ASP.NET Core Web API to MonsterASP
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0'
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Publish
+      run: dotnet publish ./AlMostashar.Api/AlMostashar.Api.csproj -c Release -o ./publish -r win-x86 --self-contained true
+  
+    - name: Deploy to MonsterASP.NET via FTP
+      uses: SamKirkland/FTP-Deploy-Action@4.3.0
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: ./publish/
+        server-dir: /wwwroot/  #
+        protocol: ftp
+        port: 21
+        
+        dangerous-clean-files: true
