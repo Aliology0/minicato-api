@@ -8,9 +8,6 @@ public class ClientConfiguration : IEntityTypeConfiguration<Client>
 {
     public void Configure(EntityTypeBuilder<Client> builder)
     {
-        builder.Property(c => c.NationalIdPhotoUrl)
-            .HasMaxLength(500);
-
         // ─── Relationships ───
 
         // 1:N — Client → ClientRequest

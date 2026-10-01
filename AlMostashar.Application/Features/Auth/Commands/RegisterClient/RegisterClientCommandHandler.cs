@@ -48,9 +48,6 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterClient
                 CreatedAt        = DateTime.UtcNow,
                 IsEmailVerified  = false,
                 AccountStatus    = AlMostashar.Domain.ValueObject.Enum.AccountStatus.EmailVerificationRequired,
-                VerificationStatus = AlMostashar.Domain.ValueObject.Enum.VerificationStatus.Pending,
-                AvatarUrl        = request.AvatarUrl,
-                NationalIdPhotoUrl = request.NationalIdPhotoUrl,
                 OTPcode          = otp,
                 OTPcodeExpiryTime = DateTime.UtcNow.AddMinutes(expiryMinutes),
             };
@@ -60,11 +57,11 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterClient
             await _db.SaveChangesAsync(cancellationToken);
 
             // 5. Send verification email
-            string subject = "Minicato - كود تأكيد البريد الإلكتروني";
+            string subject = "المستشار - كود تأكيد البريد الإلكتروني";
             string body = $@"
                 <div style='font-family: Arial, sans-serif; direction: rtl; text-align: center; padding: 20px;'>
                     <h2 style='color: #2c3e50;'>مرحباً {client.FullName}!</h2>
-                    <p>شكراً لتسجيلك في Minicato. لتأكيد بريدك الإلكتروني، أدخل الكود التالي:</p>
+                    <p>شكراً لتسجيلك في منصة المستشار. لتأكيد بريدك الإلكتروني، أدخل الكود التالي:</p>
                     <div style='font-size: 32px; font-weight: bold; color: #27ae60; letter-spacing: 8px; padding: 20px; background: #f0f0f0; border-radius: 10px; display: inline-block;'>
                         {otp}
                     </div>
@@ -88,9 +85,6 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterClient
             return Result<RegisterClientResponseDto>.Success(new RegisterClientResponseDto
             {
                 UserId = client.Id,
-                Role = AlMostashar.Domain.ValueObject.Enum.UserRole.Client,
-                AccountStatus = AlMostashar.Domain.ValueObject.Enum.AccountStatus.EmailVerificationRequired,
-                VerificationStatus = AlMostashar.Domain.ValueObject.Enum.VerificationStatus.Pending,
                 Message = emailSent 
                     ? Messages.AuthSuccess.VerificationSent 
                     : "تم إنشاء الحساب بنجاح، ولكن تعذر إرسال رمز التحقق (OTP) إلى بريدك الإلكتروني. يرجى استخدام ميزة 'إعادة إرسال الرمز' للحصول على كود جديد."

@@ -56,14 +56,14 @@ namespace AlMostashar.Application.Features.Admin.Commands.VerifyLawyer
                     });
                 }
 
-                subject = "Minicato - تم قبول حسابك! 🎉";
+                subject = "المستشار - تم قبول حسابك! 🎉";
                 body = $@"
                 <div style='font-family: Arial, sans-serif; direction: rtl; text-align: center; padding: 20px;'>
                     <h2 style='color: #27ae60;'>تهانينا! تم قبول حسابك</h2>
                     <p>مرحباً <strong>{lawyer.FullName}</strong>،</p>
-                    <p>تم مراجعة وقبول حسابك على Minicato.</p>
+                    <p>تم مراجعة وقبول حسابك على منصة المستشار.</p>
                     <p>يمكنك الآن تسجيل الدخول والبدء في استقبال القضايا.</p>
-                    <p style='color: #888; font-size: 12px; margin-top: 20px;'>Minicato Team</p>
+                    <p style='color: #888; font-size: 12px; margin-top: 20px;'>فريق المستشار</p>
                 </div>";
                 resultMessage = $"Lawyer '{lawyer.FullName}' has been verified successfully.";
             }
@@ -71,17 +71,17 @@ namespace AlMostashar.Application.Features.Admin.Commands.VerifyLawyer
             {
                 lawyer.AccountStatus = Domain.ValueObject.Enum.AccountStatus.Suspended;
                 // Email subject for document rejection / account suspension
-                subject = "Minicato - إجراء مطلوب: تحديث مستندات التحقق";
+                subject = "المستشار - إجراء مطلوب: تحديث مستندات التحقق";
 
                 // Email body explaining the suspension and required action
                 body = $@"
                     <div style='font-family: Arial, sans-serif; direction: rtl; text-align: center; padding: 20px;'>
                         <h2 style='color: #e74c3c;'>تحديث بخصوص حالة حسابك</h2>
                         <p>مرحباً <strong>{lawyer.FullName}</strong>،</p>
-                        <p>بعد مراجعة طلب انضمامك لمنصة Minicato، تبين أن ملفات التحقق المرفقة غير مكتملة أو غير واضحة.</p>
+                        <p>بعد مراجعة طلب انضمامك لمنصة المستشار، تبين أن ملفات التحقق المرفقة غير مكتملة أو غير واضحة.</p>
                         <p>بناءً على ذلك، سيظل حسابك <strong>معلقاً مؤقتاً</strong>.</p>
                         <p>يرجى تسجيل الدخول إلى حسابك وإعادة رفع المستندات المطلوبة بوضوح حتى نتمكن من استكمال عملية المراجعة وتفعيل الحساب.</p>
-                        <p style='color: #888; font-size: 12px; margin-top: 20px;'>Minicato Team</p>
+                        <p style='color: #888; font-size: 12px; margin-top: 20px;'>فريق المستشار</p>
                     </div>";
                 resultMessage = $"Lawyer '{lawyer.FullName}' has been rejected successfully.";
             }

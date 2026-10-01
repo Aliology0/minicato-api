@@ -47,8 +47,8 @@ namespace AlMostashar.Api.Helpers
                     { securityScheme, Array.Empty<string>() }
                 });
             });
-            services.AddSignalR(option => option.EnableDetailedErrors = true)
-                .AddJsonProtocol(options =>
+            services.AddSignalR(option=> option.EnableDetailedErrors = true)
+                .AddJsonProtocol(options => 
                 {
                     options.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                 });
@@ -60,7 +60,7 @@ namespace AlMostashar.Api.Helpers
                     policy.SetIsOriginAllowed(_ => true)
                           .AllowAnyMethod()
                           .AllowAnyHeader()
-                          .AllowCredentials();
+                          .AllowCredentials(); 
                 });
             });
 

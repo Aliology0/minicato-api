@@ -44,7 +44,7 @@ namespace AlMostashar.Application.Features.Auth.Commands.ResendVerification
             await _db.SaveChangesAsync(cancellationToken);
 
             // 4. Send new OTP email
-            string subject = "Minicato - كود تأكيد جديد";
+            string subject = "المستشار - كود تأكيد جديد";
             string body = $@"
                 <div style='font-family: Arial, sans-serif; direction: rtl; text-align: center; padding: 20px;'>
                     <h2 style='color: #2c3e50;'>كود تأكيد جديد</h2>

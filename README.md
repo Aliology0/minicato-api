@@ -10,7 +10,7 @@
     </tr>
   </table>
 
-  <h1>Minicato API</h1>
+  <h1>AlMostashar API</h1>
 
   <p>
     <strong>A graduation project by Faculty of Computers and Informatics, Zagazig University</strong>
@@ -43,13 +43,13 @@
 
 ## 1. Overview
 
-Minicato is a legal-services backend platform that connects clients, lawyers, and admins through a structured digital workflow. The API supports legal service discovery, direct and broadcast client requests, lawyer offers, case management, real-time chat, document handling, payments, invoices, escrow, lawyer wallets, disputes, notifications, and retrieval-grounded legal answer generation over curated Egyptian legal sources.
+AlMostashar is a legal-services backend platform that connects clients, lawyers, and admins through a structured digital workflow. The API supports legal service discovery, direct and broadcast client requests, lawyer offers, case management, real-time chat, document handling, payments, invoices, escrow, lawyer wallets, disputes, notifications, and retrieval-grounded legal answer generation over curated Egyptian legal sources.
 
 The platform is organized as a layered ASP.NET Core solution with a dedicated API layer, application feature handlers, domain entities/events, infrastructure integrations, automated tests, and a separate Legal RAG worker integrated through a backend gateway.
 
 ## 2. 🎓 Graduation Project
 
-Minicato was developed as a graduation project for the Faculty of Computers and Informatics, Zagazig University.
+AlMostashar was developed as a graduation project for the Faculty of Computers and Informatics, Zagazig University.
 
 The project focuses on building a real-world legal technology platform that combines software engineering, secure backend design, financial workflows, real-time communication, and AI-assisted legal services.
 
@@ -112,7 +112,7 @@ The project focuses on building a real-world legal technology platform that comb
 
 ### Real-time Communication
 
-- SignalR hub at `/hubs/minicato`.
+- SignalR hub at `/hubs/almostashar`.
 - Real-time chat between case participants.
 - Typing indicators.
 - Message read receipts.
@@ -156,11 +156,11 @@ This AI layer retrieves relevant Egyptian legal materials before answer generati
 
 > Legal AI responses are designed to support legal understanding, not replace professional legal advice. The system distinguishes between internally grounded answers and assisted explanations, and it avoids presenting unsupported answers as verified legal citations.
 
-### 🔎 Minicato Legal RAG Service
+### 🔎 AlMostashar Legal RAG Service
 
 The Legal AI capability is powered by a dedicated Python/FastAPI service:
 
-[Minicato Legal RAG API](https://github.com/Loay-Wael1/al-mostashar-legal-rag)
+[AlMostashar Legal RAG API](https://github.com/Loay-Wael1/al-mostashar-legal-rag)
 
 This service acts as the Egyptian legal knowledge engine behind the platform. It is not a generic chatbot; it uses Retrieval-Augmented Generation to retrieve relevant Egyptian legal materials, evaluate whether the retrieved sources are sufficient, and then generate an answer grounded in those sources.
 
@@ -222,7 +222,7 @@ flowchart LR
 
     API --> LegalAIController["Legal AI Controller"]
     LegalAIController --> LegalAIClient["LegalAiClient"]
-    LegalAIClient --> RAG["Minicato Legal RAG Service"]
+    LegalAIClient --> RAG["AlMostashar Legal RAG Service"]
     RAG --> Qdrant[("Qdrant Vector DB")]
     RAG --> Embeddings["BGE-M3 Embeddings"]
     RAG --> Gemini["Gemini LLM"]

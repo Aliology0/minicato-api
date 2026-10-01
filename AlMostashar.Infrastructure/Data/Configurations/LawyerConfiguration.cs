@@ -37,8 +37,6 @@ public class LawyerConfiguration : IEntityTypeConfiguration<Lawyer>
 
         // ─── Indexes ───
         builder.HasIndex(l => l.VerifiedByAdminId);
-        builder.HasIndex(l => l.SyndicateId)
-            .IsUnique();
 
         // ─── Relationships ───
 

@@ -11,7 +11,6 @@ namespace AlMostashar.Domain.Entities
         public bool IsActive { get; set; } = false;
         public DateTime CreatedAt { get; set; }
         public AccountStatus AccountStatus { get; set; }
-        public VerificationStatus VerificationStatus { get; set; } = VerificationStatus.Pending;
 
         // Navigation — Step 4: 1:N (User → Notification)
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();

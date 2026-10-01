@@ -25,14 +25,6 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterClient
                 .Matches(@"[A-Z]").WithMessage(Messages.Validation.PasswordUppercase)
                 .Matches(@"[a-z]").WithMessage(Messages.Validation.PasswordLowercase)
                 .Matches(@"[0-9]").WithMessage(Messages.Validation.PasswordDigit);
-
-            RuleFor(x => x.AvatarUrl)
-                .NotEmpty().WithMessage(Messages.Validation.ProfilePictureRequired)
-                .MaximumLength(500).WithMessage(Messages.Generic.MaxLength("AvatarUrl", 500));
-
-            RuleFor(x => x.NationalIdPhotoUrl)
-                .NotEmpty().WithMessage(Messages.Validation.NationalIdPhotoRequired)
-                .MaximumLength(500).WithMessage(Messages.Generic.MaxLength("NationalIdPhotoUrl", 500));
         }
     }
 }

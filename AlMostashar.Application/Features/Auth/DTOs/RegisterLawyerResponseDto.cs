@@ -13,7 +13,6 @@ namespace AlMostashar.Application.Features.Auth.DTOs
         public int UserId { get; set; }
         public UserRole Role { get; set; } = UserRole.Lawyer;
         public AccountStatus AccountStatus { get; set; } = AccountStatus.PendingReview;
-        public VerificationStatus VerificationStatus { get; set; } = VerificationStatus.Pending;
         public int ExpectedReviewDays { get; set; } = 2;
     }
 }

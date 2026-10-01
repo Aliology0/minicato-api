@@ -1,3 +1,5 @@
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using AlMostashar.Api.Helpers;
 using AlMostashar.Api.Middlewares;
 using AlMostashar.Api.SignalR;
@@ -39,7 +41,7 @@ namespace AlMostashar.Api
             builder.Services.AddLocalization();
           
             var app = builder.Build();
-            app.MapGet("/", () => Results.Redirect("https://minicato-web.vercel.app")).AllowAnonymous();
+            app.MapGet("/", () => Results.Redirect("https://almostashar-web-3oqf.vercel.app")).AllowAnonymous();
 
             // Set Arabic as default culture; Flutter can override via Accept-Language header
             var supportedCultures = new[] { new CultureInfo("ar"), new CultureInfo("en") };
@@ -52,8 +54,11 @@ namespace AlMostashar.Api
 
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 
+            if (app.Environment.IsDevelopment())
+            {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+            }
 
             app.UseCors("AllowAll");
             app.UseHttpsRedirection();
@@ -62,7 +67,7 @@ namespace AlMostashar.Api
             app.UseAuthorization();
 
             app.MapControllers();
-            app.MapHub<AlMostasharHub>("/hubs/minicato");
+            app.MapHub<AlMostasharHub>("/hubs/almostashar");
 
             app.Run();
         }

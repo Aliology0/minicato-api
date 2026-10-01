@@ -45,15 +45,6 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterLawyer
                 return Result<RegisterLawyerResponseDto>.Failure(error);
             }
 
-            bool syndicateExists = await _db.Lawyers
-                .AnyAsync(l => l.SyndicateId == request.SyndicateId, cancellationToken);
-
-            if (syndicateExists)
-            {
-                var error = new Error("User.Conflict", Messages.Auth.SyndicateIdAlreadyRegistered);
-                return Result<RegisterLawyerResponseDto>.Failure(error);
-            }
-
             // 2. Build the Lawyer entity
             var lawyer = new Lawyer
             {
@@ -69,13 +60,11 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterLawyer
                 CityId                  = location.CityId,
                 City                    = location.City,
                 SyndicateId             = request.SyndicateId,
-                AvatarUrl               = request.AvatarUrl,
                 SSN_Url                 = request.SSN_Url,
                 SyndicateCardUrl        = request.SyndicateCardUrl,
                 PracticeCertificatesUrl = request.PracticeCertificatesUrl,
                 IsVerified              = false, // awaiting admin approval
                 AccountStatus           = AlMostashar.Domain.ValueObject.Enum.AccountStatus.PendingReview,
-                VerificationStatus      = AlMostashar.Domain.ValueObject.Enum.VerificationStatus.Pending,
             };
 
             // 3. Persist lawyer to DB — NO tokens generated

@@ -1,6 +1,6 @@
 # Agora Video/Audio Calling — Flutter Integration Guide
 
-> This guide walks you through integrating Agora video/audio calling into your Flutter app using the Minicato backend API endpoints.
+> This guide walks you through integrating Agora video/audio calling into your Flutter app using the AlMostashar backend API endpoints.
 
 ---
 
@@ -20,7 +20,7 @@
 
 ```
 ┌─────────────┐        ┌──────────────────┐        ┌─────────────┐
-│  Flutter App │───────▶│  Minicato API  │───────▶│  Agora Cloud │
+│  Flutter App │───────▶│  AlMostashar API  │───────▶│  Agora Cloud │
 │  (Client)    │◀───────│  (Your Backend)   │◀───────│  (RTC Server)│
 └─────────────┘        └──────────────────┘        └─────────────┘
 ```

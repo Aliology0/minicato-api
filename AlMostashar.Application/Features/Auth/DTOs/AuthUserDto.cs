@@ -11,7 +11,6 @@ namespace AlMostashar.Application.Features.Auth.DTOs
         public UserRole  Role           { get; set; }
         /// <summary>Uses <see cref="AccountStatus"/> enum values.</summary>
         public AccountStatus  AccountStatus  { get; set; }
-        public VerificationStatus VerificationStatus { get; set; }
         public string? ProfileImage   { get; set; }
         /// <summary>
         /// Lawyer-specific details (governorate, city, bio, about).

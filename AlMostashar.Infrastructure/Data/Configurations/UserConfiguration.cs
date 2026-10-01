@@ -27,12 +27,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         .HasColumnType("varchar")
         .HasMaxLength(50);
 
-        builder.Property(u => u.VerificationStatus)
-            .HasConversion<string>()
-            .HasColumnType("varchar")
-            .HasMaxLength(50)
-            .HasDefaultValue(AlMostashar.Domain.ValueObject.Enum.VerificationStatus.Pending);
-
 
         builder.HasIndex(u => u.Email)
             .IsUnique();

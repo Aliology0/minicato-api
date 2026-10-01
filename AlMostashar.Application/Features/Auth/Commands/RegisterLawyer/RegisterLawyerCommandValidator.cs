@@ -37,18 +37,6 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterLawyer
             RuleFor(x => x.SyndicateId)
                 .GreaterThan(0).WithMessage(Messages.Validation.SyndicateIdRequired);
 
-            RuleFor(x => x.AvatarUrl)
-                .NotEmpty().WithMessage(Messages.Validation.ProfilePictureRequired)
-                .MaximumLength(500).WithMessage(Messages.Generic.MaxLength("AvatarUrl", 500));
-
-            RuleFor(x => x.SSN_Url)
-                .NotEmpty().WithMessage(Messages.Validation.SsnRequired)
-                .MaximumLength(500).WithMessage(Messages.Generic.MaxLength("SSN_Url", 500));
-
-            RuleFor(x => x.SyndicateCardUrl)
-                .NotEmpty().WithMessage(Messages.Validation.SyndicateCardRequired)
-                .MaximumLength(500).WithMessage(Messages.Generic.MaxLength("SyndicateCardUrl", 500));
-
             RuleFor(x => x.GovernorateId)
                 .GreaterThan(0).WithMessage(Messages.Generic.InvalidId("GovernorateId"));
 

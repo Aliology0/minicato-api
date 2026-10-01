@@ -1381,13 +1381,6 @@ namespace AlMostashar.Infrastructure.Migrations
                         .HasMaxLength(8)
                         .HasColumnType("nvarchar(8)");
 
-                    b.Property<string>("VerificationStatus")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar")
-                        .HasDefaultValue("Pending");
-
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
@@ -1889,10 +1882,6 @@ namespace AlMostashar.Infrastructure.Migrations
                 {
                     b.HasBaseType("AlMostashar.Domain.Entities.User");
 
-                    b.Property<string>("NationalIdPhotoUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
                     b.HasDiscriminator().HasValue("Client");
                 });
 
@@ -1955,10 +1944,6 @@ namespace AlMostashar.Infrastructure.Migrations
 
                     b.Property<int>("YearsOfExperience")
                         .HasColumnType("int");
-
-                    b.HasIndex("SyndicateId")
-                        .IsUnique()
-                        .HasFilter("[SyndicateId] IS NOT NULL");
 
                     b.HasIndex("VerifiedByAdminId");
 

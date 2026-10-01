@@ -22,7 +22,6 @@ namespace AlMostashar.Application.Common.Constants
             public static string InvalidCredentials     => Get("Auth_InvalidCredentials");
             public static string EmailNotVerified        => Get("Auth_EmailNotVerified");
             public static string EmailAlreadyRegistered  => Get("Auth_EmailAlreadyRegistered");
-            public static string SyndicateIdAlreadyRegistered => Get("Auth_SyndicateIdAlreadyRegistered");
             public static string AlreadyVerified         => Get("Auth_AlreadyVerified");
             public static string InvalidOtp              => Get("Auth_InvalidOtp");
             public static string OtpExpired              => Get("Auth_OtpExpired");
@@ -93,11 +92,6 @@ namespace AlMostashar.Application.Common.Constants
             public static string FileTooLarge            => Get("Validation_FileTooLarge");
             public static string FileTypeNotAllowed      => Get("Validation_FileTypeNotAllowed");
             public static string FileRequired            => Get("Validation_FileRequired");
-            public static string FileEmpty               => Get("Validation_FileEmpty");
-            public static string ProfilePictureRequired  => Get("Validation_ProfilePictureRequired");
-            public static string NationalIdPhotoRequired => Get("Validation_NationalIdPhotoRequired");
-            public static string SsnRequired             => Get("Validation_SsnRequired");
-            public static string SyndicateCardRequired   => Get("Validation_SyndicateCardRequired");
             public static string RatingMustBeBetween1And5 => Get("Validation_RatingMustBeBetween1And5");
         }
 
@@ -107,9 +101,6 @@ namespace AlMostashar.Application.Common.Constants
             public static string LawyerNotFound          => Get("Admin_LawyerNotFound");
             public static string LawyerAlreadyVerified   => Get("Admin_LawyerAlreadyVerified");
             public static string LawyerVerified          => Get("Admin_LawyerVerified");
-            public static string UserAlreadyVerified     => Get("Admin_UserAlreadyVerified");
-            public static string UserAlreadyRejected     => Get("Admin_UserAlreadyRejected");
-            public static string CannotVerifyAdmin       => Get("Admin_CannotVerifyAdmin");
         }
 
         // ── Cases ────────────────────────────────────────────────────────────

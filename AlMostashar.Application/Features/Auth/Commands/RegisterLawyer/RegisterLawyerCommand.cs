@@ -17,9 +17,8 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterLawyer
         public int CityId { get; set; }
         // ── Lawyer-specific fields ──────────────────────────────────────────
         public int SyndicateId { get; set; }
-        public string AvatarUrl { get; set; } = null!;
-        public string SSN_Url { get; set; } = null!;
-        public string SyndicateCardUrl { get; set; } = null!;
+        public string? SSN_Url { get; set; }
+        public string? SyndicateCardUrl { get; set; }
         public string? PracticeCertificatesUrl { get; set; }
     }
 }

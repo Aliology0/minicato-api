@@ -1,12 +1,12 @@
 # Legal AI Integration
 
-This document describes how the Minicato C# platform integrates with the Python Legal RAG engine.
+This document describes how the AlMostashar C# platform integrates with the Python Legal RAG engine that powers **المستشار**.
 
 ## Current Staging Setup
 
 ```text
 Flutter
--> Minicato.Api
+-> AlMostashar.Api
 -> Hugging Face Space
 -> Python Legal RAG /chat
 -> Gemini primary + Groq fallback
@@ -176,7 +176,7 @@ The ideal production topology is:
 
 ```text
 Flutter
--> Minicato.Api
+-> AlMostashar.Api
 -> internal Python Legal RAG service on the same Docker/network
 ```
 

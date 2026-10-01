@@ -1,17 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 18
-VisualStudioVersion = 18.11.12217.175 insiders
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36915.13
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Minicato.Api", "AlMostashar.Api\Minicato.Api.csproj", "{3AE3139D-2A4D-4215-B33E-3F9CD29D85E0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlMostashar.Api", "AlMostashar.Api\AlMostashar.Api.csproj", "{3AE3139D-2A4D-4215-B33E-3F9CD29D85E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Minicato.Application", "AlMostashar.Application\Minicato.Application.csproj", "{71F971BE-1D34-41A5-A696-9CF3514C6211}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlMostashar.Application", "AlMostashar.Application\AlMostashar.Application.csproj", "{71F971BE-1D34-41A5-A696-9CF3514C6211}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Minicato.Domain", "AlMostashar.Domain\Minicato.Domain.csproj", "{6CFB56BF-4D92-4E76-89D0-B0E6EEDEACDB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlMostashar.Domain", "AlMostashar.Domain\AlMostashar.Domain.csproj", "{6CFB56BF-4D92-4E76-89D0-B0E6EEDEACDB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Minicato.Infrastructure", "AlMostashar.Infrastructure\Minicato.Infrastructure.csproj", "{5CBF586A-E330-44C7-98A7-994F2107244E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlMostashar.Infrastructure", "AlMostashar.Infrastructure\AlMostashar.Infrastructure.csproj", "{5CBF586A-E330-44C7-98A7-994F2107244E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Minicato.Application.Tests", "AlMostashar.Application.Tests\Minicato.Application.Tests.csproj", "{25E16511-E782-430E-B5AC-235E0FB38D74}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlMostashar.Application.Tests", "AlMostashar.Application.Tests\AlMostashar.Application.Tests.csproj", "{25E16511-E782-430E-B5AC-235E0FB38D74}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

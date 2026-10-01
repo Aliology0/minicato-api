@@ -43,7 +43,7 @@ namespace AlMostashar.Application.Features.Auth.Commands.ForgotPassword
             await _db.SaveChangesAsync(cancellationToken);
 
             // 3. Send OTP email
-            string subject = "Minicato - كود تأكيد إعادة تعيين كلمة المرور";
+            string subject = "المستشار - كود تأكيد إعادة تعيين كلمة المرور";
             string body = $@"
                 <div style='font-family: Arial, sans-serif; direction: rtl; text-align: center; padding: 20px;'>
                     <h2 style='color: #2c3e50;'>إعادة تعيين كلمة المرور</h2>
