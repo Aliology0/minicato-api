@@ -52,6 +52,14 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(u => u.AvatarUrl)
             .HasMaxLength(500);
+        builder.Property(u => u.FrontIdUrl)
+            .HasMaxLength(500);
+
+        builder.Property(u => u.BackIdUrl)
+            .HasMaxLength(500);
+
+        builder.Property(u => u.SyndicateMembershipCardUrl)
+            .HasMaxLength(500);
 
         // ─── Relationships ───
 

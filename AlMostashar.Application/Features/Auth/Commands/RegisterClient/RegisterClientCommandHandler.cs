@@ -5,20 +5,23 @@ using AlMostashar.Domain.Entities;
 using AlMostashar.Domain.Shared;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using AlMostashar.Application.Helpers;
 
 namespace AlMostashar.Application.Features.Auth.Commands.RegisterClient
 {
     public class RegisterClientCommandHandler : IRequestHandler<RegisterClientCommand, Result<RegisterClientResponseDto>>
     {
-        private readonly IAppDbContext _db;
-        private readonly IAuthService  _authService;
-        private readonly IEmailService _emailService;
+    private readonly IAppDbContext _db;
+    private readonly IAuthService  _authService;
+    private readonly IEmailService _emailService;
+    private readonly IStorageService _storageService;
 
-        public RegisterClientCommandHandler(IAppDbContext db, IAuthService authService, IEmailService emailService)
+        public RegisterClientCommandHandler(IAppDbContext db, IAuthService authService, IEmailService emailService, IStorageService storageService)
         {
             _db           = db;
             _authService  = authService;
             _emailService = emailService;
+            _storageService = storageService;
         }
 
         public async Task<Result<RegisterClientResponseDto>> Handle(RegisterClientCommand request, CancellationToken cancellationToken)
@@ -52,9 +55,70 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterClient
                 OTPcodeExpiryTime = DateTime.UtcNow.AddMinutes(expiryMinutes),
             };
 
-            // 4. Persist client — NO tokens generated
+            // 4. Persist client — NO tokens generated yet
             await _db.Clients.AddAsync(client, cancellationToken);
             await _db.SaveChangesAsync(cancellationToken);
+
+            // 5. If files provided, upload them and update user record.
+            // Avatar: public URL; ID documents: private storage keys
+            try
+            {
+                var avatarTask = request.AvatarPhoto != null
+                    ? UploadToStorage.UploadPublicAsync(request.AvatarPhoto, _storageService)
+                    : Task.FromResult<string?>(null);
+
+                var frontIdTask = request.FrontIdPhoto != null
+                    ? UploadToStorage.UploadAsync(request.FrontIdPhoto, _storageService)
+                    : Task.FromResult<string?>(null);
+
+                var backIdTask = request.BackIdPhoto != null
+                    ? UploadToStorage.UploadAsync(request.BackIdPhoto, _storageService)
+                    : Task.FromResult<string?>(null);
+
+                var syndicateTask = request.SyndicateMembershipCardPhoto != null
+                    ? UploadToStorage.UploadAsync(request.SyndicateMembershipCardPhoto, _storageService)
+                    : Task.FromResult<string?>(null);
+
+                await Task.WhenAll(avatarTask, frontIdTask, backIdTask, syndicateTask);
+
+                var avatarKey = await avatarTask;
+                var frontKey = await frontIdTask;
+                var backKey = await backIdTask;
+                var syndicateKey = await syndicateTask;
+
+                bool updated = false;
+                if (!string.IsNullOrEmpty(avatarKey))
+                {
+                    client.AvatarUrl = _storageService.GetPublicUrl(avatarKey!);
+                    updated = true;
+                }
+                if (!string.IsNullOrEmpty(frontKey))
+                {
+                    client.FrontIdUrl = frontKey;
+                    updated = true;
+                }
+                if (!string.IsNullOrEmpty(backKey))
+                {
+                    client.BackIdUrl = backKey;
+                    updated = true;
+                }
+                if (!string.IsNullOrEmpty(syndicateKey))
+                {
+                    client.SyndicateMembershipCardUrl = syndicateKey;
+                    updated = true;
+                }
+
+                if (updated)
+                {
+                    _db.Users.Update(client);
+                    await _db.SaveChangesAsync(cancellationToken);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Do not fail registration due to storage issues. Log and continue.
+                // Storage exceptions should be monitored by logs.
+            }
 
             // 5. Send verification email
             string subject = "المستشار - كود تأكيد البريد الإلكتروني";

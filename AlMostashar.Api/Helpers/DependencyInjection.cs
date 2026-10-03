@@ -2,12 +2,15 @@ using AlMostashar.Api.Services;
 using AlMostashar.Application.Common.Interfaces;
 using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace AlMostashar.Api.Helpers
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddApi(this IServiceCollection services)
+        public static IServiceCollection AddApi(this IServiceCollection services, IConfiguration configuration)
         {
 
             services.AddControllers().AddJsonOptions(options =>
@@ -53,14 +56,25 @@ namespace AlMostashar.Api.Helpers
                     options.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                 });
 
+            // CORS: allowed origins configured via appsettings (AllowedOrigins: comma-separated)
+            var allowedOrigins = configuration.GetValue<string>("AllowedOrigins")?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? Array.Empty<string>();
             services.AddCors(options =>
             {
-                options.AddPolicy("AllowAll", policy =>
+                options.AddPolicy("DefaultCorsPolicy", policy =>
                 {
-                    policy.SetIsOriginAllowed(_ => true)
-                          .AllowAnyMethod()
-                          .AllowAnyHeader()
-                          .AllowCredentials(); 
+                    if (allowedOrigins.Length == 0)
+                    {
+                        // If not configured, allow localhost development origins only
+                        policy.WithOrigins("https://localhost:5001", "http://localhost:5000")
+                              .AllowAnyMethod()
+                              .AllowAnyHeader();
+                    }
+                    else
+                    {
+                        policy.WithOrigins(allowedOrigins)
+                              .AllowAnyMethod()
+                              .AllowAnyHeader();
+                    }
                 });
             });
 

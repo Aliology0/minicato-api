@@ -14,20 +14,17 @@ namespace AlMostashar.Api.Services
     /// </summary>
     public class SignalRNotificationService : INotificationService
     {
-        private readonly IHubContext<AlMostasharHub> _hubContext;
-        private readonly IConnectionTracker _connectionTracker;
-        private readonly IFcmService _fcmService;
-        private readonly ILogger<SignalRNotificationService> _logger;
+    private readonly IHubContext<AlMostasharHub> _hubContext;
+    private readonly IConnectionTracker _connectionTracker;
+    private readonly ILogger<SignalRNotificationService> _logger;
 
         public SignalRNotificationService(
             IHubContext<AlMostasharHub> hubContext,
             IConnectionTracker connectionTracker,
-            IFcmService fcmService,
             ILogger<SignalRNotificationService> logger)
         {
             _hubContext = hubContext;
             _connectionTracker = connectionTracker;
-            _fcmService = fcmService;
             _logger = logger;
         }
 
@@ -60,16 +57,8 @@ namespace AlMostashar.Api.Services
             }
             else
             {
-                _logger.LogDebug("[NOTIFY] Sending via FCM to UserId={UserId}", userId);
-                var data = new Dictionary<string, string> {
-                    {"title", title },
-                    {"message", message },
-                    {"type", type.ToString() },
-                    {"referenceId", referenceId?.ToString() ?? "0" },
-                    {"senderName", senderName ?? "" },
-                    {"profileImage", profileImage ?? "" }
-                };
-                await _fcmService.SendToUserByIdAsync(userId, data, cancellationToken);
+                // User offline — SignalR cannot deliver in real-time. No Firebase fallback available.
+                _logger.LogInformation("[NOTIFY] User offline and no push provider configured. Notification for UserId={UserId} will remain in DB.", userId);
             }
         }
 
@@ -132,8 +121,7 @@ namespace AlMostashar.Api.Services
                 {"callerProfileImage", incomingCallDto.CallerInfo.ProfileImage },
             };
 
-            _logger.LogInformation("[CALL] Sending via FCM to ReceiverId={ReceiverId} (always-on fallback)", ReceiverId);
-            await _fcmService.SendCallNotificationAsync(ReceiverId, data, cancellationToken);
+            _logger.LogInformation("[CALL] User may be offline; no push provider configured. Call fallback skipped for ReceiverId={ReceiverId}", ReceiverId);
         }
 
         public async Task SendCallAcceptedAsync(int userId, string message, CancellationToken cancellationToken)

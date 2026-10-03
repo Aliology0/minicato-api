@@ -8,6 +8,9 @@ namespace AlMostashar.Domain.Entities
         public string LastName { get; set; }
         public string FullName { get; set; }
         public string? AvatarUrl { get; set; }
+        public string? FrontIdUrl { get; set; }
+        public string? BackIdUrl { get; set; }
+        public string? SyndicateMembershipCardUrl { get; set; }
         public bool IsActive { get; set; } = false;
         public DateTime CreatedAt { get; set; }
         public AccountStatus AccountStatus { get; set; }

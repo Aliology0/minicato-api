@@ -4,8 +4,6 @@ using AlMostashar.Infrastructure.Data;
 using AlMostashar.Infrastructure.Options;
 using AlMostashar.Infrastructure.Services;
 using Amazon.S3;
-using FirebaseAdmin;
-using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -139,45 +137,7 @@ namespace AlMostashar.Infrastructure.Helpers
                 services.AddScoped<IStorageService, S3StorageService>();
             //}
 
-            // Firebase Registration
-            var firebaseJson = configuration["Firebase:ServiceAccountKey"];
-            var firebaseFile = "service-account-key.json";
-            var isDevelopment = isDevelopmentEnvironment;
-
-            if (!string.IsNullOrWhiteSpace(firebaseJson))
-            {
-                try
-                {
-                    FirebaseApp.Create(new AppOptions()
-                    {
-                        Credential = GoogleCredential.FromJson(firebaseJson)
-                    });
-                }
-                catch when (File.Exists(firebaseFile))
-                {
-                    FirebaseApp.Create(new AppOptions()
-                    {
-                        Credential = GoogleCredential.FromJson(File.ReadAllText(firebaseFile))
-                    });
-                }
-            }
-            else if (File.Exists(firebaseFile))
-            {
-                FirebaseApp.Create(new AppOptions()
-                {
-                    Credential = GoogleCredential.FromJson(File.ReadAllText(firebaseFile))
-                });
-            }
-            else if (!isDevelopment)
-            {
-                throw new InvalidOperationException(
-                    "Firebase credentials are required outside the Development environment.");
-            }
-
-            if (FirebaseApp.DefaultInstance is null)
-                services.AddScoped<IFcmService, DevelopmentNoOpFcmService>();
-            else
-                services.AddScoped<IFcmService, FcmNotificationService>();
+            // Firebase removed - no FCM provider is registered
 
 
             // Paymob Registration

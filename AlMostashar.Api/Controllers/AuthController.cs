@@ -27,8 +27,9 @@ namespace AlMostashar.Api.Controllers
 
         /// <summary>Register a new Client account. Sends OTP to email for verification.</summary>
         [HttpPost("register/client")]
+        [Consumes("multipart/form-data")]
         public async Task<IActionResult> RegisterClient(
-            [FromBody] RegisterClientCommand command,
+            [FromForm] RegisterClientCommand command,
             CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(command, cancellationToken);

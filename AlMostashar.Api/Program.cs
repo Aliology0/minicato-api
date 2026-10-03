@@ -1,5 +1,3 @@
-using FirebaseAdmin;
-using Google.Apis.Auth.OAuth2;
 using AlMostashar.Api.Helpers;
 using AlMostashar.Api.Middlewares;
 using AlMostashar.Api.SignalR;
@@ -30,7 +28,7 @@ namespace AlMostashar.Api
             );
 
             builder.Services
-                .AddApi()                                        // controllers, swagger, cors, signalr
+                .AddApi(builder.Configuration)                 // controllers, swagger, cors, signalr
                 .AddApplication()                               // mediatr handlers
                 .AddInfrastructure(builder.Configuration);      // db, auth service, jwt
 
@@ -57,7 +55,7 @@ namespace AlMostashar.Api
                 app.UseSwagger();
                 app.UseSwaggerUI();
 
-            app.UseCors("AllowAll");
+            app.UseCors("DefaultCorsPolicy");
             app.UseHttpsRedirection();
 
             app.UseAuthentication();   
