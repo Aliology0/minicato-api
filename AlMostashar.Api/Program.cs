@@ -4,7 +4,6 @@ using AlMostashar.Api.SignalR;
 using AlMostashar.Application.Helpers;
 using AlMostashar.Infrastructure.Helpers;
 using System.Globalization;
-using Microsoft.AspNetCore.Authorization;
 using Serilog;
 
 namespace AlMostashar.Api
@@ -28,40 +27,57 @@ namespace AlMostashar.Api
             );
 
             builder.Services
-                .AddApi(builder.Configuration)                 // controllers, swagger, cors, signalr
-                .AddApplication()                               // mediatr handlers
-                .AddInfrastructure(builder.Configuration);      // db, auth service, jwt
+                .AddApi(builder.Configuration)
+                .AddApplication()
+                .AddInfrastructure(builder.Configuration);
 
             // Disable Microsoft's default JWT claim type mapping globally
-            System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+            System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler
+                .DefaultInboundClaimTypeMap.Clear();
 
-            // ── Localization: Arabic default, English fallback ──
+            // ── Localization ──
             builder.Services.AddLocalization();
-          
-            var app = builder.Build();
-            app.MapGet("/", () => Results.Redirect("https://almostashar-web-3oqf.vercel.app")).AllowAnonymous();
 
-            // Set Arabic as default culture; Flutter can override via Accept-Language header
-            var supportedCultures = new[] { new CultureInfo("ar"), new CultureInfo("en") };
+            var app = builder.Build();
+
+            // API health/status endpoint
+            app.MapGet("/", () => Results.Ok(new
+            {
+                message = "AlMostashar API is running",
+                status = "OK"
+            })).AllowAnonymous();
+
+            // Set Arabic as default culture
+            var supportedCultures = new[]
+            {
+                new CultureInfo("ar"),
+                new CultureInfo("en")
+            };
+
             app.UseRequestLocalization(new RequestLocalizationOptions
             {
-                DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("ar"),
+                DefaultRequestCulture =
+                    new Microsoft.AspNetCore.Localization.RequestCulture("ar"),
+
                 SupportedCultures = supportedCultures,
                 SupportedUICultures = supportedCultures,
             });
 
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-                app.UseSwagger();
-                app.UseSwaggerUI();
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
+            app.UseCors("AllowAll");
             app.UseCors("DefaultCorsPolicy");
+
             app.UseHttpsRedirection();
 
-            app.UseAuthentication();   
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
+
             app.MapHub<AlMostasharHub>("/hubs/almostashar");
 
             app.Run();
