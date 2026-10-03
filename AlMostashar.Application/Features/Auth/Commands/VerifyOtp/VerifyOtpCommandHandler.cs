@@ -20,6 +20,11 @@ namespace AlMostashar.Application.Features.Auth.Commands.VerifyOtp
 
         public async Task<Result<VerifyOtpResponseDto>> Handle(VerifyOtpCommand request, CancellationToken cancellationToken)
         {
+            // OTP/EMAIL VERIFICATION TEMPORARILY DISABLED
+            // TODO: Re-enable VerifyOtp when verification flow is restored.
+            return Result<VerifyOtpResponseDto>.Failure(new Error("Auth.VerificationDisabled", "Email verification is temporarily disabled."));
+
+            /*
             var error = new Error("Auth.InvalidOtp", Messages.Auth.InvalidOtp);
 
             // 1. Find user by email
@@ -62,6 +67,7 @@ namespace AlMostashar.Application.Features.Auth.Commands.VerifyOtp
             {
                 ResetToken = resetToken.Token,
             });
+            */
         }
     }
 }

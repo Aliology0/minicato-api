@@ -49,7 +49,10 @@ namespace AlMostashar.Application.Features.Auth.Commands.Login
 
             AccountStatus accountStatus = user switch
             {
-                Client c    => c.IsEmailVerified ? AccountStatus.Active : AccountStatus.EmailVerificationRequired,
+                Client c    => /* OTP/EMAIL VERIFICATION TEMPORARILY DISABLED
+                                  TODO: restore original check when re-enabling verification */
+                                  // c.IsEmailVerified ? AccountStatus.Active : AccountStatus.EmailVerificationRequired,
+                                  AccountStatus.Active,
                 Lawyer l    => l.AccountStatus,
                 AdminEntity => AccountStatus.Active,
                 _           => AccountStatus.Active

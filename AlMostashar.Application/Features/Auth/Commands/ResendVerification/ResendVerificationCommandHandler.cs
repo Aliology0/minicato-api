@@ -22,6 +22,11 @@ namespace AlMostashar.Application.Features.Auth.Commands.ResendVerification
 
         public async Task<Result<string>> Handle(ResendVerificationCommand request, CancellationToken cancellationToken)
         {
+            // OTP/EMAIL VERIFICATION TEMPORARILY DISABLED
+            // TODO: Re-enable ResendVerification when verification flow is restored.
+            return Result<string>.Failure(new Error("Auth.VerificationDisabled", "Email verification is temporarily disabled."));
+
+            /*
             // 1. Find CLIENT by email — lawyers cannot use this flow
             var user = await _db.Clients
                 .FirstOrDefaultAsync(u => u.Email.ToLower() == request.Email.ToLower(), cancellationToken);
@@ -58,6 +63,7 @@ namespace AlMostashar.Application.Features.Auth.Commands.ResendVerification
             await _emailService.SendEmailAsync(user.Email, subject, body, cancellationToken);
 
             return Result<string>.Success(Messages.AuthSuccess.ResendSuccess);
+            */
         }
     }
 }

@@ -37,8 +37,10 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterClient
             }
 
             // 2. Generate OTP for email verification
-            string otp = _authService.GenerateOtp();
-            int expiryMinutes = _authService.GetOtpExpiryMinutes();
+            // OTP/EMAIL VERIFICATION TEMPORARILY DISABLED
+            // TODO: Re-enable this block when email verification is ready for production.
+            //string otp = _authService.GenerateOtp();
+            //int expiryMinutes = _authService.GetOtpExpiryMinutes();
 
             // 3. Build the Client entity — email NOT verified yet
             var client = new Client
@@ -49,10 +51,12 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterClient
                 Email            = request.Email,
                 PasswordHash     = _authService.HashPassword(request.Password),
                 CreatedAt        = DateTime.UtcNow,
-                IsEmailVerified  = false,
-                AccountStatus    = AlMostashar.Domain.ValueObject.Enum.AccountStatus.EmailVerificationRequired,
-                OTPcode          = otp,
-                OTPcodeExpiryTime = DateTime.UtcNow.AddMinutes(expiryMinutes),
+                // OTP/EMAIL VERIFICATION TEMPORARILY DISABLED
+                // TODO: Re-enable email verification flags when ready for production.
+                IsEmailVerified  = true, // treated as verified during temporary disable
+                AccountStatus    = AlMostashar.Domain.ValueObject.Enum.AccountStatus.Active, // activate immediately
+                //OTPcode          = otp,
+                //OTPcodeExpiryTime = DateTime.UtcNow.AddMinutes(expiryMinutes),
             };
 
             // 4. Persist client — NO tokens generated yet
@@ -120,38 +124,48 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterClient
                 // Storage exceptions should be monitored by logs.
             }
 
-            // 5. Send verification email
-            string subject = "المستشار - كود تأكيد البريد الإلكتروني";
-            string body = $@"
-                <div style='font-family: Arial, sans-serif; direction: rtl; text-align: center; padding: 20px;'>
-                    <h2 style='color: #2c3e50;'>مرحباً {client.FullName}!</h2>
-                    <p>شكراً لتسجيلك في منصة المستشار. لتأكيد بريدك الإلكتروني، أدخل الكود التالي:</p>
-                    <div style='font-size: 32px; font-weight: bold; color: #27ae60; letter-spacing: 8px; padding: 20px; background: #f0f0f0; border-radius: 10px; display: inline-block;'>
-                        {otp}
-                    </div>
-                    <p style='color: #888; margin-top: 15px;'>الكود صالح لمدة {expiryMinutes} دقائق</p>
-                </div>";
+            /*
+             // 5. Send verification email
+             string subject = "المستشار - كود تأكيد البريد الإلكتروني";
+             string body = $@"
+                 <div style='font-family: Arial, sans-serif; direction: rtl; text-align: center; padding: 20px;'>
+                     <h2 style='color: #2c3e50;'>مرحباً {client.FullName}!</h2>
+                     <p>شكراً لتسجيلك في منصة المستشار. لتأكيد بريدك الإلكتروني، أدخل الكود التالي:</p>
+                     <div style='font-size: 32px; font-weight: bold; color: #27ae60; letter-spacing: 8px; padding: 20px; background: #f0f0f0; border-radius: 10px; display: inline-block;'>
+                         {otp}
+                     </div>
+                     <p style='color: #888; margin-top: 15px;'>الكود صالح لمدة {expiryMinutes} دقائق</p>
+                 </div>";
 
-            bool emailSent = true;
-            try
-            {
-                await _emailService.SendEmailAsync(client.Email, subject, body, cancellationToken);
-            }
-            catch (Exception)
-            {
-                // If email fails, the user is still saved in the DB.
-                // We should not return a 500 error, as that would make the user retry and hit "Email already registered".
-                // The client can request a new OTP via ResendVerification.
-                emailSent = false;
-            }
+             bool emailSent = true;
+             try
+             {
+                 await _emailService.SendEmailAsync(client.Email, subject, body, cancellationToken);
+             }
+             catch (Exception)
+             {
+                 // If email fails, the user is still saved in the DB.
+                 // We should not return a 500 error, as that would make the user retry and hit "Email already registered".
+                 // The client can request a new OTP via ResendVerification.
+                 emailSent = false;
+             }
 
-            // 6. Return pending response — mobile navigates to "enter OTP" screen
+             // 6. Return pending response — mobile navigates to "enter OTP" screen
+             return Result<RegisterClientResponseDto>.Success(new RegisterClientResponseDto
+             {
+                 UserId = client.Id,
+                 Message = emailSent 
+                     ? Messages.AuthSuccess.VerificationSent 
+                     : "تم إنشاء الحساب بنجاح، ولكن تعذر إرسال رمز التحقق (OTP) إلى بريدك الإلكتروني. يرجى استخدام ميزة 'إعادة إرسال الرمز' للحصول على كود جديد."
+             });
+            */
+
+            // OTP/EMAIL VERIFICATION TEMPORARILY DISABLED
+            // TODO: Re-enable verification flow later. For now, do not send OTP and treat user as verified and active.
             return Result<RegisterClientResponseDto>.Success(new RegisterClientResponseDto
             {
                 UserId = client.Id,
-                Message = emailSent 
-                    ? Messages.AuthSuccess.VerificationSent 
-                    : "تم إنشاء الحساب بنجاح، ولكن تعذر إرسال رمز التحقق (OTP) إلى بريدك الإلكتروني. يرجى استخدام ميزة 'إعادة إرسال الرمز' للحصول على كود جديد."
+                Message = "Account created and email marked as verified (email verification temporarily disabled)."
             });
         }
     }
