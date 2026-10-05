@@ -60,6 +60,13 @@ namespace AlMostashar.Api.Helpers
             var allowedOrigins = configuration.GetValue<string>("AllowedOrigins")?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? Array.Empty<string>();
             services.AddCors(options =>
             {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader();
+                });
+
                 options.AddPolicy("DefaultCorsPolicy", policy =>
                 {
                     if (allowedOrigins.Length == 0)

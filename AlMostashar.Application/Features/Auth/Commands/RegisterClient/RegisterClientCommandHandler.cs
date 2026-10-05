@@ -6,6 +6,7 @@ using AlMostashar.Domain.Shared;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using AlMostashar.Application.Helpers;
+using AlMostashar.Application.Common.Locations;
 
 namespace AlMostashar.Application.Features.Auth.Commands.RegisterClient
 {
@@ -14,14 +15,16 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterClient
     private readonly IAppDbContext _db;
     private readonly IAuthService  _authService;
     private readonly IEmailService _emailService;
-    private readonly IStorageService _storageService;
+        private readonly IStorageService _storageService;
+        private readonly ILocationCatalog _locationCatalog;
 
-        public RegisterClientCommandHandler(IAppDbContext db, IAuthService authService, IEmailService emailService, IStorageService storageService)
+        public RegisterClientCommandHandler(IAppDbContext db, IAuthService authService, IEmailService emailService, IStorageService storageService, ILocationCatalog locationCatalog)
         {
             _db           = db;
             _authService  = authService;
             _emailService = emailService;
             _storageService = storageService;
+            _locationCatalog = locationCatalog;
         }
 
         public async Task<Result<RegisterClientResponseDto>> Handle(RegisterClientCommand request, CancellationToken cancellationToken)
@@ -36,11 +39,11 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterClient
                 return Result<RegisterClientResponseDto>.Failure(error);
             }
 
-            // 2. Generate OTP for email verification
-            // OTP/EMAIL VERIFICATION TEMPORARILY DISABLED
-            // TODO: Re-enable this block when email verification is ready for production.
-            //string otp = _authService.GenerateOtp();
-            //int expiryMinutes = _authService.GetOtpExpiryMinutes();
+            // 2. Resolve location (Governorate/City)
+            var locationResult = RequestLocationResolver.ResolveRequired(_locationCatalog, request.GovernorateId, request.CityId);
+            if (!locationResult.IsSuccess)
+                return Result<RegisterClientResponseDto>.Failure(locationResult.Error!);
+            var location = locationResult.Value!;
 
             // 3. Build the Client entity — email NOT verified yet
             var client = new Client
@@ -55,6 +58,10 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterClient
                 // TODO: Re-enable email verification flags when ready for production.
                 IsEmailVerified  = true, // treated as verified during temporary disable
                 AccountStatus    = AlMostashar.Domain.ValueObject.Enum.AccountStatus.Active, // activate immediately
+                GovernorateId    = location.GovernorateId,
+                Governorate      = location.Governorate,
+                CityId           = location.CityId,
+                City             = location.City,
                 //OTPcode          = otp,
                 //OTPcodeExpiryTime = DateTime.UtcNow.AddMinutes(expiryMinutes),
             };
@@ -79,16 +86,11 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterClient
                     ? UploadToStorage.UploadAsync(request.BackIdPhoto, _storageService)
                     : Task.FromResult<string?>(null);
 
-                var syndicateTask = request.SyndicateMembershipCardPhoto != null
-                    ? UploadToStorage.UploadAsync(request.SyndicateMembershipCardPhoto, _storageService)
-                    : Task.FromResult<string?>(null);
-
-                await Task.WhenAll(avatarTask, frontIdTask, backIdTask, syndicateTask);
+                await Task.WhenAll(avatarTask, frontIdTask, backIdTask);
 
                 var avatarKey = await avatarTask;
                 var frontKey = await frontIdTask;
                 var backKey = await backIdTask;
-                var syndicateKey = await syndicateTask;
 
                 bool updated = false;
                 if (!string.IsNullOrEmpty(avatarKey))
@@ -106,11 +108,7 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterClient
                     client.BackIdUrl = backKey;
                     updated = true;
                 }
-                if (!string.IsNullOrEmpty(syndicateKey))
-                {
-                    client.SyndicateMembershipCardUrl = syndicateKey;
-                    updated = true;
-                }
+                // Clients do not upload syndicate membership cards — nothing to set here.
 
                 if (updated)
                 {
@@ -165,6 +163,8 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterClient
             return Result<RegisterClientResponseDto>.Success(new RegisterClientResponseDto
             {
                 UserId = client.Id,
+                Role = AlMostashar.Domain.ValueObject.Enum.UserRole.Client,
+                AccountStatus = AlMostashar.Domain.ValueObject.Enum.AccountStatus.Active,
                 Message = "Account created and email marked as verified (email verification temporarily disabled)."
             });
         }

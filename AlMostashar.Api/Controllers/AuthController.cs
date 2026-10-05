@@ -58,8 +58,9 @@ namespace AlMostashar.Api.Controllers
 
         /// <summary>Register a new Lawyer account.</summary>
         [HttpPost("register/lawyer")]
+        [Consumes("multipart/form-data")]
         public async Task<IActionResult> RegisterLawyer(
-            [FromBody] RegisterLawyerCommand command,
+            [FromForm] RegisterLawyerCommand command,
             CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(command, cancellationToken);

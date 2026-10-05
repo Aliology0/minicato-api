@@ -10,7 +10,7 @@ namespace AlMostashar.Domain.Entities
         public string? AvatarUrl { get; set; }
         public string? FrontIdUrl { get; set; }
         public string? BackIdUrl { get; set; }
-        public string? SyndicateMembershipCardUrl { get; set; }
+        // SyndicateMembershipCardUrl moved to Lawyer entity only
         public bool IsActive { get; set; } = false;
         public DateTime CreatedAt { get; set; }
         public AccountStatus AccountStatus { get; set; }

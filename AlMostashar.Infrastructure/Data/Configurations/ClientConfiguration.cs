@@ -15,5 +15,11 @@ public class ClientConfiguration : IEntityTypeConfiguration<Client>
             .WithOne(cr => cr.Client)
             .HasForeignKey(cr => cr.ClientId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Property(c => c.Governorate)
+            .HasMaxLength(100);
+
+        builder.Property(c => c.City)
+            .HasMaxLength(100);
     }
 }

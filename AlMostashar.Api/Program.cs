@@ -69,9 +69,9 @@ namespace AlMostashar.Api
             app.UseSwaggerUI();
 
             app.UseCors("AllowAll");
-            app.UseCors("DefaultCorsPolicy");
 
-            app.UseHttpsRedirection();
+            // Do not force HTTPS redirection to preserve HTTP frontend development workflow
+            // app.UseHttpsRedirection();
 
             app.UseAuthentication();
             app.UseAuthorization();

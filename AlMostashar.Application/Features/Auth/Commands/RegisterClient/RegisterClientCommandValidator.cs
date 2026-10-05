@@ -61,15 +61,12 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterClient
                     }).WithMessage(Messages.Validation.FileTypeNotAllowed);
             });
 
-            When(x => x.SyndicateMembershipCardPhoto != null, () =>
-            {
-                RuleFor(x => x.SyndicateMembershipCardPhoto!)
-                    .Must(f => f.Length <= MaxFileSizeBytes).WithMessage(Messages.Validation.FileTooLarge)
-                    .Must(f => {
-                        var ext = Path.GetExtension(f.FileName)?.ToLowerInvariant();
-                        return !string.IsNullOrEmpty(ext) && FileContentTypeHelper.AllowedExtensions.Contains(ext);
-                    }).WithMessage(Messages.Validation.FileTypeNotAllowed);
-            });
+            // Location validation
+            RuleFor(x => x.GovernorateId)
+                .GreaterThan(0).WithMessage(Messages.Generic.InvalidId("GovernorateId"));
+
+            RuleFor(x => x.CityId)
+                .GreaterThan(0).WithMessage(Messages.Generic.InvalidId("CityId"));
         }
     }
 }
