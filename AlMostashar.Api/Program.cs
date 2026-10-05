@@ -41,11 +41,7 @@ namespace AlMostashar.Api
             var app = builder.Build();
 
             // API health/status endpoint
-            app.MapGet("/", () => Results.Ok(new
-            {
-                message = "AlMostashar API is running",
-                status = "OK"
-            })).AllowAnonymous();
+            app.MapGet("/", () => Results.Redirect("/swagger/index.html"));
 
             // Set Arabic as default culture
             var supportedCultures = new[]
@@ -69,9 +65,6 @@ namespace AlMostashar.Api
             app.UseSwaggerUI();
 
             app.UseCors("AllowAll");
-
-            // Do not force HTTPS redirection to preserve HTTP frontend development workflow
-            // app.UseHttpsRedirection();
 
             app.UseAuthentication();
             app.UseAuthorization();
