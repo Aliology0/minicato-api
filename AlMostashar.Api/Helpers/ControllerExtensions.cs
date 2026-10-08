@@ -55,6 +55,10 @@ public static class ControllerExtensions
 
         var payload = BuildPayload();
 
+        // 200 OK — successful result
+        if (result.IsSuccess)
+            return controller.Ok(payload);
+
         var codeStr = result.Error?.Code ?? string.Empty;
 
         // 409 Conflict — duplicate resource (e.g. email already registered)
@@ -65,6 +69,7 @@ public static class ControllerExtensions
         if (codeStr.Contains("NotFound", StringComparison.OrdinalIgnoreCase))
             return controller.NotFound(payload);
 
+        // 403 Forbidden
         if (codeStr.Contains("Forbidden", StringComparison.OrdinalIgnoreCase))
             return controller.StatusCode(StatusCodes.Status403Forbidden, payload);
 
