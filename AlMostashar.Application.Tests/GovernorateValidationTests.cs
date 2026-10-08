@@ -97,7 +97,9 @@ public class GovernorateValidationTests
             PhoneNo = "01000000000",
             GovernorateId = 0,
             CityId = 0,
-            SyndicateId = 123
+            SyndicateId = 123,
+            YearsOfExperience = 5,
+            SpecializationIds = new List<int> { 1, 4 }
         });
 
         Assert.False(result.IsValid);
@@ -141,7 +143,9 @@ public class GovernorateValidationTests
             PhoneNo = "01000000000",
             GovernorateId = 1,
             CityId = 1,
-            SyndicateId = 123
+            SyndicateId = 123,
+            YearsOfExperience = 5,
+            SpecializationIds = new List<int> { 1, 4 }
         }, CancellationToken.None);
 
         Assert.True(result.IsSuccess);

@@ -42,6 +42,15 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterLawyer
 
             RuleFor(x => x.CityId)
                 .GreaterThan(0).WithMessage(Messages.Generic.InvalidId("CityId"));
+
+            RuleFor(x => x.YearsOfExperience)
+                .GreaterThanOrEqualTo(0).WithMessage("Years of experience must be 0 or greater.")
+                .LessThanOrEqualTo(70).WithMessage("Years of experience cannot exceed 70 years.");
+
+            RuleFor(x => x.SpecializationIds)
+                .NotNull().WithMessage("Specialization IDs are required.")
+                .NotEmpty().WithMessage("At least one specialization must be selected.")
+                .ForEach(rule => rule.GreaterThan(0).WithMessage("Each specialization ID must be greater than 0."));
         }
     }
 }

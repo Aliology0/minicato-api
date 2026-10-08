@@ -1,3 +1,8 @@
 namespace AlMostashar.Application.Features.Lawyers.DTOs;
 
-public record SpecializationDto(int Id, string Title, string ArabicTitle);
+using System.Text.Json.Serialization;
+
+public record SpecializationDto(
+    [property: JsonPropertyName("id")] int Id, 
+    [property: JsonPropertyName("name")] string Name, 
+    [property: JsonPropertyName("arabicName")] string? ArabicName = null);

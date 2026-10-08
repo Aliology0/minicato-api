@@ -48,6 +48,23 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterLawyer
                 return Result<RegisterLawyerResponseDto>.Failure(error);
             }
 
+            // 1.5. Validate and load specializations if provided
+            List<Domain.Entities.LawyerSpecialization>? selectedSpecializations = null;
+            if (request.SpecializationIds != null && request.SpecializationIds.Any())
+            {
+                selectedSpecializations = await _db.LawyerSpecializations
+                    .Where(s => request.SpecializationIds.Contains(s.Id))
+                    .ToListAsync(cancellationToken);
+
+                // Verify all requested IDs exist
+                if (selectedSpecializations.Count != request.SpecializationIds.Count)
+                {
+                    return Result<RegisterLawyerResponseDto>.Failure(
+                        new Error("Specialization.Invalid", 
+                            "One or more specialization IDs do not exist."));
+                }
+            }
+
             // 2. If files provided, upload them and set URLs
             string? ssnKey = null;
             string? syndicateKey = null;
@@ -92,11 +109,13 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterLawyer
                 CityId                  = location.CityId,
                 City                    = location.City,
                 SyndicateId             = request.SyndicateId,
+                YearsOfExperience       = request.YearsOfExperience,
                 SSN_Url                 = ssnKey,
                 SyndicateCardUrl        = syndicateKey,
                 PracticeCertificatesUrl = practiceKey,
                 IsVerified              = false, // awaiting admin approval
                 AccountStatus           = AlMostashar.Domain.ValueObject.Enum.AccountStatus.PendingReview,
+                LawyerSpecializations   = selectedSpecializations ?? new List<Domain.Entities.LawyerSpecialization>()
             };
 
             // 3. Persist lawyer to DB — NO tokens generated

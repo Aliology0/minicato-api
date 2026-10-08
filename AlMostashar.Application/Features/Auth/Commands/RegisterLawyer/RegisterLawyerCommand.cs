@@ -17,6 +17,8 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterLawyer
         public int CityId { get; set; }
         // ── Lawyer-specific fields ──────────────────────────────────────────
         public int SyndicateId { get; set; }
+        public int YearsOfExperience { get; set; }
+        public List<int>? SpecializationIds { get; set; }
         // File uploads (multipart/form-data)
         public Microsoft.AspNetCore.Http.IFormFile? SSNPhoto { get; set; }
         public Microsoft.AspNetCore.Http.IFormFile? SyndicateCardPhoto { get; set; }
