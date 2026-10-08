@@ -29,7 +29,7 @@ public class GetAdminWithdrawalByIdQueryHandler : IRequestHandler<GetAdminWithdr
 
         if (withdrawal is null)
         {
-            return Result<WithdrawalRequestDto>.Failure(new Error("Withdrawal.NotFound", "Withdrawal request was not found."));
+            return Result<WithdrawalRequestDto>.Failure(new Error("Withdrawal.NotFound", "Withdrawal request was not found.", null, "لم يتم العثور على طلب السحب."));
         }
 
         var fullAccountDetails = _sensitiveDataProtector.Unprotect(withdrawal.AccountDetailsEncrypted);

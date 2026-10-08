@@ -32,7 +32,7 @@ public class GetMyWithdrawalsQueryHandler
         if (!lawyerId.HasValue)
         {
             return Result<CursorPagedResult<WithdrawalRequestDto>>.Failure(
-                new Error("Lawyer.Auth.Unauthorized", "Authenticated user is not a lawyer."));
+                new Error("Lawyer.Auth.Unauthorized", "Authenticated user is not a lawyer.", null, "المستخدم المصادق عليه ليس محاميًا."));
         }
 
         var pageSize = Math.Clamp(request.PageSize, 1, 50);

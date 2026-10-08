@@ -33,7 +33,7 @@ public class GetEscrowByIdQueryHandler : IRequestHandler<GetEscrowByIdQuery, Res
             .FirstOrDefaultAsync(cancellationToken);
 
         if (escrow is null)
-            return Result<EscrowDto>.Failure(new Error("Escrow.NotFound", "Escrow was not found."));
+            return Result<EscrowDto>.Failure(new Error("Escrow.NotFound", "Escrow was not found.", null, "لم يتم العثور على حساب الضمان."));
 
         return Result<EscrowDto>.Success(escrow);
     }

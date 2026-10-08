@@ -44,7 +44,7 @@ public sealed class DocumentAccessService : IDocumentAccessService
 
 
         if (document is null)
-            return Result<CaseDocuments>.Failure(new Error("Document.NotFound", "Document was not found."));
+            return Result<CaseDocuments>.Failure(new Error("Document.NotFound", "Document was not found.", null, "لم يتم العثور على المستند."));
 
         var userId = _currentUser.UserId;
         var isAdmin = await _db.Admins.AsNoTracking()
@@ -80,7 +80,7 @@ public sealed class DocumentAccessService : IDocumentAccessService
                 ClientRequestId = document.ClientRequestId,
                 ReportId = document.ReporterId,
             })
-            : Result<CaseDocuments>.Failure(new Error("Document.Forbidden", "You are not authorized to access this document."));
+            : Result<CaseDocuments>.Failure(new Error("Document.Forbidden", "You are not authorized to access this document.", null, "ليس لديك صلاحية الوصول إلى هذا المستند."));
     }
 
     public async Task<Result<CaseDocuments>> GetUnlinkedForDeleteAsync(
@@ -91,10 +91,10 @@ public sealed class DocumentAccessService : IDocumentAccessService
             .SingleOrDefaultAsync(value => value.Id == documentId, cancellationToken);
 
         if (document is null)
-            return Result<CaseDocuments>.Failure(new Error("Document.NotFound", "Document was not found."));
+            return Result<CaseDocuments>.Failure(new Error("Document.NotFound", "Document was not found.", null, "لم يتم العثور على المستند."));
 
         if (document.UploadedByUserId != _currentUser.UserId)
-            return Result<CaseDocuments>.Failure(new Error("Document.Forbidden", "Only the upload owner can delete this document."));
+            return Result<CaseDocuments>.Failure(new Error("Document.Forbidden", "Only the upload owner can delete this document.", null, "فقط مالك الرفع يمكنه حذف هذا المستند."));
 
         if (document.ClientRequestId.HasValue || document.CaseId.HasValue || document.ReportId.HasValue)
             return Result<CaseDocuments>.Failure(new Error(

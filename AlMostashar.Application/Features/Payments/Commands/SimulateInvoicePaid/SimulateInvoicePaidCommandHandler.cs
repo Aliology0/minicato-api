@@ -34,9 +34,9 @@ public sealed class SimulateInvoicePaidCommandHandler
             .Include(value => value.Payment)
             .SingleOrDefaultAsync(value => value.Id == request.InvoiceId, cancellationToken);
         if (invoice is null)
-            return Result<SimulateInvoicePaidResponse>.Failure(new Error("Invoice.NotFound", "Invoice was not found."));
+            return Result<SimulateInvoicePaidResponse>.Failure(new Error("Invoice.NotFound", "Invoice was not found.", null, "لم يتم العثور على الفاتورة."));
         if (invoice.ClientRequest.ClientId != _currentUser.UserId)
-            return Result<SimulateInvoicePaidResponse>.Failure(new Error("Invoice.Forbidden", "Only the invoice client can simulate payment."));
+            return Result<SimulateInvoicePaidResponse>.Failure(new Error("Invoice.Forbidden", "Only the invoice client can simulate payment.", null, "فقط عميل الفاتورة يمكنه محاكاة الدفع."));
 
         var existingCaseId = await _db.CaseClientRequests.AsNoTracking()
             .Where(value => value.ClientRequestId == invoice.ClientRequestId)
@@ -48,7 +48,7 @@ public sealed class SimulateInvoicePaidCommandHandler
 
         var lawyerId = invoice.ClientRequest.LawyerServiceLawyerId;
         if (!lawyerId.HasValue)
-            return Result<SimulateInvoicePaidResponse>.Failure(new Error("Invoice.MissingLawyer", "The request has no accepted lawyer."));
+            return Result<SimulateInvoicePaidResponse>.Failure(new Error("Invoice.MissingLawyer", "The request has no accepted lawyer.", null, "الطلب لا يحتوي على محامٍ مقبول."));
 
         var payment = invoice.Payment ?? new Payment
         {

@@ -24,10 +24,10 @@ public class AddCaseNoteCommandHandler : IRequestHandler<AddCaseNoteCommand, Res
             .FirstOrDefaultAsync(c => c.Id == request.CaseId, cancellationToken);
 
         if (caseEntity is null)
-            return Result<CaseNoteDto>.Failure(new Error("Case.NotFound", "Case not found."));
+            return Result<CaseNoteDto>.Failure(new Error("Case.NotFound", "Case not found.", null, "لم يتم العثور على القضية."));
 
         if (caseEntity.LawyerId != _currentUser.UserId)
-            return Result<CaseNoteDto>.Failure(new Error("Auth.Forbidden", "You do not own this case."));
+            return Result<CaseNoteDto>.Failure(new Error("Auth.Forbidden", "You do not own this case.", null, "أنت لست مالك هذه القضية."));
 
         var note = new CaseNotes
         {

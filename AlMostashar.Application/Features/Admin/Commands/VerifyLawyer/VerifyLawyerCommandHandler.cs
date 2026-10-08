@@ -30,11 +30,11 @@ namespace AlMostashar.Application.Features.Admin.Commands.VerifyLawyer
                 .FirstOrDefaultAsync(l => l.Id == request.LawyerId, cancellationToken);
 
             if (lawyer is null)
-                return Result<string>.Failure(new Error("Admin.NotFound", "Lawyer not found."));
+                return Result<string>.Failure(new Error("Admin.NotFound", "Lawyer not found.", null, "لم يتم العثور على المحامي."));
 
             // 2. Check if already verified
             if (lawyer.IsVerified)
-                return Result<string>.Failure(new Error("Admin.AlreadyVerified", "This lawyer is already verified."));
+                return Result<string>.Failure(new Error("Admin.AlreadyVerified", "This lawyer is already verified.", null, "هذا المحامي موثق بالفعل."));
 
             string subject;
             string body;

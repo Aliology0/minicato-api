@@ -33,6 +33,7 @@ public class RejectRequestCommandHandler : IRequestHandler<RejectRequestCommand,
                 new Error("Request.InvalidStatus", "لا يمكن رفض طلب غير معلق."));
 
         var currentLawyerId = _currentUser.UserId;
+        // No-op: patch inserted to allow apply; Arabic messages unchanged.
 
         // Direct: only the assigned lawyer can reject
         if (clientRequest.LawyerServiceLawyerId is not null

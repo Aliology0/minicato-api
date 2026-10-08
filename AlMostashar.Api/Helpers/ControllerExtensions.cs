@@ -1,4 +1,5 @@
 using AlMostashar.Domain.Shared;
+using AlMostashar.Application.Common.Constants;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AlMostashar.Api.Helpers;
@@ -13,27 +14,65 @@ public static class ControllerExtensions
     /// </summary>
     public static IActionResult ToActionResult<T>(this ControllerBase controller, Result<T> result)
     {
-        if (result.IsSuccess)
-            return controller.Ok(result);
+        // Build standardized payload containing both English and Arabic messages
+        object BuildPayload()
+        {
+            if (result.IsSuccess)
+            {
+                if (result.Value is string sv)
+                {
+                    return new
+                    {
+                        success = true,
+                        message = sv,
+                        messageAr = Messages.GetArabicForValue(sv),
+                        value = result.Value
+                    };
+                }
 
-        var code = result.Error!.Code;
+                return new
+                {
+                    success = true,
+                    message = (string?)null,
+                    messageAr = (string?)null,
+                    value = result.Value
+                };
+            }
+
+            var err = result.Error!;
+            var messageAr = err.MessageAr ?? Messages.GetArabicForValue(err.Message) ?? string.Empty;
+
+            return new
+            {
+                success = false,
+                message = err.Message,
+                messageAr,
+                code = err.Code,
+                details = err.Details,
+                value = result.Value
+            };
+        }
+
+        var payload = BuildPayload();
+
+        var codeStr = result.Error?.Code ?? string.Empty;
 
         // 409 Conflict — duplicate resource (e.g. email already registered)
-        if (code.Contains("Conflict", StringComparison.OrdinalIgnoreCase))
-            return controller.Conflict(result);
+        if (codeStr.Contains("Conflict", StringComparison.OrdinalIgnoreCase))
+            return controller.Conflict(payload);
 
         // 404 Not Found
-        if (code.Contains("NotFound", StringComparison.OrdinalIgnoreCase))
-            return controller.NotFound(result);
+        if (codeStr.Contains("NotFound", StringComparison.OrdinalIgnoreCase))
+            return controller.NotFound(payload);
 
-        if (code.Contains("Forbidden", StringComparison.OrdinalIgnoreCase))
-            return controller.StatusCode(StatusCodes.Status403Forbidden, result);
+        if (codeStr.Contains("Forbidden", StringComparison.OrdinalIgnoreCase))
+            return controller.StatusCode(StatusCodes.Status403Forbidden, payload);
 
         // 401 Unauthorized — authentication failures
-        if (code.Contains("Auth", StringComparison.OrdinalIgnoreCase))
-            return controller.Unauthorized(result);
+        if (codeStr.Contains("Auth", StringComparison.OrdinalIgnoreCase))
+            return controller.Unauthorized(payload);
 
         // Default: 400 Bad Request
-        return controller.BadRequest(result);
+        return controller.BadRequest(payload);
     }
 }

@@ -26,7 +26,7 @@ public class GetClientProfileQueryHandler : IRequestHandler<GetClientProfileQuer
             .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
 
         if (user == null)
-            return Result<ClientProfileDto>.Failure(new Error("User.NotFound", "User not found."));
+            return Result<ClientProfileDto>.Failure(new Error("User.NotFound", "User not found.", null, "المستخدم غير موجود."));
 
         return Result<ClientProfileDto>.Success(new ClientProfileDto
         {

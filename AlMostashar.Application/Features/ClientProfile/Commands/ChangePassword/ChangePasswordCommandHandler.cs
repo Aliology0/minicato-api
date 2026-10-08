@@ -26,11 +26,11 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
             .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
 
         if (user == null)
-            return Result<Unit>.Failure(new Error("User.NotFound", "User not found."));
+            return Result<Unit>.Failure(new Error("User.NotFound", "User not found.", null, "المستخدم غير موجود."));
 
         if (!_authService.VerifyPassword(user.PasswordHash, request.OldPassword))
         {
-            return Result<Unit>.Failure(new Error("Auth.InvalidOldPassword", "The old password you entered is incorrect."));
+            return Result<Unit>.Failure(new Error("Auth.InvalidOldPassword", "The old password you entered is incorrect.", null, "كلمة المرور القديمة التي أدخلتها غير صحيحة."));
         }
 
         user.PasswordHash = _authService.HashPassword(request.NewPassword);

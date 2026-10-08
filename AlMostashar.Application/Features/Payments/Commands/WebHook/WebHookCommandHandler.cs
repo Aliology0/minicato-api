@@ -53,7 +53,7 @@ namespace AlMostashar.Application.Features.Payments.Commands.WebHook
             if (!IsValidPayload(in obj, request.Hmac))
             {
                 await LogWebhookAsync(null, obj?.id, request.GatewayResponse, "Error", "Invalid HMAC signature.", cancellationToken);
-                return Result<string>.Failure(new Error("Webhook.InvalidSignature", "Invalid HMAC signature"));
+                return Result<string>.Failure(new Error("Webhook.InvalidSignature", "Invalid HMAC signature", null, "توقيع HMAC غير صالح."));
             }
 
             // 3. Resolve Payment via Payment.Id from merchant_order_id (our special_reference)
@@ -63,7 +63,7 @@ namespace AlMostashar.Application.Features.Payments.Commands.WebHook
             if (!int.TryParse(paymentIdString, out int paymentId))
             {
                 await LogWebhookAsync(null, obj.id, request.GatewayResponse, "Error", $"Could not parse Payment.Id from merchant_order_id: {merchantOrderId}.", cancellationToken);
-                return Result<string>.Failure(new Error("Webhook.InvalidPaymentId", "Could not parse Payment.Id from merchant_order_id."));
+                return Result<string>.Failure(new Error("Webhook.InvalidPaymentId", "Could not parse Payment.Id from merchant_order_id.", null, "تعذر استخراج معرف الدفع من merchant_order_id."));
             }
 
             var payment = await _db.Payments

@@ -42,7 +42,7 @@ public class ResolveDisputeCommandHandler : IRequestHandler<ResolveDisputeComman
             dispute.Status == DisputeStatus.ResolvedRefund || 
             dispute.Status == DisputeStatus.Dismissed)
         {
-            return Result<string>.Failure(new Error("Dispute.AlreadyResolved", "This dispute has already been resolved or dismissed."));
+            return Result<string>.Failure(new Error("Dispute.AlreadyResolved", "This dispute has already been resolved or dismissed.", null, "تم حل هذه المنازعة أو رفضها مسبقًا."));
         }
 
         // Apply resolution
@@ -85,7 +85,7 @@ public class ResolveDisputeCommandHandler : IRequestHandler<ResolveDisputeComman
 
                     if (!paymentId.HasValue)
                         return Result<string>.Failure(
-                            new Error("Payment.NotFound", "Escrow does not have a linked payment."));
+                            new Error("Payment.NotFound", "Escrow does not have a linked payment.", null, "لا يحتوي حساب الضمان على دفعة مرتبطة."));
 
                     // Refund the payment via Paymob first
                     var refundPaymentResult = await _mediator.Send(

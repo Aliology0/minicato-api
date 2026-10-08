@@ -52,7 +52,7 @@ public class CreateReportCommandHandler : IRequestHandler<CreateReportCommand, R
 
         // ── Prevent self-reporting ─────────────────────────────────────────────
         if (reportedUserId.HasValue && reportedUserId.Value == reporterId)
-            return Result<string>.Failure(new Error("Report.SelfReport", "You cannot file a report against yourself."));
+            return Result<string>.Failure(new Error("Report.SelfReport", "You cannot file a report against yourself.", null, "لا يمكنك تقديم بلاغ ضد نفسك."));
 
         // ── Validate CaseId ────────────────────────────────────────────────────
         if (request.CaseId.HasValue)
@@ -69,7 +69,7 @@ public class CreateReportCommandHandler : IRequestHandler<CreateReportCommand, R
                                       (caseEntity.CaseClientRequest?.ClientRequest?.ClientId == reporterId);
 
             if (!isReporterInvolved)
-                return Result<string>.Failure(new Error("Case.Unauthorized", "You are not a participant in this case."));
+                return Result<string>.Failure(new Error("Case.Unauthorized", "You are not a participant in this case.", null, "أنت لست طرفًا في هذه القضية."));
 
             // If a reported user is specified, validate they are also part of this case
             if (reportedUserId.HasValue)
@@ -77,7 +77,7 @@ public class CreateReportCommandHandler : IRequestHandler<CreateReportCommand, R
                 bool isReportedInvolved = caseEntity.LawyerId == reportedUserId.Value || 
                                           (caseEntity.CaseClientRequest?.ClientRequest?.ClientId == reportedUserId.Value);
                 if (!isReportedInvolved)
-                    return Result<string>.Failure(new Error("Case.InvalidReportedUser", "The reported user is not a participant in this case."));
+                    return Result<string>.Failure(new Error("Case.InvalidReportedUser", "The reported user is not a participant in this case.", null, "المستخدم المبلغ عنه ليس طرفًا في هذه القضية."));
             }
         }
 

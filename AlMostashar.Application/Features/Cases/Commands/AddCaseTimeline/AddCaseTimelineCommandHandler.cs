@@ -24,10 +24,10 @@ public class AddCaseTimelineCommandHandler : IRequestHandler<AddCaseTimelineComm
             .FirstOrDefaultAsync(c => c.Id == request.CaseId, cancellationToken);
 
         if (caseEntity is null)
-            return Result<CaseTimelineDto>.Failure(new Error("Case.NotFound", "Case not found."));
+            return Result<CaseTimelineDto>.Failure(new Error("Case.NotFound", "Case not found.", null, "لم يتم العثور على القضية."));
 
         if (caseEntity.LawyerId != _currentUser.UserId)
-            return Result<CaseTimelineDto>.Failure(new Error("Auth.Forbidden", "You do not own this case."));
+            return Result<CaseTimelineDto>.Failure(new Error("Auth.Forbidden", "You do not own this case.", null, "أنت لست مالك هذه القضية."));
 
         var timeline = new CaseTimeline
         {

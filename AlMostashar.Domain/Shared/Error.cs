@@ -5,12 +5,12 @@ namespace AlMostashar.Domain.Shared;
 /// </summary>
 /// <param name="Code">A unique string code indicating the type of error (e.g., "User.NotFound").</param>
 /// <param name="Message">A human-readable error message explaining what happened.</param>
-public record Error(string Code, string Message, object? Details= null)
+public record Error(string Code, string Message, object? Details = null, string? MessageAr = null)
 {
     /// <summary>
     /// Represents an empty error, indicating success or no error.
     /// </summary>
-    public static readonly Error None = new(string.Empty, string.Empty);
+    public static readonly Error None = new(string.Empty, string.Empty, null, string.Empty);
 }
 
 /// <summary>

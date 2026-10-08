@@ -22,7 +22,7 @@ namespace AlMostashar.Application.Features.Auth.Commands.VerifyOtp
         {
             // OTP/EMAIL VERIFICATION TEMPORARILY DISABLED
             // TODO: Re-enable VerifyOtp when verification flow is restored.
-            return Result<VerifyOtpResponseDto>.Failure(new Error("Auth.VerificationDisabled", "Email verification is temporarily disabled."));
+            return Result<VerifyOtpResponseDto>.Failure(new Error("Auth.VerificationDisabled", "Email verification is temporarily disabled.", null, "تم تعطيل تأكيد البريد الإلكتروني مؤقتًا."));
 
             /*
             var error = new Error("Auth.InvalidOtp", Messages.Auth.InvalidOtp);

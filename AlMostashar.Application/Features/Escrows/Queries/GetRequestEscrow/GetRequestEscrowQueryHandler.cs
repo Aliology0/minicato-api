@@ -31,7 +31,7 @@ public class GetRequestEscrowQueryHandler : IRequestHandler<GetRequestEscrowQuer
             .FirstOrDefaultAsync(cancellationToken);
 
         if (clientRequest is null)
-            return Result<EscrowDto>.Failure(new Error("Request.NotFound", "Request was not found."));
+            return Result<EscrowDto>.Failure(new Error("Request.NotFound", "Request was not found.", null, "لم يتم العثور على الطلب."));
 
         var currentUserId = _currentUser.UserId;
 
@@ -55,7 +55,7 @@ public class GetRequestEscrowQueryHandler : IRequestHandler<GetRequestEscrowQuer
                             currentLawyerId == clientRequest.LawyerServiceLawyerId;
 
         if (!isParticipant && !isAdmin)
-            return Result<EscrowDto>.Failure(new Error("Escrow.Auth.Unauthorized", "You are not allowed to view this escrow."));
+            return Result<EscrowDto>.Failure(new Error("Escrow.Auth.Unauthorized", "You are not allowed to view this escrow.", null, "ليست لديك صلاحية لعرض هذا الحساب الضمان."));
 
         var escrow = await _db.Escrows
             .AsNoTracking()
@@ -73,7 +73,7 @@ public class GetRequestEscrowQueryHandler : IRequestHandler<GetRequestEscrowQuer
             .FirstOrDefaultAsync(cancellationToken);
 
         if (escrow is null)
-            return Result<EscrowDto>.Failure(new Error("Escrow.NotFound", "Escrow was not found."));
+            return Result<EscrowDto>.Failure(new Error("Escrow.NotFound", "Escrow was not found.", null, "لم يتم العثور على حساب الضمان."));
 
         return Result<EscrowDto>.Success(escrow);
     }

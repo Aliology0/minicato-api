@@ -65,7 +65,7 @@ public class PayInvoiceCommandHandler : IRequestHandler<PayInvoiceCommand, Resul
             // Refunded payments are terminal — cannot retry
             if (payment.Status == PaymentStatus.Refunded)
                 return Result<PaymentResultDto>.Failure(
-                    new Error("Payment.Refunded", "This payment was refunded and cannot be retried."));
+                    new Error("Payment.Refunded", "This payment was refunded and cannot be retried.", null, "تم رد هذا الدفع ولا يمكن إعادة المحاولة"));
 
             // Already succeeded — should not happen if invoice status check above works, but guard anyway
             if (payment.Status == PaymentStatus.Succeeded)

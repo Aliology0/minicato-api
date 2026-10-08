@@ -113,19 +113,19 @@ public class SendOfferCommandHandler : IRequestHandler<SendOfferCommand, Result<
             if (requestedLegalServiceId is null)
             {
                 return Result<int>.Failure(
-                    new Error("Offer.MissingService", "LegalServiceId is required for broadcast offers."));
+                    new Error("Offer.MissingService", "LegalServiceId is required for broadcast offers.", null, "معرّف الخدمة القانونية مطلوب للعروض المرسلة."));
             }
 
             if (!clientRequest.LawyerServiceLegalServiceId.HasValue || clientRequest.LawyerServiceLegalServiceId.Value <= 0)
             {
                 return Result<int>.Failure(
-                    new Error("Offer.InvalidState", "Broadcast request has no configured legal service."));
+                    new Error("Offer.InvalidState", "Broadcast request has no configured legal service.", null, "الطلب المرسل لا يحتوي على خدمة قانونية مُحددة."));
             }
 
             if (requestedLegalServiceId.Value != clientRequest.LawyerServiceLegalServiceId.Value)
             {
                 return Result<int>.Failure(
-                    new Error("Offer.InvalidService", "Offer legal service must match the broadcast request service."));
+                    new Error("Offer.InvalidService", "Offer legal service must match the broadcast request service.", null, "خدمة العرض يجب أن تتطابق مع خدمة الطلب المرسل."));
             }
 
             return Result<int>.Success(clientRequest.LawyerServiceLegalServiceId.Value);
@@ -136,20 +136,20 @@ public class SendOfferCommandHandler : IRequestHandler<SendOfferCommand, Result<
             if (clientRequest.LawyerServiceLawyerId != currentLawyerId)
             {
                 return Result<int>.Failure(
-                    new Error("Offer.Unauthorized", "Only the assigned lawyer can submit an offer for this direct request."));
+                    new Error("Offer.Unauthorized", "Only the assigned lawyer can submit an offer for this direct request.", null, "فقط المحامي المعيّن يمكنه تقديم عرض لهذا الطلب المباشر."));
             }
 
             if (!clientRequest.LawyerServiceLegalServiceId.HasValue)
             {
                 return Result<int>.Failure(
-                    new Error("Offer.InvalidState", "Direct request has no configured legal service."));
+                    new Error("Offer.InvalidState", "Direct request has no configured legal service.", null, "الطلب المباشر لا يحتوي على خدمة قانونية مُحددة."));
             }
 
             var fixedLegalServiceId = clientRequest.LawyerServiceLegalServiceId.Value;
             if (requestedLegalServiceId.HasValue && requestedLegalServiceId.Value != fixedLegalServiceId)
             {
                 return Result<int>.Failure(
-                    new Error("Offer.InvalidService", "Cannot change legal service for direct request offers."));
+                    new Error("Offer.InvalidService", "Cannot change legal service for direct request offers.", null, "لا يمكن تغيير الخدمة القانونية لعروض الطلبات المباشرة."));
             }
 
             return Result<int>.Success(fixedLegalServiceId);

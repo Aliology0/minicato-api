@@ -38,7 +38,7 @@ public class OpenDisputeCommandHandler : IRequestHandler<OpenDisputeCommand, Res
                              (caseEntity.CaseClientRequest?.ClientRequest?.ClientId == currentUserId);
 
         if (!isParticipant)
-            return Result<int>.Failure(new Error("Dispute.Unauthorized", "You must be a participant in the case to open a dispute."));
+            return Result<int>.Failure(new Error("Dispute.Unauthorized", "You must be a participant in the case to open a dispute.", null, "يجب أن تكون طرفًا في القضية لفتح منازعة."));
 
         // Automatically fetch and validate the Escrow associated with this case's request
         int? escrowId = null;

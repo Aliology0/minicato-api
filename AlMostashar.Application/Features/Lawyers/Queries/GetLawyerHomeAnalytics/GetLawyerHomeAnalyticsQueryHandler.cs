@@ -34,7 +34,7 @@ public class GetLawyerHomeAnalyticsQueryHandler
         if (!lawyerExists)
         {
             return Result<LawyerAnalyticsDto>.Failure(
-                new Error("Lawyer.NotFound", "Lawyer not found or profile is not active."));
+                new Error("Lawyer.NotFound", "Lawyer not found or profile is not active.", null, "لم يتم العثور على المحامي أو أن ملفه الشخصي غير مفعل."));
         }
 
         // Ratings logic mapping to existing GetLawyerProfile handler

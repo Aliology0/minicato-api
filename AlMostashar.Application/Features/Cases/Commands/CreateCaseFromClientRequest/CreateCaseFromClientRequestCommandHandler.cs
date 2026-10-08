@@ -50,18 +50,18 @@ public sealed class CreateCaseFromClientRequestCommandHandler
             .SingleOrDefaultAsync(value => value.Id == command.ClientRequestId, cancellationToken);
 
         if (request is null)
-            return Result<int>.Failure(new Error("Request.NotFound", "Client request was not found."));
+            return Result<int>.Failure(new Error("Request.NotFound", "Client request was not found.", null, "لم يتم العثور على طلب العميل."));
 
         var lawyerId = request.LawyerServiceLawyerId;
         if (!lawyerId.HasValue)
-            return Result<int>.Failure(new Error("Case.MissingLawyer", "The request has no accepted lawyer."));
+            return Result<int>.Failure(new Error("Case.MissingLawyer", "The request has no accepted lawyer.", null, "الطلب لا يحتوي على محامٍ مقبول."));
 
         if (request.ServiceType == ServiceType.Base && request.RequestedLegalService is not null)
             request.ServiceType = request.RequestedLegalService.ServiceType;
 
         var details = _requestDetailsService.MapFromEntity(request);
         if (details is null)
-            return Result<int>.Failure(new Error("Case.MissingRequestDetails", "Typed request details were not found."));
+            return Result<int>.Failure(new Error("Case.MissingRequestDetails", "Typed request details were not found.", null, "لم يتم العثور على تفاصيل الطلب المطبقة."));
 
         var caseResult = _caseMapper.Create(request, lawyerId.Value, details);
         if (!caseResult.IsSuccess)

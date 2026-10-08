@@ -29,7 +29,7 @@ public sealed class AskLegalAiCommandHandler : IRequestHandler<AskLegalAiCommand
         catch (LegalAiServiceUnavailableException)
         {
             return Result<LegalAiChatResponse>.Failure(
-                new Error("LegalAi.Unavailable", "Legal AI service is temporarily unavailable."));
+                new Error("LegalAi.Unavailable", "Legal AI service is temporarily unavailable.", null, "خدمة الذكاء القانوني غير متاحة مؤقتًا."));
         }
     }
 }

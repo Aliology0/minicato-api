@@ -28,7 +28,7 @@ public class GetMyWalletQueryHandler : IRequestHandler<GetMyWalletQuery, Result<
             .FirstOrDefaultAsync(cancellationToken);
 
         if (!lawyerId.HasValue)
-            return Result<WalletSummaryDto>.Failure(new Error("Lawyer.Auth.Unauthorized", "Authenticated user is not a lawyer."));
+            return Result<WalletSummaryDto>.Failure(new Error("Lawyer.Auth.Unauthorized", "Authenticated user is not a lawyer.", null, "المستخدم المصادق عليه ليس محاميًا."));
 
         var wallet = await _db.Wallets
             .AsNoTracking()

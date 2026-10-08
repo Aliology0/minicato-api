@@ -30,7 +30,7 @@ public class GetMyWalletTransactionsQueryHandler
             .FirstOrDefaultAsync(cancellationToken);
 
         if (!lawyerId.HasValue)
-            return Result<CursorPagedResult<WalletTransactionDto>>.Failure(new Error("Lawyer.Auth.Unauthorized", "Authenticated user is not a lawyer."));
+            return Result<CursorPagedResult<WalletTransactionDto>>.Failure(new Error("Lawyer.Auth.Unauthorized", "Authenticated user is not a lawyer.", null, "المستخدم المصادق عليه ليس محاميًا."));
 
         var pageSize = Math.Clamp(request.PageSize, 1, 50);
 

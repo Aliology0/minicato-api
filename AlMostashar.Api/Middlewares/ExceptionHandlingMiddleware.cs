@@ -1,6 +1,7 @@
 using FluentValidation;
 using System.Diagnostics;
 using System.Text.Json;
+using AlMostashar.Application.Common.Constants;
 
 namespace AlMostashar.Api.Middlewares
 {
@@ -65,7 +66,8 @@ namespace AlMostashar.Api.Middlewares
                 ValidationException validationEx => validationEx.Errors.Select(e => new
                 {
                     Property = e.PropertyName,
-                    Error = e.ErrorMessage
+                    Error = e.ErrorMessage,
+                    ErrorAr = Messages.GetArabicForValue(e.ErrorMessage)
                 }),
                 // In production, hide raw message for 500s to avoid leaking internals
                 _ when statusCode == StatusCodes.Status500InternalServerError && !_isDevelopment
@@ -73,12 +75,24 @@ namespace AlMostashar.Api.Middlewares
                 _ => exception.Message
             };
 
+            // Attempt to provide Arabic equivalents where possible
+            string? titleAr = title switch
+            {
+                "Validation Error" => "خطأ في التحقق من القيم",
+                "Invalid Operation" => "عملية غير صالحة",
+                "Unauthorized" => "غير مصرح",
+                "Not Found" => "لم يتم العثور على المورد",
+                _ => "خطأ في الخادم"
+            };
+
             // Build the response
             var response = new Dictionary<string, object?>
             {
                 ["status"] = statusCode,
                 ["title"] = title,
+                ["titleAr"] = titleAr,
                 ["detail"] = detail,
+                ["detailAr"] = (detail is string s) ? Messages.GetArabicForValue(s) : (detail is IEnumerable<object> list ? null : null),
                 ["traceId"] = traceId,
                 ["timestamp"] = DateTime.UtcNow.ToString("o"),
                 ["method"] = context.Request.Method,

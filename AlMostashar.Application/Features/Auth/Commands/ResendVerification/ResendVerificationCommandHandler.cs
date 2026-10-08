@@ -24,7 +24,7 @@ namespace AlMostashar.Application.Features.Auth.Commands.ResendVerification
         {
             // OTP/EMAIL VERIFICATION TEMPORARILY DISABLED
             // TODO: Re-enable ResendVerification when verification flow is restored.
-            return Result<string>.Failure(new Error("Auth.VerificationDisabled", "Email verification is temporarily disabled."));
+            return Result<string>.Failure(new Error("Auth.VerificationDisabled", "Email verification is temporarily disabled.", null, "تم تعطيل تأكيد البريد الإلكتروني مؤقتًا."));
 
             /*
             // 1. Find CLIENT by email — lawyers cannot use this flow

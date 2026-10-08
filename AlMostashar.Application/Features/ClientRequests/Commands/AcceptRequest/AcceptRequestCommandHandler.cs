@@ -33,10 +33,10 @@ public class AcceptRequestCommandHandler : IRequestHandler<AcceptRequestCommand,
             return Result<string>.Failure(
                 new Error("Request.InvalidStatus", "لا يمكن قبول طلب غير معلق."));
 
-        if (clientRequest is BroadcastRequest)
+            if (clientRequest is BroadcastRequest)
         {
             return Result<string>.Failure(
-                new Error("Request.BroadcastMustUseOffers", "Broadcast requests must be accepted by the client via offers, not directly by lawyers."));
+                new Error("Request.BroadcastMustUseOffers", "Broadcast requests must be accepted by the client via offers, not directly by lawyers.", null, "يجب على العميل قبول الطلبات المرسلة عبر العروض وليس قبولها مباشرةً من المحامين."));
         }
 
         var currentLawyerId = _currentUser.UserId;
@@ -77,7 +77,7 @@ public class AcceptRequestCommandHandler : IRequestHandler<AcceptRequestCommand,
                 return (0, 0, 0, new Error("Request.NotFound", Messages.Generic.NotFound("LawyerService")));
 
             if (lawyerService.Price <= 0)
-                return (0, 0, 0, new Error("Request.PriceAgreementRequired", "A payable offer must be agreed before accepting this request."));
+                return (0, 0, 0, new Error("Request.PriceAgreementRequired", "A payable offer must be agreed before accepting this request.", null, "يجب الاتفاق على عرض مدفوع قبل قبول هذا الطلب."));
 
             var total = lawyerService.Price;
             var platformFee = Math.Round(total * 0.10m, 2);
@@ -118,13 +118,13 @@ public class AcceptRequestCommandHandler : IRequestHandler<AcceptRequestCommand,
         {
             if (clientRequest.LawyerServiceLegalServiceId is null)
                 return Result<int?>.Failure(
-                    new Error("Request.InvalidState", "Cannot accept request because legal service is missing."));
+                    new Error("Request.InvalidState", "Cannot accept request because legal service is missing.", null, "لا يمكن قبول الطلب لأن الخدمة القانونية مفقودة."));
 
             if (requestedLegalServiceId is not null &&
                 requestedLegalServiceId != clientRequest.LawyerServiceLegalServiceId)
             {
                 return Result<int?>.Failure(
-                    new Error("Request.InvalidService", "Cannot change legal service for direct request."));
+                    new Error("Request.InvalidService", "Cannot change legal service for direct request.", null, "لا يمكن تغيير الخدمة القانونية للطلبات المباشرة."));
             }
 
             return Result<int?>.Success(clientRequest.LawyerServiceLegalServiceId);

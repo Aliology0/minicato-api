@@ -78,7 +78,7 @@ public class ConfirmCaseCompletionCommandHandler : IRequestHandler<ConfirmCaseCo
 
                 if (escrow is null)
                 {
-                    result = Result<string>.Failure(new Error("Escrow.NotFound", "Escrow was not found."));
+                    result = Result<string>.Failure(new Error("Escrow.NotFound", "Escrow was not found.", null, "لم يتم العثور على حساب الضمان."));
                     return;
                 }
 
@@ -122,7 +122,7 @@ public class ConfirmCaseCompletionCommandHandler : IRequestHandler<ConfirmCaseCo
 
         if (result is null || !result.IsSuccess)
         {
-            return result ?? Result<string>.Failure(new Error("Case.ConfirmationFailed", "Failed to confirm case completion."));
+            return result ?? Result<string>.Failure(new Error("Case.ConfirmationFailed", "Failed to confirm case completion.", null, "فشل تأكيد إتمام القضية."));
         }
 
         // Send Notification to Lawyer

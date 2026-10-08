@@ -16,6 +16,43 @@ namespace AlMostashar.Application.Common.Constants
 
         internal static string Get(string key) => _rm.GetString(key, CultureInfo.CurrentUICulture) ?? key;
 
+        /// <summary>
+        /// Returns the resource value for the specified culture.
+        /// </summary>
+        internal static string? GetForCulture(string key, CultureInfo culture) => _rm.GetString(key, culture);
+
+        /// <summary>
+        /// Try to find the resource key that matches the provided English value, then return the Arabic translation for that key.
+        /// This is used to include an Arabic equivalent when callers supply an English message string (resolved from resources).
+        /// </summary>
+        public static string? GetArabicForValue(string? valueToMatch)
+        {
+            if (string.IsNullOrEmpty(valueToMatch))
+                return null;
+
+            // Try both Arabic and English resource sets to find a matching value and then return the Arabic translation.
+            var culturesToCheck = new[] { new CultureInfo("ar"), CultureInfo.InvariantCulture, new CultureInfo("en") };
+
+            foreach (var culture in culturesToCheck)
+            {
+                var resourceSet = _rm.GetResourceSet(culture, true, true);
+                if (resourceSet is null)
+                    continue;
+
+                foreach (System.Collections.DictionaryEntry entry in resourceSet)
+                {
+                    if (entry.Value is string val && string.Equals(val, valueToMatch, StringComparison.Ordinal))
+                    {
+                        var key = (string)entry.Key;
+                        var ar = _rm.GetString(key, new CultureInfo("ar"));
+                        return ar;
+                    }
+                }
+            }
+
+            return null;
+        }
+
         // ── Auth: Errors ─────────────────────────────────────────────────────
         public static class Auth
         {

@@ -50,7 +50,7 @@ public class AcceptOfferCommandHandler : IRequestHandler<AcceptOfferCommand, Res
         if (hasAcceptedOffer)
         {
             return Result<AcceptOfferResponseDto>.Failure(
-                new Error("Offer.Conflict", "Another offer has already been accepted for this request."));
+                new Error("Offer.Conflict", "Another offer has already been accepted for this request.", null, "تم قبول عرض آخر لهذا الطلب بالفعل."));
         }
 
         var acceptedLegalServiceResult = ResolveAcceptedLegalServiceId(offer.ClientRequest, offer);
@@ -104,7 +104,7 @@ public class AcceptOfferCommandHandler : IRequestHandler<AcceptOfferCommand, Res
         catch (DbUpdateException ex) when (IsAcceptedOfferUniqueConflict(ex))
         {
             return Result<AcceptOfferResponseDto>.Failure(
-                new Error("Offer.Conflict", "Another offer has already been accepted for this request."));
+                new Error("Offer.Conflict", "Another offer has already been accepted for this request.", null, "تم قبول عرض آخر لهذا الطلب بالفعل."));
         }
 
         var invoiceId = await _db.Invoices
@@ -141,20 +141,20 @@ public class AcceptOfferCommandHandler : IRequestHandler<AcceptOfferCommand, Res
             if (clientRequest.LawyerServiceLawyerId != offer.LawyerId)
             {
                 return Result<int>.Failure(
-                    new Error("Offer.InvalidLawyer", "Offer lawyer does not match the assigned lawyer for this direct request."));
+                    new Error("Offer.InvalidLawyer", "Offer lawyer does not match the assigned lawyer for this direct request.", null, "محامي العرض لا يطابق المحامي المعيّن لهذا الطلب المباشر."));
             }
 
             if (!clientRequest.LawyerServiceLegalServiceId.HasValue)
             {
                 return Result<int>.Failure(
-                    new Error("Offer.InvalidRequestState", "Direct request has no configured legal service."));
+                    new Error("Offer.InvalidRequestState", "Direct request has no configured legal service.", null, "الطلب المباشر لا يحتوي على خدمة قانونية مُحددة."));
             }
 
             var fixedLegalServiceId = clientRequest.LawyerServiceLegalServiceId.Value;
             if (offer.LegalServiceId != fixedLegalServiceId)
             {
                 return Result<int>.Failure(
-                    new Error("Offer.InvalidService", "Offer legal service does not match the direct request legal service."));
+                    new Error("Offer.InvalidService", "Offer legal service does not match the direct request legal service.", null, "خدمة العرض لا تطابق خدمة الطلب المباشر."));
             }
 
             return Result<int>.Success(fixedLegalServiceId);

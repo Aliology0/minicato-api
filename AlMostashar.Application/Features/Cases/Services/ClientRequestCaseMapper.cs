@@ -35,7 +35,7 @@ public sealed class ClientRequestCaseMapper : IClientRequestCaseMapper
         };
 
         return data is null
-            ? Result<Case>.Failure(new Error("Case.UnsupportedRequestDetails", "Unsupported request details type."))
+            ? Result<Case>.Failure(new Error("Case.UnsupportedRequestDetails", "Unsupported request details type.", null, "نوع تفاصيل الطلب غير مدعوم."))
             : Result<Case>.Success(_caseMapper.Create(data));
     }
 }

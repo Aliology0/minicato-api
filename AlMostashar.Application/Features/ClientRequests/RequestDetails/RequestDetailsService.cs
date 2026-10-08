@@ -19,7 +19,7 @@ public sealed class RequestDetailsService : IRequestDetailsService
     public Result<ValidatedRequestDetails> ValidateAndNormalize(ServiceType serviceType, JsonElement requestDetails)
     {
         if (requestDetails.ValueKind is JsonValueKind.Undefined or JsonValueKind.Null)
-            return Result<ValidatedRequestDetails>.Failure(new Error("RequestDetails.Required", "Request details are required."));
+            return Result<ValidatedRequestDetails>.Failure(new Error("RequestDetails.Required", "Request details are required.", null, "تفاصيل الطلب مطلوبة."));
 
         try
         {
@@ -45,7 +45,7 @@ public sealed class RequestDetailsService : IRequestDetailsService
         catch (JsonException ex)
         {
             return Result<ValidatedRequestDetails>.Failure(
-                new Error("RequestDetails.InvalidJson", "Request details do not match the selected legal service.", ex.Message));
+                new Error("RequestDetails.InvalidJson", "Request details do not match the selected legal service.", ex.Message, "تفاصيل الطلب لا تتطابق مع نوع الخدمة القانونية المحددة.") );
         }
     }
 

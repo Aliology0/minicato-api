@@ -123,7 +123,7 @@ public class RefundPaymentCommandHandler : IRequestHandler<RefundPaymentCommand,
                 remainingRefundableAmount);
 
             return Result<RefundPaymentResultDto>.Failure(
-                new Error("Payment.RefundFailed", "Paymob refund failed. Please try again."));
+                new Error("Payment.RefundFailed", "Paymob refund failed. Please try again.", null, "فشل رد المبلغ عبر Paymob. يرجى المحاولة مرة أخرى."));
         }
 
         // ── Step 8: Business validation on amount ──

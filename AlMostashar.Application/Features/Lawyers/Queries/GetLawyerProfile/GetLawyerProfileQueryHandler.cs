@@ -90,7 +90,7 @@ public class GetLawyerProfileQueryHandler
 
         if (profile is null)
             return Result<LawyerProfileDto>.Failure(
-                new Error("Lawyer.NotFound", "Lawyer not found or profile is not public."));
+                new Error("Lawyer.NotFound", "Lawyer not found or profile is not public.", null, "لم يتم العثور على المحامي أو أن ملفه الشخصي غير عام."));
 
         var ratingAverage = profile.RatingsCount > 0
             ? Math.Round(profile.RatingSum / profile.RatingsCount, 1)

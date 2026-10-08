@@ -63,7 +63,7 @@ public class CancelCaseCommandHandler : IRequestHandler<CancelCaseCommand, Resul
         {
             if (!escrow.PaymentId.HasValue)
             {
-                return Result<string>.Failure(new Error("Payment.NotFound", "Escrow does not have a linked payment."));
+                return Result<string>.Failure(new Error("Payment.NotFound", "Escrow does not have a linked payment.", null, "لا يحتوي حساب الضمان على دفعة مرتبطة."));
             }
 
             var refundPaymentResult = await _mediator.Send(

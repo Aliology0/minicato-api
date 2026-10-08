@@ -42,7 +42,7 @@ public class UploadCaseDocumentCommandHandler : IRequestHandler<UploadCaseDocume
             d.Id == request.DocumentId && d.UploadedByUserId == requesterId &&
             d.CaseId == null && d.ClientRequestId == null && d.ReportId == null && d.CleanupClaimToken == null, cancellationToken);
         if (document is null)
-            return Result<CaseDocumentDto>.Failure(new Error("CaseDocument.Invalid", "Document is missing, owned by another user, or already linked."));
+            return Result<CaseDocumentDto>.Failure(new Error("CaseDocument.Invalid", "Document is missing, owned by another user, or already linked.", null, "المستند مفقود، مملوك لمستخدم آخر، أو مرتبط بالفعل."));
         document.CaseId = request.CaseId;
         await _db.SaveChangesAsync(cancellationToken);
 
