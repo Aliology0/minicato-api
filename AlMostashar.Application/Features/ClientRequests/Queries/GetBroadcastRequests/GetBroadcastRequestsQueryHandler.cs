@@ -114,7 +114,10 @@ public class GetBroadcastRequestsQueryHandler
             City = r.City,
             Budget = r.Budget,
             ClientName = r.ClientName,
-            Documents = r.Documents.Select(d=> new DocumentDto { Id= d.Id, DocumentName= d.DocumentName, Type= d.DocumentType, SizeInBytes = d.SizeInBytes, CreatedAt = d.CreatedAt}).ToList(),
+            // Do not expose attached documents for requests that are still pending (privacy for unaccepted broadcasts)
+            Documents = r.Status == ClientRequestStatus.Pending.ToString()
+                ? new List<DocumentDto>()
+                : r.Documents.Select(d => new DocumentDto { Id = d.Id, DocumentName = d.DocumentName, Type = d.DocumentType ?? string.Empty, SizeInBytes = d.SizeInBytes, CreatedAt = d.CreatedAt }).ToList(),
             CreatedAt = r.CreatedAt,
             ServiceType = r.ServiceType,
             ClientDeadline = r.ClientDeadline,

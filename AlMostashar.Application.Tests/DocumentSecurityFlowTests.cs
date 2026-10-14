@@ -280,6 +280,7 @@ public class DocumentSecurityFlowTests
     {
         DocumentName = "document.pdf",
         DocumentUrl = key,
+        DocumentType = "application/pdf",
         UploadedByUserId = ownerId,
         CreatedAt = DateTime.UtcNow
     };

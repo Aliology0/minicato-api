@@ -23,10 +23,6 @@ namespace AlMostashar.Application.Features.Auth.Commands.VerifyEmail
 
         public async Task<Result<AuthResponseDto>> Handle(VerifyEmailCommand request, CancellationToken cancellationToken)
         {
-            // OTP/EMAIL VERIFICATION TEMPORARILY DISABLED
-            // TODO: Re-enable VerifyEmail handler when verification flow is restored.
-            return Result<AuthResponseDto>.Failure(new Error("Auth.VerificationDisabled", "Email verification is temporarily disabled.", null, "تم تعطيل تأكيد البريد الإلكتروني مؤقتًا."));
-            /*
             var error = new Error("Auth.InvalidOtp", Messages.Auth.InvalidOtp);
 
             // 1. Find user by ID — must be a Client
@@ -49,9 +45,9 @@ namespace AlMostashar.Application.Features.Auth.Commands.VerifyEmail
                 return Result<AuthResponseDto>.Failure(new Error("Auth.OtpExpired", Messages.Auth.OtpExpired));
 
             // 5. Mark email as verified + clear OTP
-            user.IsEmailVerified  = true;
-            user.AccountStatus    = AccountStatus.Active;
-            user.OTPcode          = null;
+            user.IsEmailVerified = true;
+            user.AccountStatus = AccountStatus.Active;
+            user.OTPcode = null;
             user.OTPcodeExpiryTime = null;
 
             await _db.SaveChangesAsync(cancellationToken);
@@ -61,8 +57,8 @@ namespace AlMostashar.Application.Features.Auth.Commands.VerifyEmail
 
             var refreshToken = new RefreshTokenEntity
             {
-                Token     = _authService.GenerateRefreshToken(),
-                UserId    = user.Id,
+                Token = _authService.GenerateRefreshToken(),
+                UserId = user.Id,
                 ExpiresAt = DateTime.UtcNow.AddDays(_authService.GetRefreshTokenExpiryDays()),
                 CreatedAt = DateTime.UtcNow,
             };
@@ -74,22 +70,21 @@ namespace AlMostashar.Application.Features.Auth.Commands.VerifyEmail
             {
                 User = new AuthUserDto
                 {
-                    Id            = user.Id,
-                    FirstName     = user.FirstName,
-                    LastName      = user.LastName,
-                    Email         = user.Email,
-                    Role          = UserRole.Client,
+                    Id = user.Id,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email,
+                    Role = UserRole.Client,
                     AccountStatus = AccountStatus.Active,
-                    ProfileImage  = string.IsNullOrWhiteSpace(user.AvatarUrl) ? string.Empty : user.AvatarUrl,
-                    UserDetails   = null,
+                    ProfileImage = string.IsNullOrWhiteSpace(user.AvatarUrl) ? string.Empty : user.AvatarUrl,
+                    UserDetails = null,
                 },
                 Tokens = new AuthTokensDto
                 {
-                    AccessToken  = jwt,
+                    AccessToken = jwt,
                     RefreshToken = refreshToken.Token,
                 },
             });
-            */
         }
     }
 }

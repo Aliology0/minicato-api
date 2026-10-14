@@ -45,7 +45,64 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterClient
                 return Result<RegisterClientResponseDto>.Failure(locationResult.Error!);
             var location = locationResult.Value!;
 
-            // 3. Build the Client entity — email NOT verified yet
+            // 3. If files provided, upload them first (atomic registration: do not persist until uploads succeed).
+            var uploadedKeys = new List<string>();
+            string? avatarKey = null;
+            string? frontKey = null;
+            string? backKey = null;
+
+            try
+            {
+                var avatarTask = request.AvatarPhoto != null
+                    ? UploadToStorage.UploadPublicAsync(request.AvatarPhoto, _storageService)
+                    : Task.FromResult<string?>(null);
+
+                var frontIdTask = request.FrontIdPhoto != null
+                    ? UploadToStorage.UploadAsync(request.FrontIdPhoto, _storageService)
+                    : Task.FromResult<string?>(null);
+
+                var backIdTask = request.BackIdPhoto != null
+                    ? UploadToStorage.UploadAsync(request.BackIdPhoto, _storageService)
+                    : Task.FromResult<string?>(null);
+
+                await Task.WhenAll(avatarTask, frontIdTask, backIdTask);
+
+                avatarKey = await avatarTask;
+                frontKey = await frontIdTask;
+                backKey = await backIdTask;
+
+                if (!string.IsNullOrEmpty(avatarKey)) uploadedKeys.Add(avatarKey);
+                if (!string.IsNullOrEmpty(frontKey)) uploadedKeys.Add(frontKey);
+                if (!string.IsNullOrEmpty(backKey)) uploadedKeys.Add(backKey);
+
+                // If any file was supplied but its upload returned null, treat as failure.
+                if ((request.AvatarPhoto != null && avatarKey == null) ||
+                    (request.FrontIdPhoto != null && frontKey == null) ||
+                    (request.BackIdPhoto != null && backKey == null))
+                {
+                    // Cleanup any successful uploads
+                    foreach (var k in uploadedKeys)
+                    {
+                        try { await _storageService.DeleteFileAsync(k); } catch { }
+                    }
+
+                    var err = new Error("Upload.UploadFailed", "Failed to upload provided files. Please try again.");
+                    return Result<RegisterClientResponseDto>.Failure(err);
+                }
+            }
+            catch (Exception)
+            {
+                // Cleanup any partial uploads
+                foreach (var k in uploadedKeys)
+                {
+                    try { await _storageService.DeleteFileAsync(k); } catch { }
+                }
+
+                var err = new Error("Upload.UploadFailed", "Failed to upload provided files. Please try again.");
+                return Result<RegisterClientResponseDto>.Failure(err);
+            }
+
+            // 4. Build the Client entity — email NOT verified yet
             var client = new Client
             {
                 FirstName        = request.FirstName,
@@ -62,113 +119,31 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterClient
                 Governorate      = location.Governorate,
                 CityId           = location.CityId,
                 City             = location.City,
-                //OTPcode          = otp,
-                //OTPcodeExpiryTime = DateTime.UtcNow.AddMinutes(expiryMinutes),
             };
 
-            // 4. Persist client — NO tokens generated yet
-            await _db.Clients.AddAsync(client, cancellationToken);
-            await _db.SaveChangesAsync(cancellationToken);
+            // assign uploaded URLs/keys to client
+            if (!string.IsNullOrEmpty(avatarKey)) client.AvatarUrl = _storageService.GetPublicUrl(avatarKey);
+            if (!string.IsNullOrEmpty(frontKey)) client.FrontIdUrl = frontKey;
+            if (!string.IsNullOrEmpty(backKey)) client.BackIdUrl = backKey;
 
-            // 5. If files provided, upload them and update user record.
-            // Avatar: public URL; ID documents: private storage keys
+            // 5. Persist client — NO tokens generated yet
             try
             {
-                var avatarTask = request.AvatarPhoto != null
-                    ? UploadToStorage.UploadPublicAsync(request.AvatarPhoto, _storageService)
-                    : Task.FromResult<string?>(null);
-
-                var frontIdTask = request.FrontIdPhoto != null
-                    ? UploadToStorage.UploadAsync(request.FrontIdPhoto, _storageService)
-                    : Task.FromResult<string?>(null);
-
-                var backIdTask = request.BackIdPhoto != null
-                    ? UploadToStorage.UploadAsync(request.BackIdPhoto, _storageService)
-                    : Task.FromResult<string?>(null);
-
-                try
-                {
-                    await Task.WhenAll(avatarTask, frontIdTask, backIdTask);
-                }
-                catch
-                {
-                    // Some upload(s) failed. Persist any successful upload results, then fail registration.
-                    string? avatarKeyPartial = null;
-                    string? frontKeyPartial = null;
-                    string? backKeyPartial = null;
-
-                    if (avatarTask.IsCompletedSuccessfully)
-                        avatarKeyPartial = avatarTask.Result;
-                    if (frontIdTask.IsCompletedSuccessfully)
-                        frontKeyPartial = frontIdTask.Result;
-                    if (backIdTask.IsCompletedSuccessfully)
-                        backKeyPartial = backIdTask.Result;
-
-                    bool updatedPartial = false;
-                    if (!string.IsNullOrEmpty(avatarKeyPartial))
-                    {
-                        client.AvatarUrl = _storageService.GetPublicUrl(avatarKeyPartial!);
-                        updatedPartial = true;
-                    }
-                    if (!string.IsNullOrEmpty(frontKeyPartial))
-                    {
-                        client.FrontIdUrl = frontKeyPartial;
-                        updatedPartial = true;
-                    }
-                    if (!string.IsNullOrEmpty(backKeyPartial))
-                    {
-                        client.BackIdUrl = backKeyPartial;
-                        updatedPartial = true;
-                    }
-
-                    if (updatedPartial)
-                    {
-                        _db.Users.Update(client);
-                        await _db.SaveChangesAsync(cancellationToken);
-                    }
-
-                    var err = new Error("Auth.UploadFailed", "Failed to upload provided files. Please try again.");
-                    return Result<RegisterClientResponseDto>.Failure(err);
-                }
-
-                var avatarKey = await avatarTask;
-                var frontKey = await frontIdTask;
-                var backKey = await backIdTask;
-
-                bool updated = false;
-                if (!string.IsNullOrEmpty(avatarKey))
-                {
-                    client.AvatarUrl = _storageService.GetPublicUrl(avatarKey!);
-                    updated = true;
-                }
-                if (!string.IsNullOrEmpty(frontKey))
-                {
-                    client.FrontIdUrl = frontKey;
-                    updated = true;
-                }
-                if (!string.IsNullOrEmpty(backKey))
-                {
-                    client.BackIdUrl = backKey;
-                    updated = true;
-                }
-                // Clients do not upload syndicate membership cards — nothing to set here.
-
-                if (updated)
-                {
-                    _db.Users.Update(client);
-                    await _db.SaveChangesAsync(cancellationToken);
-                }
+                await _db.Clients.AddAsync(client, cancellationToken);
+                await _db.SaveChangesAsync(cancellationToken);
             }
             catch (Exception)
             {
-                // If preparing/starting upload tasks failed and any file was supplied, fail registration.
-                if (request.AvatarPhoto != null || request.FrontIdPhoto != null || request.BackIdPhoto != null)
+                // DB persistence failed; cleanup uploaded files.
+                foreach (var k in uploadedKeys)
                 {
-                    var err = new Error("Auth.UploadFailed", "Failed to upload provided files. Please try again.");
-                    return Result<RegisterClientResponseDto>.Failure(err);
+                    try { await _storageService.DeleteFileAsync(k); } catch { }
                 }
-                // Otherwise proceed — nothing to upload.
+
+                var err = new Error("Upload.UploadFailed", "Failed to save user after uploading files. Please try again.");
+                return Result<RegisterClientResponseDto>.Failure(err);
             }
+
 
             /*
              // 5. Send verification email

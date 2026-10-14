@@ -40,6 +40,10 @@ public static class TestEntityFactory
         bool isVerified = true,
         AccountStatus? status = null)
     {
+        var parsed = 0;
+        if (!int.TryParse(suffix, out parsed))
+            parsed = 0;
+
         return new Lawyer
         {
             FirstName = "Lawyer",
@@ -54,7 +58,7 @@ public static class TestEntityFactory
             PhoneNo = "01000000000",
             Governorate = "Cairo",
             City = "Nasr City",
-            SyndicateId = 123 + int.Parse(suffix)
+            SyndicateId = 123 + parsed
         };
     }
 

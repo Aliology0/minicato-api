@@ -132,6 +132,7 @@ namespace AlMostashar.Application.Features.Auth.Commands.Login
                     Bio         = string.IsNullOrWhiteSpace(lawyer.Bio) ? null : lawyer.Bio,
                     About       = string.IsNullOrWhiteSpace(lawyer.About) ? null : lawyer.About,
                     PhoneNumber = string.IsNullOrWhiteSpace(lawyer.PhoneNo) ? string.Empty : lawyer.PhoneNo,
+                    RejectionReason = string.IsNullOrWhiteSpace(lawyer.RejectionReason) ? null : lawyer.RejectionReason,
                 } : null,
             };
         }

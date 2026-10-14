@@ -35,6 +35,9 @@ public class LawyerConfiguration : IEntityTypeConfiguration<Lawyer>
         builder.Property(l => l.PracticeCertificatesUrl)
             .HasMaxLength(500);
 
+        builder.Property(l => l.RejectionReason)
+            .HasMaxLength(1000);
+
         // ─── Indexes ───
         builder.HasIndex(l => l.VerifiedByAdminId);
 

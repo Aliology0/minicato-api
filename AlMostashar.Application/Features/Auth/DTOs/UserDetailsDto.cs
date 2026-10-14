@@ -11,5 +11,8 @@ namespace AlMostashar.Application.Features.Auth.DTOs
         public string? Bio { get; set; }
         public string? About { get; set; }
         public string? PhoneNumber { get; set; }
+        // If the lawyer was rejected, a short reason provided by admins.
+        // Visible only to the authenticated lawyer.
+        public string? RejectionReason { get; set; }
     }
 }

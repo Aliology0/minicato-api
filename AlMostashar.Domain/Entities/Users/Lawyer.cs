@@ -16,6 +16,7 @@ public class Lawyer : User
     public DateTime? NotifiedAt { get; set; }
     public string? SyndicateCardUrl { get; set; }
     public string? PracticeCertificatesUrl { get; set; }
+    public string? RejectionReason { get; set; }
 
     // FK — Step 4: 1:N (Admin → Lawyer via Verifies)
     public int? VerifiedByAdminId { get; set; }

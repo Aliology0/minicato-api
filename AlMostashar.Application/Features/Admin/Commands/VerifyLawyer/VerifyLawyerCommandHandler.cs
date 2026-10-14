@@ -45,6 +45,12 @@ namespace AlMostashar.Application.Features.Admin.Commands.VerifyLawyer
                 lawyer.IsVerified = true;
                 lawyer.VerifiedByAdminId = _currentUserService.UserId;
                 lawyer.AccountStatus = Domain.ValueObject.Enum.AccountStatus.Active;
+                // Clear any previous rejection reason if the property exists on the Lawyer entity
+                var _rejectionProp = lawyer.GetType().GetProperty("RejectionReason");
+                if (_rejectionProp != null)
+                {
+                    _rejectionProp.SetValue(lawyer, null);
+                }
 
                 if (!await _db.Wallets.AnyAsync(w => w.LawyerId == lawyer.Id, cancellationToken))
                 {
@@ -70,6 +76,13 @@ namespace AlMostashar.Application.Features.Admin.Commands.VerifyLawyer
             else
             {
                 lawyer.AccountStatus = Domain.ValueObject.Enum.AccountStatus.Suspended;
+                // Persist rejection reason if provided and the property exists on the Lawyer entity
+                var _rejectionProp = lawyer.GetType().GetProperty("RejectionReason");
+                if (_rejectionProp != null)
+                {
+                    var reason = string.IsNullOrWhiteSpace(request.RejectionReason) ? null : request.RejectionReason.Trim();
+                    _rejectionProp.SetValue(lawyer, reason);
+                }
                 // Email subject for document rejection / account suspension
                 subject = "المستشار - إجراء مطلوب: تحديث مستندات التحقق";
 

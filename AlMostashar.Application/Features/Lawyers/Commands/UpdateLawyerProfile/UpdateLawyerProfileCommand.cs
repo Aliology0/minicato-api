@@ -17,4 +17,7 @@ public class UpdateLawyerProfileCommand : IRequest<Result<UpdateLawyerProfileRes
     public string? About { get; set; }
     public int? YearsOfExperience { get; set; }
     public List<int>? SpecializationIds { get; set; }
+    // Indicates the caller wants to explicitly resubmit corrected data for admin review.
+    // Must be true to transition a rejected lawyer back to PendingReview.
+    public bool ResubmitForReview { get; set; } = false;
 }

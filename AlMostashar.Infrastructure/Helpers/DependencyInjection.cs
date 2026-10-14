@@ -111,18 +111,23 @@ namespace AlMostashar.Infrastructure.Helpers
                 Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
                 "Development",
                 StringComparison.OrdinalIgnoreCase);
-            //if (isDevelopmentEnvironment)
-            //{
-            //    services.AddSingleton<DevelopmentLocalStorageService>();
-            //    services.AddSingleton<IStorageService>(provider =>
-            //        provider.GetRequiredService<DevelopmentLocalStorageService>());
-            //}
-            //else
-            //{
-                var s3Settings = configuration.GetSection("Storage:S3").Get<S3Settings>();
-                if (s3Settings == null)
-                    throw new InvalidOperationException("Storage:S3 section is missing or invalid in appsettings.");
 
+            var s3Settings = configuration.GetSection("Storage:S3").Get<S3Settings>();
+            if (s3Settings == null)
+                throw new InvalidOperationException("Storage:S3 section is missing or invalid in appsettings.");
+
+            // If S3 credentials are not configured, fall back to the local development storage implementation.
+            // This prevents runtime AmazonS3Client errors when secrets are not present in development environments.
+            if (string.IsNullOrWhiteSpace(s3Settings.AccessKey) || string.IsNullOrWhiteSpace(s3Settings.SecretKey))
+            {
+                // Register DevelopmentLocalStorageService as the IStorageService implementation
+                services.AddSingleton<DevelopmentLocalStorageService>();
+                services.AddSingleton<IStorageService>(provider =>
+                    provider.GetRequiredService<DevelopmentLocalStorageService>());
+                services.AddSingleton(s3Settings);
+            }
+            else
+            {
                 var s3Config = new AmazonS3Config
                 {
                     ServiceURL = s3Settings.Endpoint,
@@ -135,7 +140,7 @@ namespace AlMostashar.Infrastructure.Helpers
                 services.AddSingleton<IAmazonS3>(new AmazonS3Client(credentials, s3Config));
                 services.AddSingleton(s3Settings);
                 services.AddScoped<IStorageService, S3StorageService>();
-            //}
+            }
 
             // Firebase removed - no FCM provider is registered
 

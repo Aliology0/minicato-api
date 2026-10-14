@@ -9,6 +9,13 @@ namespace AlMostashar.Application.Features.Admin.Commands.VerifyLawyer
         {
             RuleFor(x => x.LawyerId)
                 .GreaterThan(0).WithMessage(Messages.Admin.LawyerNotFound);
+
+            When(x => !x.IsAccepted, () =>
+            {
+                RuleFor(x => x.RejectionReason)
+                    .NotEmpty().WithMessage("Rejection reason is required when rejecting a lawyer.")
+                    .MaximumLength(1000);
+            });
         }
     }
 }

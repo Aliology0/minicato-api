@@ -26,6 +26,8 @@ namespace AlMostashar.Application.Features.Auth.Commands.UploadIdentityDocuments
             var response = new UploadIdentityDocumentsResponseDto();
 
             // Upload files in parallel; if a supplied file upload fails, return an error.
+            // Track successful uploads so we can cleanup on DB failure.
+            var uploadedKeys = new List<string>();
             try
             {
                 var frontTask = request.SSN != null
@@ -45,6 +47,10 @@ namespace AlMostashar.Application.Features.Auth.Commands.UploadIdentityDocuments
                 var frontKey = await frontTask;
                 var backKey = await backTask;
                 var pracKey = await practiceTask;
+
+                if (!string.IsNullOrEmpty(frontKey)) uploadedKeys.Add(frontKey);
+                if (!string.IsNullOrEmpty(backKey)) uploadedKeys.Add(backKey);
+                if (!string.IsNullOrEmpty(pracKey)) uploadedKeys.Add(pracKey);
 
                 // Persist front/back ID to the authenticated user (Client) — do not assume Lawyer
                 var user = await _db.Users.FindAsync(new object[] { _currentUser.UserId }, cancellationToken);
@@ -66,12 +72,29 @@ namespace AlMostashar.Application.Features.Auth.Commands.UploadIdentityDocuments
                     response.SyndicateCardUrl = backKey;
                 }
 
+                // PracticeCertificates should not overwrite BackIdUrl. Only store practice certificates if the
+                // authenticated user is a Lawyer and the application explicitly intends to persist practice docs
+                // on the Lawyer entity. Respect role/ownership rules: do not assume the current user is a lawyer.
                 if (!string.IsNullOrEmpty(pracKey))
                 {
-                    // PracticeCertificates for clients map to BackIdUrl or a new field; store in BackIdUrl if intended.
-                    user.BackIdUrl = pracKey;
-                    updated = true;
-                    response.PracticeCertificatesUrl = pracKey;
+                    // If the user is a Lawyer, persist to PracticeCertificatesUrl on the Lawyer entity instead of User
+                    if (user is Domain.Entities.Lawyer)
+                    {
+                        var lawyer = await _db.Lawyers.FindAsync(new object[] { _currentUser.UserId }, cancellationToken);
+                        if (lawyer is not null)
+                        {
+                            // Persist the private key; the public URL will be generated when needed by GetPublicUrl or presigned URLs
+                            lawyer.PracticeCertificatesUrl = pracKey;
+                            _db.Lawyers.Update(lawyer);
+                            response.PracticeCertificatesUrl = pracKey;
+                            updated = true;
+                        }
+                    }
+                    else
+                    {
+                        // Do not persist practice certificates for Clients. Instead return it in response only.
+                        response.PracticeCertificatesUrl = pracKey;
+                    }
                 }
 
                 if (updated)
@@ -82,9 +105,25 @@ namespace AlMostashar.Application.Features.Auth.Commands.UploadIdentityDocuments
 
                 return Result<UploadIdentityDocumentsResponseDto>.Success(response);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                var err = new Error("Auth.UploadFailed", "Failed to upload identity documents. Please try again.", null, "فشل تحميل مستندات الهوية. يرجى المحاولة مرة أخرى.");
+                // If DB persistence failed after successful uploads, attempt to remove the uploaded objects.
+                if (uploadedKeys.Count > 0)
+                {
+                    foreach (var k in uploadedKeys)
+                    {
+                        try
+                        {
+                            await _storageService.DeleteFileAsync(k);
+                        }
+                        catch
+                        {
+                            // Do not throw; cleanup best-effort only.
+                        }
+                    }
+                }
+
+                var err = new Error("Upload.IdentityDocumentsFailed", "Failed to upload identity documents. Please try again.", null, "فشل تحميل مستندات الهوية. يرجى المحاولة مرة أخرى.");
                 return Result<UploadIdentityDocumentsResponseDto>.Failure(err);
             }
         }
