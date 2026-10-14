@@ -47,6 +47,33 @@ public class UpdateLawyerProfileCommandHandler
             lawyer.AvatarUrl = _storageService.GetPublicUrl(fileKey);
         }
 
+        // 2b. Upload identity / certification documents if provided (do not overwrite existing if null)
+        var documentReplaced = false;
+
+        if (request.SSNPhoto is not null)
+        {
+            var ssnKey = await UploadPublicAsync(request.SSNPhoto, _storageService);
+            var ssnUrl = _storageService.GetPublicUrl(ssnKey);
+            lawyer.SSN_Url = ssnUrl;
+            documentReplaced = true;
+        }
+
+        if (request.SyndicateCardPhoto is not null)
+        {
+            var syndKey = await UploadPublicAsync(request.SyndicateCardPhoto, _storageService);
+            var syndUrl = _storageService.GetPublicUrl(syndKey);
+            lawyer.SyndicateCardUrl = syndUrl;
+            documentReplaced = true;
+        }
+
+        if (request.PracticeCertificatesPhoto is not null)
+        {
+            var pracKey = await UploadPublicAsync(request.PracticeCertificatesPhoto, _storageService);
+            var pracUrl = _storageService.GetPublicUrl(pracKey);
+            lawyer.PracticeCertificatesUrl = pracUrl;
+            documentReplaced = true;
+        }
+
         // 3. Update fields
             lawyer.FirstName = request.FirstName ?? lawyer.FirstName;
             lawyer.LastName= request.LastName ?? lawyer.LastName;
@@ -71,7 +98,16 @@ public class UpdateLawyerProfileCommandHandler
             }
         }
 
-        // 4. Save
+        // 4. If any required document was replaced, reset verification state (do not touch email verification)
+        if (documentReplaced && lawyer.IsVerified)
+        {
+            lawyer.IsVerified = false;
+            lawyer.VerifiedByAdminId = null;
+            lawyer.AccountStatus = AlMostashar.Domain.ValueObject.Enum.AccountStatus.PendingReview;
+            lawyer.NotifiedAt = null;
+        }
+
+        // 5. Save
         await _db.SaveChangesAsync(cancellationToken);
 
         // 5. Return updated profile

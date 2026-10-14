@@ -10,6 +10,9 @@ public class UpdateLawyerProfileCommand : IRequest<Result<UpdateLawyerProfileRes
     public string? FirstName { get; set; } = null!;
     public string? LastName { get; set; } = null!;
     public IFormFile? ProfileImage { get; set; }
+    public IFormFile? SSNPhoto { get; set; }
+    public IFormFile? SyndicateCardPhoto { get; set; }
+    public IFormFile? PracticeCertificatesPhoto { get; set; }
     public string? Bio { get; set; }
     public string? About { get; set; }
     public int? YearsOfExperience { get; set; }

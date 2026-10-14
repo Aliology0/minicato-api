@@ -110,9 +110,9 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterLawyer
                 City                    = location.City,
                 SyndicateId             = request.SyndicateId,
                 YearsOfExperience       = request.YearsOfExperience,
-                SSN_Url                 = ssnKey,
-                SyndicateCardUrl        = syndicateKey,
-                PracticeCertificatesUrl = practiceKey,
+                SSN_Url                 = ssnKey is null ? null : _storageService.GetPublicUrl(ssnKey),
+                SyndicateCardUrl        = syndicateKey is null ? null : _storageService.GetPublicUrl(syndicateKey),
+                PracticeCertificatesUrl = practiceKey is null ? null : _storageService.GetPublicUrl(practiceKey),
                 IsVerified              = false, // awaiting admin approval
                 AccountStatus           = AlMostashar.Domain.ValueObject.Enum.AccountStatus.PendingReview,
                 LawyerSpecializations   = selectedSpecializations ?? new List<Domain.Entities.LawyerSpecialization>()

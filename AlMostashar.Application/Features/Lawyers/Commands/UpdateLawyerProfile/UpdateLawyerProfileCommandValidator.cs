@@ -38,6 +38,39 @@ public class UpdateLawyerProfileCommandValidator : AbstractValidator<UpdateLawye
             .WithMessage($"Profile image must be one of: {string.Join(", ", FileContentTypeHelper.AllowedImageExtensions)}.")
             .When(x => x.ProfileImage is not null);
 
+        RuleFor(x => x.SSNPhoto)
+            .Must(file => file!.Length <= MaxImageSizeBytes)
+            .WithMessage("SSN image must not exceed 5 MB.")
+            .Must(file =>
+            {
+                var ext = Path.GetExtension(file!.FileName)?.ToLowerInvariant();
+                return !string.IsNullOrEmpty(ext) && FileContentTypeHelper.AllowedImageExtensions.Contains(ext);
+            })
+            .WithMessage($"SSN image must be one of: {string.Join(", ", FileContentTypeHelper.AllowedImageExtensions)}.")
+            .When(x => x.SSNPhoto is not null);
+
+        RuleFor(x => x.SyndicateCardPhoto)
+            .Must(file => file!.Length <= MaxImageSizeBytes)
+            .WithMessage("Syndicate card image must not exceed 5 MB.")
+            .Must(file =>
+            {
+                var ext = Path.GetExtension(file!.FileName)?.ToLowerInvariant();
+                return !string.IsNullOrEmpty(ext) && FileContentTypeHelper.AllowedImageExtensions.Contains(ext);
+            })
+            .WithMessage($"Syndicate card image must be one of: {string.Join(", ", FileContentTypeHelper.AllowedImageExtensions)}.")
+            .When(x => x.SyndicateCardPhoto is not null);
+
+        RuleFor(x => x.PracticeCertificatesPhoto)
+            .Must(file => file!.Length <= MaxImageSizeBytes)
+            .WithMessage("Practice certificate image must not exceed 5 MB.")
+            .Must(file =>
+            {
+                var ext = Path.GetExtension(file!.FileName)?.ToLowerInvariant();
+                return !string.IsNullOrEmpty(ext) && FileContentTypeHelper.AllowedImageExtensions.Contains(ext);
+            })
+            .WithMessage($"Practice certificate image must be one of: {string.Join(", ", FileContentTypeHelper.AllowedImageExtensions)}.")
+            .When(x => x.PracticeCertificatesPhoto is not null);
+
         RuleFor(x => x.Bio)
             .MaximumLength(500)
             .When(x => x.Bio is not null);

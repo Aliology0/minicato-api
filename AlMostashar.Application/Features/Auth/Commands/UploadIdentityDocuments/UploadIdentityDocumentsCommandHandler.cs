@@ -24,24 +24,28 @@ namespace AlMostashar.Application.Features.Auth.Commands.UploadIdentityDocuments
             // 1. Define tasks without awaiting them immediately
             // Start all upload operations at the same time
             var ssnTask = request.SSN != null
-                ? UploadAsync(request.SSN, _storageService)
-                : Task.FromResult<string>(null!);
+                ? UploadPublicAsync(request.SSN, _storageService)
+                : Task.FromResult<string?>(null);
 
             var syndicateTask = request.SyndicateCard != null
-                ? UploadAsync(request.SyndicateCard, _storageService)
-                : Task.FromResult<string>(null!);
+                ? UploadPublicAsync(request.SyndicateCard, _storageService)
+                : Task.FromResult<string?>(null);
 
             var practiceTask = request.PracticeCertificates != null
-                ? UploadAsync(request.PracticeCertificates, _storageService)
-                : Task.FromResult<string>(null!);
+                ? UploadPublicAsync(request.PracticeCertificates, _storageService)
+                : Task.FromResult<string?>(null);
 
             // 2. Wait for all tasks to complete in parallel
             await Task.WhenAll(ssnTask, syndicateTask, practiceTask);
 
             // 3. Assign results from completed tasks
-            response.SSN_Url = await ssnTask;
-            response.SyndicateCardUrl = await syndicateTask;
-            response.PracticeCertificatesUrl = await practiceTask;
+            var ssnKey = await ssnTask;
+            var syndKey = await syndicateTask;
+            var pracKey = await practiceTask;
+
+            response.SSN_Url = ssnKey is null ? null : _storageService.GetPublicUrl(ssnKey);
+            response.SyndicateCardUrl = syndKey is null ? null : _storageService.GetPublicUrl(syndKey);
+            response.PracticeCertificatesUrl = pracKey is null ? null : _storageService.GetPublicUrl(pracKey);
 
             return Result<UploadIdentityDocumentsResponseDto>.Success(response);
         }
