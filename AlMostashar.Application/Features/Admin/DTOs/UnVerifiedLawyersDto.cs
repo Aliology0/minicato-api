@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using AlMostashar.Application.Features.Specializations.DTOs;
 
 namespace AlMostashar.Application.Features.Admin.DTOs;
 
@@ -14,6 +12,8 @@ public record UnVerifiedLawyersDto(
     int SyndicateId,
     string? SSN_Url,
     string? SyndicateCardUrl,
-    string? PracticeCertificatesUrl);
+    string? PracticeCertificatesUrl,
+    int YearsOfExperience,
+    IEnumerable<SpecializationLookupDto> Specializations);
 
 

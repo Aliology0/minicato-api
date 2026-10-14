@@ -49,6 +49,13 @@ namespace AlMostashar.Api.Controllers
             return this.ToActionResult(result);
         }
 
+        [HttpGet("lawyers/{id}")]
+        public async Task<IActionResult> GetLawyerById([FromRoute] int id, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new AlMostashar.Application.Features.Admin.Queries.GetLawyerById.GetLawyerByIdQuery(id), cancellationToken);
+            return this.ToActionResult(result);
+        }
+
         /// <summary>
         /// Get all users with optional filters and cursor-based pagination.
         /// For lawyers, IsVerified filter is also available.
