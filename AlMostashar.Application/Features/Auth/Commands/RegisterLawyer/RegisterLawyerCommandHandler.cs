@@ -65,22 +65,22 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterLawyer
                 }
             }
 
-            // 2. If files provided, upload them and set URLs
+            // 2. If files provided, upload them and set URLs. Registration must fail on any supplied-file upload failure.
             string? ssnKey = null;
             string? syndicateKey = null;
             string? practiceKey = null;
             try
             {
                 var ssnTask = (request.SSNPhoto != null && _storageService != null)
-                    ? UploadToStorage.UploadAsync(request.SSNPhoto, _storageService)
+                    ? UploadToStorage.UploadPublicAsync(request.SSNPhoto, _storageService)
                     : Task.FromResult<string?>(null);
 
                 var syndicateTask = (request.SyndicateCardPhoto != null && _storageService != null)
-                    ? UploadToStorage.UploadAsync(request.SyndicateCardPhoto, _storageService)
+                    ? UploadToStorage.UploadPublicAsync(request.SyndicateCardPhoto, _storageService)
                     : Task.FromResult<string?>(null);
 
                 var practiceTask = (request.PracticeCertificatesPhoto != null && _storageService != null)
-                    ? UploadToStorage.UploadAsync(request.PracticeCertificatesPhoto, _storageService)
+                    ? UploadToStorage.UploadPublicAsync(request.PracticeCertificatesPhoto, _storageService)
                     : Task.FromResult<string?>(null);
 
                 await Task.WhenAll(ssnTask, syndicateTask, practiceTask);
@@ -88,10 +88,20 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterLawyer
                 ssnKey = await ssnTask;
                 syndicateKey = await syndicateTask;
                 practiceKey = await practiceTask;
+
+                // If any file was supplied but its upload returned null, treat as failure.
+                if ((request.SSNPhoto != null && ssnKey == null) ||
+                    (request.SyndicateCardPhoto != null && syndicateKey == null) ||
+                    (request.PracticeCertificatesPhoto != null && practiceKey == null))
+                {
+                    return Result<RegisterLawyerResponseDto>.Failure(
+                        new Error("Auth.UploadFailed", "Failed to upload required documents. Please try again."));
+                }
             }
-            catch
+            catch (Exception)
             {
-                // Don't fail registration on storage issues; log elsewhere
+                var err = new Error("Auth.UploadFailed", "Failed to upload required documents. Please try again.");
+                return Result<RegisterLawyerResponseDto>.Failure(err);
             }
 
             // 3. Build the Lawyer entity

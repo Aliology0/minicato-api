@@ -70,6 +70,7 @@ namespace AlMostashar.Application.Common.Constants
             public static string CannotViewCase          => Get("Auth_CannotViewCase");
             public static string NotChatParticipant      => Get("Auth_NotChatParticipant");
             public static string OnlyLawyersCanSendOffers=> Get("Auth_OnlyLawyersCanSendOffers");
+            public static string UploadFailed           => Get("Auth_UploadFailed");
         }
 
         // ── Auth: Success ────────────────────────────────────────────────────

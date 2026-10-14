@@ -74,11 +74,14 @@
   <data name="Validation_NewPasswordRequired"><value>New password is required.</value></data>
   <data name="Validation_RefreshTokenRequired"><value>Refresh token is required.</value></data>
   <data name="Validation_UserIdRequired"><value>User ID is required.</value></data>
+  <data name="Validation_ImageTooLarge"><value>Image must not exceed 5 MB.</value></data>
+  <data name="Validation_ImageInvalidExtension"><value>Image must be one of: .jpg, .jpeg, .png, .webp, .heic.</value></data>
 
   <!-- Admin -->
   <data name="Admin_LawyerNotFound"><value>Lawyer not found.</value></data>
   <data name="Admin_LawyerAlreadyVerified"><value>Lawyer is already verified.</value></data>
   <data name="Admin_LawyerVerified"><value>Lawyer has been verified successfully.</value></data>
+  <data name="Auth_UploadFailed"><value>Failed to upload required documents. Please try again.</value></data>
 
   <!-- Generic (reusable templates with {0}, {1} placeholders) -->
   <data name="Generic_Required"><value>'{0}' is required.</value></data>

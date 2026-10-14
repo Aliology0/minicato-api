@@ -29,6 +29,8 @@ public class GetLawyerByIdQueryHandler : IRequestHandler<GetLawyerByIdQuery, Res
                 LastName = l.LastName,
                 FullName = l.FullName,
                 Email = l.Email,
+                PhoneNumber = l.PhoneNo,
+                SyndicateId = l.SyndicateId,
                 IsVerified = l.IsVerified,
                 YearsOfExperience = l.YearsOfExperience,
                 SSN_Url = l.SSN_Url,

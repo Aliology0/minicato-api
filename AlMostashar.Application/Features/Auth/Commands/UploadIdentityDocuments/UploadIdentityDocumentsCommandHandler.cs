@@ -9,10 +9,14 @@ namespace AlMostashar.Application.Features.Auth.Commands.UploadIdentityDocuments
         : IRequestHandler<UploadIdentityDocumentsCommand, Result<UploadIdentityDocumentsResponseDto>>
     {
         private readonly IStorageService _storageService;
+        private readonly IAppDbContext _db;
+        private readonly ICurrentUserService _currentUser;
 
-        public UploadIdentityDocumentsCommandHandler(IStorageService storageService)
+        public UploadIdentityDocumentsCommandHandler(IStorageService storageService, IAppDbContext db, ICurrentUserService currentUser)
         {
             _storageService = storageService;
+            _db = db;
+            _currentUser = currentUser;
         }
 
         public async Task<Result<UploadIdentityDocumentsResponseDto>> Handle(
@@ -21,33 +25,68 @@ namespace AlMostashar.Application.Features.Auth.Commands.UploadIdentityDocuments
         {
             var response = new UploadIdentityDocumentsResponseDto();
 
-            // 1. Define tasks without awaiting them immediately
-            // Start all upload operations at the same time
-            var ssnTask = request.SSN != null
-                ? UploadPublicAsync(request.SSN, _storageService)
-                : Task.FromResult<string?>(null);
+            // Upload files in parallel; if a supplied file upload fails, return an error.
+            try
+            {
+                var frontTask = request.SSN != null
+                    ? UploadAsync(request.SSN, _storageService)
+                    : Task.FromResult<string?>(null);
 
-            var syndicateTask = request.SyndicateCard != null
-                ? UploadPublicAsync(request.SyndicateCard, _storageService)
-                : Task.FromResult<string?>(null);
+                var backTask = request.SyndicateCard != null
+                    ? UploadAsync(request.SyndicateCard, _storageService)
+                    : Task.FromResult<string?>(null);
 
-            var practiceTask = request.PracticeCertificates != null
-                ? UploadPublicAsync(request.PracticeCertificates, _storageService)
-                : Task.FromResult<string?>(null);
+                var practiceTask = request.PracticeCertificates != null
+                    ? UploadAsync(request.PracticeCertificates, _storageService)
+                    : Task.FromResult<string?>(null);
 
-            // 2. Wait for all tasks to complete in parallel
-            await Task.WhenAll(ssnTask, syndicateTask, practiceTask);
+                await Task.WhenAll(frontTask, backTask, practiceTask);
 
-            // 3. Assign results from completed tasks
-            var ssnKey = await ssnTask;
-            var syndKey = await syndicateTask;
-            var pracKey = await practiceTask;
+                var frontKey = await frontTask;
+                var backKey = await backTask;
+                var pracKey = await practiceTask;
 
-            response.SSN_Url = ssnKey is null ? null : _storageService.GetPublicUrl(ssnKey);
-            response.SyndicateCardUrl = syndKey is null ? null : _storageService.GetPublicUrl(syndKey);
-            response.PracticeCertificatesUrl = pracKey is null ? null : _storageService.GetPublicUrl(pracKey);
+                // Persist front/back ID to the authenticated user (Client) — do not assume Lawyer
+                var user = await _db.Users.FindAsync(new object[] { _currentUser.UserId }, cancellationToken);
+                if (user is null)
+                    return Result<UploadIdentityDocumentsResponseDto>.Failure(new Error("Auth.UserNotFound", AlMostashar.Application.Common.Constants.Messages.Auth.UserNotFound));
 
-            return Result<UploadIdentityDocumentsResponseDto>.Success(response);
+                bool updated = false;
+                if (!string.IsNullOrEmpty(frontKey))
+                {
+                    user.FrontIdUrl = frontKey; // store private key (not public URL)
+                    updated = true;
+                    response.SSN_Url = frontKey;
+                }
+
+                if (!string.IsNullOrEmpty(backKey))
+                {
+                    user.BackIdUrl = backKey;
+                    updated = true;
+                    response.SyndicateCardUrl = backKey;
+                }
+
+                if (!string.IsNullOrEmpty(pracKey))
+                {
+                    // PracticeCertificates for clients map to BackIdUrl or a new field; store in BackIdUrl if intended.
+                    user.BackIdUrl = pracKey;
+                    updated = true;
+                    response.PracticeCertificatesUrl = pracKey;
+                }
+
+                if (updated)
+                {
+                    _db.Users.Update(user);
+                    await _db.SaveChangesAsync(cancellationToken);
+                }
+
+                return Result<UploadIdentityDocumentsResponseDto>.Success(response);
+            }
+            catch (Exception)
+            {
+                var err = new Error("Auth.UploadFailed", "Failed to upload identity documents. Please try again.", null, "فشل تحميل مستندات الهوية. يرجى المحاولة مرة أخرى.");
+                return Result<UploadIdentityDocumentsResponseDto>.Failure(err);
+            }
         }
     }
 }

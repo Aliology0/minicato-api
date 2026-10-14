@@ -74,11 +74,14 @@
   <data name="Validation_NewPasswordRequired"><value>يرجى إدخال كلمة المرور الجديدة.</value></data>
   <data name="Validation_RefreshTokenRequired"><value>رمز الجلسة مطلوب.</value></data>
   <data name="Validation_UserIdRequired"><value>معرف المستخدم مطلوب.</value></data>
+  <data name="Validation_ImageTooLarge"><value>حجم الصورة يجب ألا يتجاوز 5 ميغابايت.</value></data>
+  <data name="Validation_ImageInvalidExtension"><value>يجب أن تكون الصورة بصيغة: .jpg, .jpeg, .png, .webp, .heic.</value></data>
 
   <!-- Admin -->
   <data name="Admin_LawyerNotFound"><value>لم يتم العثور على المحامي المطلوب.</value></data>
   <data name="Admin_LawyerAlreadyVerified"><value>هذا المحامي موثق بالفعل.</value></data>
   <data name="Admin_LawyerVerified"><value>تم توثيق المحامي وتفعيل حسابه بنجاح.</value></data>
+  <data name="Auth_UploadFailed"><value>فشل تحميل المستندات المطلوبة. يرجى المحاولة مرة أخرى.</value></data>
 
   <!-- Generic (reusable templates with {0}, {1} placeholders) -->
   <data name="Generic_Required"><value>'{0}' مطلوب.</value></data>

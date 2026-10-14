@@ -86,7 +86,50 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterClient
                     ? UploadToStorage.UploadAsync(request.BackIdPhoto, _storageService)
                     : Task.FromResult<string?>(null);
 
-                await Task.WhenAll(avatarTask, frontIdTask, backIdTask);
+                try
+                {
+                    await Task.WhenAll(avatarTask, frontIdTask, backIdTask);
+                }
+                catch
+                {
+                    // Some upload(s) failed. Persist any successful upload results, then fail registration.
+                    string? avatarKeyPartial = null;
+                    string? frontKeyPartial = null;
+                    string? backKeyPartial = null;
+
+                    if (avatarTask.IsCompletedSuccessfully)
+                        avatarKeyPartial = avatarTask.Result;
+                    if (frontIdTask.IsCompletedSuccessfully)
+                        frontKeyPartial = frontIdTask.Result;
+                    if (backIdTask.IsCompletedSuccessfully)
+                        backKeyPartial = backIdTask.Result;
+
+                    bool updatedPartial = false;
+                    if (!string.IsNullOrEmpty(avatarKeyPartial))
+                    {
+                        client.AvatarUrl = _storageService.GetPublicUrl(avatarKeyPartial!);
+                        updatedPartial = true;
+                    }
+                    if (!string.IsNullOrEmpty(frontKeyPartial))
+                    {
+                        client.FrontIdUrl = frontKeyPartial;
+                        updatedPartial = true;
+                    }
+                    if (!string.IsNullOrEmpty(backKeyPartial))
+                    {
+                        client.BackIdUrl = backKeyPartial;
+                        updatedPartial = true;
+                    }
+
+                    if (updatedPartial)
+                    {
+                        _db.Users.Update(client);
+                        await _db.SaveChangesAsync(cancellationToken);
+                    }
+
+                    var err = new Error("Auth.UploadFailed", "Failed to upload provided files. Please try again.");
+                    return Result<RegisterClientResponseDto>.Failure(err);
+                }
 
                 var avatarKey = await avatarTask;
                 var frontKey = await frontIdTask;
@@ -116,10 +159,15 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterClient
                     await _db.SaveChangesAsync(cancellationToken);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // Do not fail registration due to storage issues. Log and continue.
-                // Storage exceptions should be monitored by logs.
+                // If preparing/starting upload tasks failed and any file was supplied, fail registration.
+                if (request.AvatarPhoto != null || request.FrontIdPhoto != null || request.BackIdPhoto != null)
+                {
+                    var err = new Error("Auth.UploadFailed", "Failed to upload provided files. Please try again.");
+                    return Result<RegisterClientResponseDto>.Failure(err);
+                }
+                // Otherwise proceed — nothing to upload.
             }
 
             /*

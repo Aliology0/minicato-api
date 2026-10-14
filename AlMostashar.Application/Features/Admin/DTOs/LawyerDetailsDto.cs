@@ -12,6 +12,8 @@ public class LawyerDetailsDto
     public string LastName { get; set; } = null!;
     public string FullName { get; set; } = null!;
     public string Email { get; set; } = null!;
+    public string? PhoneNumber { get; set; }
+    public int SyndicateId { get; set; }
     public bool IsVerified { get; set; }
     public int YearsOfExperience { get; set; }
     public string? SSN_Url { get; set; }
