@@ -35,7 +35,10 @@ public class AuthAndAccountStateTests
         Assert.NotNull(result.Value!.User);
         Assert.Equal(AccountStatus.PendingReview, result.Value.User.AccountStatus);
         Assert.Equal(UserRole.Lawyer, result.Value.User.Role);
-        Assert.Null(result.Value.Tokens);
+        // Pending lawyers now receive a restricted access token without refresh token
+        Assert.NotNull(result.Value.Tokens);
+        Assert.False(string.IsNullOrWhiteSpace(result.Value.Tokens!.AccessToken));
+        Assert.True(string.IsNullOrWhiteSpace(result.Value.Tokens.RefreshToken));
         Assert.False(await db.RefreshTokens.AnyAsync());
     }
 
@@ -64,7 +67,10 @@ public class AuthAndAccountStateTests
         Assert.NotNull(result.Value!.User);
         Assert.Equal(AccountStatus.Suspended, result.Value.User.AccountStatus);
         Assert.Equal(UserRole.Lawyer, result.Value.User.Role);
-        Assert.Null(result.Value.Tokens);
+        // Suspended lawyers now receive a restricted access token without refresh token
+        Assert.NotNull(result.Value.Tokens);
+        Assert.False(string.IsNullOrWhiteSpace(result.Value.Tokens!.AccessToken));
+        Assert.True(string.IsNullOrWhiteSpace(result.Value.Tokens.RefreshToken));
         Assert.False(await db.RefreshTokens.AnyAsync());
     }
 

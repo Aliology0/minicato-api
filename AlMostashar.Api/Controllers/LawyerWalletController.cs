@@ -12,7 +12,7 @@ namespace AlMostashar.Api.Controllers;
 
 [ApiController]
 [Route("api/lawyer/wallet")]
-[Authorize(Roles = "Lawyer")]
+[Authorize(Policy = "LawyerApproved")]
 public class LawyerWalletController : ControllerBase
 {
     private readonly IMediator _mediator;

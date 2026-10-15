@@ -60,11 +60,27 @@ namespace AlMostashar.Application.Features.Auth.Commands.Login
 
             var authUser = CreateAuthUserDto(user, role, accountStatus);
 
+            // If the user is a lawyer in PendingReview or Suspended state, issue a restricted token
             if (ShouldReturnUserWithoutTokens(user, accountStatus))
             {
+                // Create a restricted-scoped JWT that grants only profile/read/edit/resubmit abilities
+                var restrictedClaims = new List<System.Security.Claims.Claim>
+                {
+                    new System.Security.Claims.Claim("access_level", "restricted_lawyer"),
+                    new System.Security.Claims.Claim("account_status", accountStatus.ToString()),
+                };
+
+                string restrictedJwt = _authService.GenerateJwtToken(user.Id, user.Email, user.FullName, UserRole.Lawyer.ToString(), restrictedClaims);
+
+                // We do not create a persistent refresh token for restricted lawyers to avoid granting long-lived session elevation.
                 return Result<AuthResponseDto>.Success(new AuthResponseDto
                 {
                     User = authUser,
+                    Tokens = new AuthTokensDto
+                    {
+                        AccessToken = restrictedJwt,
+                        RefreshToken = string.Empty // explicit empty: refresh is not issued for restricted tokens
+                    }
                 });
             }
 

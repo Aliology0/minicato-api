@@ -190,7 +190,6 @@ namespace AlMostashar.Infrastructure.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("DocumentType")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DocumentUrl")
@@ -2080,6 +2079,10 @@ namespace AlMostashar.Infrastructure.Migrations
                     b.Property<string>("PracticeCertificatesUrl")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("RejectionReason")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("SSN_Url")
                         .HasMaxLength(500)

@@ -8,7 +8,7 @@ namespace AlMostashar.Api.Controllers;
 
 [ApiController]
 [Route("api/lawyer/home")]
-[Authorize(Roles = "Lawyer")]
+[Authorize(Policy = "LawyerApproved")]
 public class LawyerHomeController : ControllerBase
 {
     private readonly IMediator _mediator;

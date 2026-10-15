@@ -107,6 +107,19 @@ namespace AlMostashar.Infrastructure.Helpers
 
                 });
 
+            // Authorization policies
+            services.AddAuthorization(options =>
+            {
+                // Policy for fully approved/verified lawyers
+                options.AddPolicy("LawyerApproved", policy =>
+                {
+                    policy.RequireRole("Lawyer");
+                    policy.AddRequirements(new AlMostashar.Infrastructure.Authorization.LawyerApprovedRequirement());
+                });
+            });
+
+            services.AddScoped<Microsoft.AspNetCore.Authorization.IAuthorizationHandler, AlMostashar.Infrastructure.Authorization.LawyerApprovedHandler>();
+
             var isDevelopmentEnvironment = string.Equals(
                 Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
                 "Development",

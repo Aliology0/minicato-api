@@ -50,7 +50,7 @@ namespace AlMostashar.Application.Features.Auth.Commands.RefreshToken
                 _              => AccountStatus.Active
             };
 
-            // 3. Block non-Active accounts from refreshing
+            // 3. Explicitly block non-Active accounts from refreshing
             if (accountStatus != AccountStatus.Active)
             {
                 stored.IsRevoked = true;

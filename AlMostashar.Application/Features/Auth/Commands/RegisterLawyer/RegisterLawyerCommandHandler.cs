@@ -69,6 +69,7 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterLawyer
             string? ssnKey = null;
             string? syndicateKey = null;
             string? practiceKey = null;
+            string? avatarKey = null;
             try
             {
                 var ssnTask = (request.SSNPhoto != null && _storageService != null)
@@ -83,16 +84,22 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterLawyer
                     ? UploadToStorage.UploadPublicAsync(request.PracticeCertificatesPhoto, _storageService)
                     : Task.FromResult<string?>(null);
 
+                var avatarTask = (request.AvatarPhoto != null && _storageService != null)
+                    ? UploadToStorage.UploadPublicAsync(request.AvatarPhoto, _storageService)
+                    : Task.FromResult<string?>(null);
+
                 await Task.WhenAll(ssnTask, syndicateTask, practiceTask);
 
                 ssnKey = await ssnTask;
                 syndicateKey = await syndicateTask;
                 practiceKey = await practiceTask;
+                avatarKey = await avatarTask;
 
                 // If any file was supplied but its upload returned null, treat as failure.
                 if ((request.SSNPhoto != null && ssnKey == null) ||
                     (request.SyndicateCardPhoto != null && syndicateKey == null) ||
-                    (request.PracticeCertificatesPhoto != null && practiceKey == null))
+                    (request.PracticeCertificatesPhoto != null && practiceKey == null) ||
+                    (request.AvatarPhoto != null && avatarKey == null))
                 {
                     return Result<RegisterLawyerResponseDto>.Failure(
                         new Error("Auth.UploadFailed", "Failed to upload required documents. Please try again."));
@@ -123,6 +130,7 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterLawyer
                 SSN_Url                 = ssnKey is null ? null : _storageService.GetPublicUrl(ssnKey),
                 SyndicateCardUrl        = syndicateKey is null ? null : _storageService.GetPublicUrl(syndicateKey),
                 PracticeCertificatesUrl = practiceKey is null ? null : _storageService.GetPublicUrl(practiceKey),
+                AvatarUrl               = avatarKey is null ? null : _storageService.GetPublicUrl(avatarKey),
                 IsVerified              = false, // awaiting admin approval
                 AccountStatus           = AlMostashar.Domain.ValueObject.Enum.AccountStatus.PendingReview,
                 LawyerSpecializations   = selectedSpecializations ?? new List<Domain.Entities.LawyerSpecialization>()

@@ -39,6 +39,7 @@ public class LawyersController : ControllerBase
 
     /// <summary>Lawyer updates their own profile information.</summary>
     [HttpPut("edit-profile")]
+    [Authorize] // allow lawyers including restricted; handler/validators will enforce ownership
     public async Task<IActionResult> UpdateLawyerProfile(
         [FromForm] UpdateLawyerProfileCommand command,
         CancellationToken cancellationToken)

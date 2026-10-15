@@ -28,7 +28,7 @@ namespace AlMostashar.Infrastructure.Services
         public bool VerifyPassword(string hash, string password)
             => BCrypt.Net.BCrypt.Verify(password, hash);
 
-        public string GenerateJwtToken(int userId, string email, string fullName, string role)
+        public string GenerateJwtToken(int userId, string email, string fullName, string role, System.Collections.Generic.IEnumerable<System.Security.Claims.Claim>? additionalClaims = null)
         {
             var jwtSettings = _configuration.GetSection("Jwt");
 
@@ -40,7 +40,7 @@ namespace AlMostashar.Infrastructure.Services
             var key         = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var claims = new[]
+            var claims = new List<System.Security.Claims.Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub,   userId.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, email),
@@ -48,6 +48,9 @@ namespace AlMostashar.Infrastructure.Services
                 new Claim(ClaimTypes.Role,               role),
                 new Claim(JwtRegisteredClaimNames.Jti,   Guid.NewGuid().ToString()),
             };
+
+            if (additionalClaims != null)
+                claims.AddRange(additionalClaims);
 
             int expiryMinutes = int.TryParse(jwtSettings["ExpiryMinutes"], out int parsed) ? parsed : 1440;
 

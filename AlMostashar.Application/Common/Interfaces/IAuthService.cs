@@ -4,7 +4,7 @@ namespace AlMostashar.Application.Common.Interfaces
     {
         string HashPassword(string password);
         bool VerifyPassword(string hash, string password);
-        string GenerateJwtToken(int userId, string email, string fullName, string role);
+        string GenerateJwtToken(int userId, string email, string fullName, string role, System.Collections.Generic.IEnumerable<System.Security.Claims.Claim>? additionalClaims = null);
         string GenerateRefreshToken();
         int GetRefreshTokenExpiryDays();
 

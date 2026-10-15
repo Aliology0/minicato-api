@@ -119,8 +119,14 @@ public sealed class StubAuthService : IAuthService
 
     public bool VerifyPassword(string hash, string password) => hash == HashPassword(password);
 
-    public string GenerateJwtToken(int userId, string email, string fullName, string role)
-        => $"JWT::{userId}::{email}::{role}";
+    public string GenerateJwtToken(int userId, string email, string fullName, string role, System.Collections.Generic.IEnumerable<System.Security.Claims.Claim>? additionalClaims = null)
+        {
+            // simple stub: include marker when restricted claim is present
+            if (additionalClaims != null && additionalClaims.Any(c => c.Type == "access_level" && c.Value == "restricted_lawyer"))
+                return $"JWT::RESTRICTED::{userId}::{email}::{role}";
+
+            return $"JWT::{userId}::{email}::{role}";
+        }
 
     public string GenerateRefreshToken() => Guid.NewGuid().ToString("N");
 

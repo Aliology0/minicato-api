@@ -51,6 +51,17 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterLawyer
                 .NotNull().WithMessage("Specialization IDs are required.")
                 .NotEmpty().WithMessage("At least one specialization must be selected.")
                 .ForEach(rule => rule.GreaterThan(0).WithMessage("Each specialization ID must be greater than 0."));
+
+            // Avatar photo is required and must be a valid image
+            RuleFor(x => x.AvatarPhoto)
+                .NotNull().WithMessage("Profile picture is required.")
+                .Must(f => f != null && f.Length > 0).WithMessage("Profile picture must not be empty.")
+                .Must(f => {
+                    if (f == null) return false;
+                    var allowed = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+                    var ext = System.IO.Path.GetExtension(f.FileName).ToLowerInvariant();
+                    return allowed.Contains(ext);
+                }).WithMessage("Unsupported image format. Allowed: jpg, jpeg, png, webp.");
         }
     }
 }
