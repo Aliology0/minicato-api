@@ -18,9 +18,18 @@ public sealed class DevelopmentStorageController : ControllerBase
     {
         if (!environment.IsDevelopment())
             return NotFound();
+
         var storage = services.GetRequiredService<DevelopmentLocalStorageService>();
-        return storage.TryResolveDownload(token, out var path)
-            ? PhysicalFile(path, "application/octet-stream")
-            : NotFound();
+        if (!storage.TryResolveDownload(token, out var path))
+            return NotFound();
+
+        // Safely map file extension to content type
+        var provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
+        if (!provider.TryGetContentType(path, out var contentType))
+        {
+            contentType = "application/octet-stream";
+        }
+
+        return PhysicalFile(path, contentType);
     }
 }

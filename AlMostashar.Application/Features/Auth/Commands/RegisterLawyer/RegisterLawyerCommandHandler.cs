@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using AlMostashar.Application.Common.Constants;
 using AlMostashar.Application.Common.Interfaces;
 using AlMostashar.Application.Features.Auth.DTOs;
@@ -17,12 +18,14 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterLawyer
     private readonly IAuthService  _authService;
     private readonly ILocationCatalog _locationCatalog;
     private readonly IStorageService? _storageService;
-        public RegisterLawyerCommandHandler(IAppDbContext db, IAuthService authService, ILocationCatalog locationCatalog, IStorageService? storageService = null)
+    private readonly ILogger<RegisterLawyerCommandHandler>? _logger;
+        public RegisterLawyerCommandHandler(IAppDbContext db, IAuthService authService, ILocationCatalog locationCatalog, IStorageService? storageService = null, ILogger<RegisterLawyerCommandHandler>? logger = null)
     {
         _db = db;
         _authService = authService;
         _locationCatalog = locationCatalog;
         _storageService = storageService;
+        _logger = logger;
     }
 
         public async Task<Result<RegisterLawyerResponseDto>> Handle(RegisterLawyerCommand request, CancellationToken cancellationToken)
@@ -72,23 +75,24 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterLawyer
             string? avatarKey = null;
             try
             {
+                // Upload private documents to private storage and avatar to public storage
                 var ssnTask = (request.SSNPhoto != null && _storageService != null)
-                    ? UploadToStorage.UploadPublicAsync(request.SSNPhoto, _storageService)
+                    ? UploadToStorage.UploadAsync(request.SSNPhoto, _storageService)
                     : Task.FromResult<string?>(null);
 
                 var syndicateTask = (request.SyndicateCardPhoto != null && _storageService != null)
-                    ? UploadToStorage.UploadPublicAsync(request.SyndicateCardPhoto, _storageService)
+                    ? UploadToStorage.UploadAsync(request.SyndicateCardPhoto, _storageService)
                     : Task.FromResult<string?>(null);
 
                 var practiceTask = (request.PracticeCertificatesPhoto != null && _storageService != null)
-                    ? UploadToStorage.UploadPublicAsync(request.PracticeCertificatesPhoto, _storageService)
+                    ? UploadToStorage.UploadAsync(request.PracticeCertificatesPhoto, _storageService)
                     : Task.FromResult<string?>(null);
 
                 var avatarTask = (request.AvatarPhoto != null && _storageService != null)
                     ? UploadToStorage.UploadPublicAsync(request.AvatarPhoto, _storageService)
                     : Task.FromResult<string?>(null);
 
-                await Task.WhenAll(ssnTask, syndicateTask, practiceTask);
+                await Task.WhenAll(ssnTask, syndicateTask, practiceTask, avatarTask);
 
                 ssnKey = await ssnTask;
                 syndicateKey = await syndicateTask;
@@ -101,13 +105,18 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterLawyer
                     (request.PracticeCertificatesPhoto != null && practiceKey == null) ||
                     (request.AvatarPhoto != null && avatarKey == null))
                 {
+                    // Return a non-auth error code so the API maps to 400 Bad Request instead of 401 Unauthorized
                     return Result<RegisterLawyerResponseDto>.Failure(
-                        new Error("Auth.UploadFailed", "Failed to upload required documents. Please try again."));
+                        new Error("Upload.Failed", "Failed to upload required documents. Please try again."));
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                var err = new Error("Auth.UploadFailed", "Failed to upload required documents. Please try again.");
+                // Log the underlying exception (S3/AWS SDK will be inner exception) for diagnostics; do not include internal details in API response
+                _logger?.LogError(ex, "Failed to upload identity documents during lawyer registration for email {Email}", request.Email);
+
+                // Return a safe error to caller; the server logs contain detailed diagnostics (S3 error code/status/request id when available)
+                var err = new Error("Upload.Failed", "Failed to upload required documents. Please try again.");
                 return Result<RegisterLawyerResponseDto>.Failure(err);
             }
 
@@ -127,10 +136,10 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterLawyer
                 City                    = location.City,
                 SyndicateId             = request.SyndicateId,
                 YearsOfExperience       = request.YearsOfExperience,
-                SSN_Url                 = ssnKey is null ? null : _storageService.GetPublicUrl(ssnKey),
-                SyndicateCardUrl        = syndicateKey is null ? null : _storageService.GetPublicUrl(syndicateKey),
-                PracticeCertificatesUrl = practiceKey is null ? null : _storageService.GetPublicUrl(practiceKey),
-                AvatarUrl               = avatarKey is null ? null : _storageService.GetPublicUrl(avatarKey),
+                SSN_Url                 = ssnKey is null ? null : ssnKey,
+                SyndicateCardUrl        = syndicateKey is null ? null : syndicateKey,
+                PracticeCertificatesUrl = practiceKey is null ? null : practiceKey,
+                AvatarUrl               = avatarKey is null ? null : avatarKey,
                 IsVerified              = false, // awaiting admin approval
                 AccountStatus           = AlMostashar.Domain.ValueObject.Enum.AccountStatus.PendingReview,
                 LawyerSpecializations   = selectedSpecializations ?? new List<Domain.Entities.LawyerSpecialization>()

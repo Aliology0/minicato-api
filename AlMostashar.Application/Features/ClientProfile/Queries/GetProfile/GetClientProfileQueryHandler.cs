@@ -10,11 +10,13 @@ public class GetClientProfileQueryHandler : IRequestHandler<GetClientProfileQuer
 {
     private readonly IAppDbContext _context;
     private readonly ICurrentUserService _currentUser;
+    private readonly AlMostashar.Application.Common.Interfaces.IStorageService _storageService;
 
-    public GetClientProfileQueryHandler(IAppDbContext context, ICurrentUserService currentUser)
+    public GetClientProfileQueryHandler(IAppDbContext context, ICurrentUserService currentUser, AlMostashar.Application.Common.Interfaces.IStorageService storageService)
     {
         _context = context;
         _currentUser = currentUser;
+        _storageService = storageService;
     }
 
     public async Task<Result<ClientProfileDto>> Handle(GetClientProfileQuery request, CancellationToken cancellationToken)
@@ -33,7 +35,7 @@ public class GetClientProfileQueryHandler : IRequestHandler<GetClientProfileQuer
             FirstName = user.FirstName,
             LastName = user.LastName,
             Email = user.Email,
-            AvatarUrl = user.AvatarUrl
+            AvatarUrl = AlMostashar.Application.Common.Helpers.StorageUrlResolver.ResolvePublicUrl(_storageService, user.AvatarUrl)
         });
     }
 }

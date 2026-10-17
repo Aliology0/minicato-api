@@ -3,7 +3,7 @@ using AlMostashar.Application.Common.Locations;
 using AlMostashar.Infrastructure.Data;
 using AlMostashar.Infrastructure.Options;
 using AlMostashar.Infrastructure.Services;
-using Amazon.S3;
+using AlMostashar.Infrastructure.Helpers;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -119,41 +119,12 @@ namespace AlMostashar.Infrastructure.Helpers
             });
 
             services.AddScoped<Microsoft.AspNetCore.Authorization.IAuthorizationHandler, AlMostashar.Infrastructure.Authorization.LawyerApprovedHandler>();
-
-            var isDevelopmentEnvironment = string.Equals(
-                Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
-                "Development",
-                StringComparison.OrdinalIgnoreCase);
-
-            var s3Settings = configuration.GetSection("Storage:S3").Get<S3Settings>();
-            if (s3Settings == null)
-                throw new InvalidOperationException("Storage:S3 section is missing or invalid in appsettings.");
-
-            // If S3 credentials are not configured, fall back to the local development storage implementation.
-            // This prevents runtime AmazonS3Client errors when secrets are not present in development environments.
-            if (string.IsNullOrWhiteSpace(s3Settings.AccessKey) || string.IsNullOrWhiteSpace(s3Settings.SecretKey))
-            {
-                // Register DevelopmentLocalStorageService as the IStorageService implementation
-                services.AddSingleton<DevelopmentLocalStorageService>();
-                services.AddSingleton<IStorageService>(provider =>
-                    provider.GetRequiredService<DevelopmentLocalStorageService>());
-                services.AddSingleton(s3Settings);
-            }
-            else
-            {
-                var s3Config = new AmazonS3Config
-                {
-                    ServiceURL = s3Settings.Endpoint,
-                    AuthenticationRegion = s3Settings.Region,
-                    ForcePathStyle = true
-                };
-                var credentials = new Amazon.Runtime.BasicAWSCredentials(
-                    s3Settings.AccessKey,
-                    s3Settings.SecretKey);
-                services.AddSingleton<IAmazonS3>(new AmazonS3Client(credentials, s3Config));
-                services.AddSingleton(s3Settings);
-                services.AddScoped<IStorageService, S3StorageService>();
-            }
+            // Register local filesystem storage provider. Configuration under Storage:Local is optional.
+            var localSettings = configuration.GetSection("Storage:Local").Get<LocalStorageSettings>() ?? new LocalStorageSettings();
+            services.AddSingleton(localSettings);
+            services.AddHttpContextAccessor();
+            services.AddSingleton<LocalFileStorageService>();
+            services.AddSingleton<IStorageService>(provider => provider.GetRequiredService<LocalFileStorageService>());
 
             // Firebase removed - no FCM provider is registered
 

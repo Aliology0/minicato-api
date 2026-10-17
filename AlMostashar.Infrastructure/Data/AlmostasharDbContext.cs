@@ -1,6 +1,6 @@
 using AlMostashar.Application.Common.Interfaces;
 using AlMostashar.Domain.Entities;
-using Amazon.Runtime.Internal.UserAgent;
+// Amazon runtime references removed when switching to local filesystem storage
 using MediatR;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

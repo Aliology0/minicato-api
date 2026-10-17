@@ -17,6 +17,7 @@ public class ConfirmCaseCompletionCommandHandler : IRequestHandler<ConfirmCaseCo
     private readonly INotificationService _notificationService;
     private readonly IEscrowSettlementService _settlementService;
     private readonly ILogger<ConfirmCaseCompletionCommandHandler> _logger;
+    private readonly AlMostashar.Application.Common.Interfaces.IStorageService _storageService;
 
     public ConfirmCaseCompletionCommandHandler(
         IAppDbContext db,
@@ -110,7 +111,7 @@ public class ConfirmCaseCompletionCommandHandler : IRequestHandler<ConfirmCaseCo
                     .FirstOrDefaultAsync(ct);
 
                 clientFullName = clientUser?.FullName ?? "";
-                clientAvatarUrl = clientUser?.AvatarUrl;
+                clientAvatarUrl = AlMostashar.Application.Common.Helpers.StorageUrlResolver.ResolvePublicUrl(_storageService, clientUser?.AvatarUrl);
 
                 result = Result<string>.Success("Case completion confirmed and escrow released successfully.");
             }, cancellationToken);

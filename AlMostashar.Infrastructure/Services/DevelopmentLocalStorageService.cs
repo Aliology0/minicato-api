@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using AlMostashar.Application.Common.Enums;
 using AlMostashar.Application.Common.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
 
 namespace AlMostashar.Infrastructure.Services;
 
@@ -10,16 +11,16 @@ public sealed class DevelopmentLocalStorageService : IStorageService
     private sealed record DownloadGrant(string FileKey, DateTime ExpiresAtUtc);
 
     private readonly string _root;
-    private readonly string _baseUrl;
+    private readonly IConfiguration _configuration;
+    private readonly IHttpContextAccessor? _httpContextAccessor;
     private readonly ConcurrentDictionary<string, DownloadGrant> _grants = new();
 
-    public DevelopmentLocalStorageService(IConfiguration configuration)
+    public DevelopmentLocalStorageService(IConfiguration configuration, IHttpContextAccessor? httpContextAccessor = null)
     {
         _root = Path.Combine(Path.GetTempPath(), "AlMostashar", "documents");
         Directory.CreateDirectory(_root);
-        _baseUrl = (Environment.GetEnvironmentVariable("ASPNETCORE_URLS")
-            ?? configuration["DevelopmentBaseUrl"]
-            ?? "http://127.0.0.1:5099").Split(';')[0].TrimEnd('/');
+        _configuration = configuration;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<string> UploadFileAsync(Stream fileStream, string fileName, FileContentType contentType)
@@ -40,7 +41,11 @@ public sealed class DevelopmentLocalStorageService : IStorageService
     {
         var token = Convert.ToHexString(Guid.NewGuid().ToByteArray());
         _grants[token] = new DownloadGrant(filePath, DateTime.UtcNow.AddMinutes(expirationMinutes));
-        return $"{_baseUrl}/api/development/storage/{token}";
+        var baseUrl = BuildBaseUrl();
+        if (string.IsNullOrWhiteSpace(baseUrl))
+            throw new InvalidOperationException("Unable to determine development base URL. Configure DevelopmentBaseUrl or call from an HTTP request.");
+
+        return $"{baseUrl}/api/development/storage/{token}";
     }
 
     public string GetPublicUrl(string fileKey)
@@ -77,5 +82,32 @@ public sealed class DevelopmentLocalStorageService : IStorageService
         if (!path.StartsWith(rootPrefix, StringComparison.OrdinalIgnoreCase))
             throw new InvalidOperationException("Invalid local storage key.");
         return path;
+    }
+
+    private string BuildBaseUrl()
+    {
+        // Prefer the current request's scheme/host when available (handles dynamic ports and HTTPS)
+        var ctx = _httpContextAccessor?.HttpContext;
+        if (ctx?.Request != null)
+        {
+            var req = ctx.Request;
+            var host = req.Host.HasValue ? req.Host.Value.TrimEnd('/') : string.Empty;
+            if (!string.IsNullOrEmpty(host))
+                return $"{req.Scheme}://{host}".TrimEnd('/');
+        }
+
+        // Next prefer an explicit configuration value
+        var configured = _configuration["DevelopmentBaseUrl"];
+        if (!string.IsNullOrWhiteSpace(configured))
+            return configured.Split(';')[0].TrimEnd('/');
+
+        // Fall back to ASPNETCORE_URLS if set
+        var env = Environment.GetEnvironmentVariable("ASPNETCORE_URLS");
+        if (!string.IsNullOrWhiteSpace(env))
+            return env.Split(';')[0].TrimEnd('/');
+
+        // If we reach here, we cannot determine a safe base URL.
+        // Return empty to signal caller to fail explicitly and avoid misleading URLs.
+        return string.Empty;
     }
 }

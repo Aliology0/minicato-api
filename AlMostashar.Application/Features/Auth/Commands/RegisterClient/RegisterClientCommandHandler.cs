@@ -122,7 +122,7 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterClient
             };
 
             // assign uploaded URLs/keys to client
-            if (!string.IsNullOrEmpty(avatarKey)) client.AvatarUrl = _storageService.GetPublicUrl(avatarKey);
+            if (!string.IsNullOrEmpty(avatarKey)) client.AvatarUrl = avatarKey;
             if (!string.IsNullOrEmpty(frontKey)) client.FrontIdUrl = frontKey;
             if (!string.IsNullOrEmpty(backKey)) client.BackIdUrl = backKey;
 

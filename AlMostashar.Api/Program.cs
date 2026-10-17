@@ -40,6 +40,37 @@ namespace AlMostashar.Api
 
             var app = builder.Build();
 
+            // Global diagnostics for unexpected crashes and unobserved task exceptions
+            AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) =>
+            {
+                try
+                {
+                    var exObj = eventArgs.ExceptionObject as Exception;
+                    Serilog.Log.Fatal(exObj, "Unhandled exception (AppDomain.CurrentDomain.UnhandledException). IsTerminating={IsTerminating}", eventArgs.IsTerminating);
+                }
+                catch { /* swallow to avoid secondary failures during fatal logging */ }
+            };
+
+            TaskScheduler.UnobservedTaskException += (sender, eventArgs) =>
+            {
+                try
+                {
+                    Serilog.Log.Error(eventArgs.Exception, "UnobservedTaskException: an unobserved task exception occurred.");
+                    eventArgs.SetObserved();
+                }
+                catch { }
+            };
+
+            AppDomain.CurrentDomain.ProcessExit += (sender, eventArgs) =>
+            {
+                try
+                {
+                    Serilog.Log.Information("ProcessExit called. Process is exiting.");
+                    Serilog.Log.CloseAndFlush();
+                }
+                catch { }
+            };
+
             // API health/status endpoint
             app.MapGet("/", () => Results.Redirect("/swagger/index.html"));
 
@@ -61,6 +92,9 @@ namespace AlMostashar.Api
 
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 
+            // Serve static files from wwwroot and ensure uploads/avatars is available
+            app.UseStaticFiles();
+
             app.UseSwagger();
             app.UseSwaggerUI();
 
@@ -73,7 +107,16 @@ namespace AlMostashar.Api
 
             app.MapHub<AlMostasharHub>("/hubs/almostashar");
 
-            app.Run();
+            try
+            {
+                app.Run();
+            }
+            catch (Exception ex)
+            {
+                // Final catch-all to ensure fatal startup exceptions are recorded
+                Serilog.Log.Fatal(ex, "Host terminated unexpectedly.");
+                throw;
+            }
         }
     }
 }

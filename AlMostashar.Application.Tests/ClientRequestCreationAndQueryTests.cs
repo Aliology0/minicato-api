@@ -14,7 +14,7 @@ using AlMostashar.Application.Features.ClientRequests.RequestDetails;
 using AlMostashar.Application.Features.ClientRequests.Services;
 using AlMostashar.Api.Services;
 using AlMostashar.Infrastructure.Services;
-using Amazon.Runtime.Internal.Util;
+// Amazon.* references removed when switching to local filesystem storage
 using Microsoft.Extensions.Logging;
 
 namespace AlMostashar.Application.Tests;
