@@ -58,7 +58,7 @@ public class CreateReportCommandHandler : IRequestHandler<CreateReportCommand, R
         if (request.CaseId.HasValue)
         {
             var caseEntity = await _context.Cases
-                .Include(c => c.CaseClientRequest).ThenInclude(ccr => ccr.ClientRequest)
+                .Include(c => c.CaseClientRequest).ThenInclude(ccr => ccr!.ClientRequest)
                 .FirstOrDefaultAsync(c => c.Id == request.CaseId.Value, cancellationToken);
 
             if (caseEntity == null)

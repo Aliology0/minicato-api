@@ -11,8 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using AlMostashar.Application.Common.Interfaces;
 using Moq;
-using AlMostashar.Application.Common.Interfaces;
-using Microsoft.Extensions.Logging;
 
 namespace AlMostashar.Application.Tests;
 

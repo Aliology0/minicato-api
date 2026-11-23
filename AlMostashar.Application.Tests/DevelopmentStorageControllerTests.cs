@@ -13,7 +13,7 @@ namespace AlMostashar.Application.Tests;
 public class DevelopmentStorageControllerTests
 {
     [Fact]
-    public void Download_ReturnsFile_WithCorrectContentType()
+    public async Task Download_ReturnsFile_WithCorrectContentType()
     {
         var config = new ConfigurationBuilder().Build();
         var svc = new DevelopmentLocalStorageService(config, null);
@@ -21,9 +21,7 @@ public class DevelopmentStorageControllerTests
         // create a temp file via UploadFileAsync
         var content = System.Text.Encoding.UTF8.GetBytes("hello world");
         using var ms = new MemoryStream(content);
-        var keyTask = svc.UploadFileAsync(ms, "test.txt", FileContentType.Txt);
-        keyTask.Wait();
-        var key = keyTask.Result;
+        var key = await svc.UploadFileAsync(ms, "test.txt", FileContentType.Txt);
 
         // generate presigned URL with a fake request host so token is stored
         var httpContext = new DefaultHttpContext();
@@ -70,8 +68,8 @@ public class DevelopmentStorageControllerTests
         public string EnvironmentName { get; set; } = Environments.Development;
         public string ApplicationName { get; set; } = string.Empty;
         public string WebRootPath { get; set; } = string.Empty;
-        public IFileProvider? WebRootFileProvider { get; set; }
+        public IFileProvider WebRootFileProvider { get; set; } = new NullFileProvider();
         public string ContentRootPath { get; set; } = string.Empty;
-        public IFileProvider? ContentRootFileProvider { get; set; }
+        public IFileProvider ContentRootFileProvider { get; set; } = new NullFileProvider();
     }
 }

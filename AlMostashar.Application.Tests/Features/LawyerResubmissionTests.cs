@@ -33,8 +33,8 @@ public class LawyerResubmissionTests
         // Act: login
         var loginResult = await loginHandler.Handle(new LoginCommand { Email = lawyer.Email, Password = "password" }, CancellationToken.None);
         Assert.True(loginResult.IsSuccess);
-        Assert.Equal(AccountStatus.Suspended, loginResult.Value.User.AccountStatus);
-        Assert.Equal("Docs blurry", loginResult.Value.User.UserDetails!.RejectionReason);
+        Assert.Equal(AccountStatus.Suspended, loginResult.Value!.User.AccountStatus);
+        Assert.Equal("Docs blurry", loginResult.Value!.User.UserDetails?.RejectionReason ?? string.Empty);
 
         // Now resubmit via UpdateLawyerProfileCommandHandler
         var storage = new RecordingStorageService();

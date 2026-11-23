@@ -30,16 +30,16 @@ namespace AlMostashar.Application.Features.Auth.Commands.UploadIdentityDocuments
             var uploadedKeys = new List<string>();
             try
             {
-                var frontTask = request.SSN != null
-                    ? UploadAsync(request.SSN, _storageService)
+                Task<string?> frontTask = request.SSN != null
+                    ? UploadAsync(request.SSN, _storageService).ContinueWith(t => (string?)t.Result)
                     : Task.FromResult<string?>(null);
 
-                var backTask = request.SyndicateCard != null
-                    ? UploadAsync(request.SyndicateCard, _storageService)
+                Task<string?> backTask = request.SyndicateCard != null
+                    ? UploadAsync(request.SyndicateCard, _storageService).ContinueWith(t => (string?)t.Result)
                     : Task.FromResult<string?>(null);
 
-                var practiceTask = request.PracticeCertificates != null
-                    ? UploadAsync(request.PracticeCertificates, _storageService)
+                Task<string?> practiceTask = request.PracticeCertificates != null
+                    ? UploadAsync(request.PracticeCertificates, _storageService).ContinueWith(t => (string?)t.Result)
                     : Task.FromResult<string?>(null);
 
                 await Task.WhenAll(frontTask, backTask, practiceTask);
@@ -105,7 +105,7 @@ namespace AlMostashar.Application.Features.Auth.Commands.UploadIdentityDocuments
 
                 return Result<UploadIdentityDocumentsResponseDto>.Success(response);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // If DB persistence failed after successful uploads, attempt to remove the uploaded objects.
                 if (uploadedKeys.Count > 0)

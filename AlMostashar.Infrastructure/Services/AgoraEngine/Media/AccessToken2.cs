@@ -237,8 +237,8 @@ namespace AlMostashar.Infrastructure.Services
 
             public class ServiceRtc : Service
             {
-                public string _channelName;
-                public string _uid;
+                public string? _channelName;
+                public string? _uid;
 
                 public ServiceRtc()
                 {
@@ -252,19 +252,19 @@ namespace AlMostashar.Infrastructure.Services
                     _uid = uid;
                 }
 
-                public string getChannelName()
+                public string? getChannelName()
                 {
                     return _channelName;
                 }
 
-                public string getUid()
+                public string? getUid()
                 {
                     return _uid;
                 }
 
                 public override ByteBuf pack(ByteBuf buf)
                 {
-                    return base.pack(buf).put(_channelName.getBytes()).put(_uid.getBytes());
+                    return base.pack(buf).put(_channelName!.getBytes()).put(_uid!.getBytes());
                 }
 
                 public override void unpack(ByteBuf byteBuf)
@@ -277,7 +277,7 @@ namespace AlMostashar.Infrastructure.Services
 
             public class ServiceRtm : Service
             {
-                public string _userId;
+                public string? _userId;
 
                 public ServiceRtm()
                 {
@@ -290,14 +290,14 @@ namespace AlMostashar.Infrastructure.Services
                     _userId = userId;
                 }
 
-                public string getUserId()
+                public string? getUserId()
                 {
                     return _userId;
                 }
 
                 public override ByteBuf pack(ByteBuf buf)
                 {
-                    return base.pack(buf).put(_userId.getBytes());
+                    return base.pack(buf).put(_userId!.getBytes());
                 }
 
                 public override void unpack(ByteBuf byteBuf)

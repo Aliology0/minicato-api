@@ -53,16 +53,16 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterClient
 
             try
             {
-                var avatarTask = request.AvatarPhoto != null
-                    ? UploadToStorage.UploadPublicAsync(request.AvatarPhoto, _storageService)
+                Task<string?> avatarTask = request.AvatarPhoto != null
+                    ? UploadToStorage.UploadPublicAsync(request.AvatarPhoto, _storageService).ContinueWith(t => (string?)t.Result)
                     : Task.FromResult<string?>(null);
 
-                var frontIdTask = request.FrontIdPhoto != null
-                    ? UploadToStorage.UploadAsync(request.FrontIdPhoto, _storageService)
+                Task<string?> frontIdTask = request.FrontIdPhoto != null
+                    ? UploadToStorage.UploadAsync(request.FrontIdPhoto, _storageService).ContinueWith(t => (string?)t.Result)
                     : Task.FromResult<string?>(null);
 
-                var backIdTask = request.BackIdPhoto != null
-                    ? UploadToStorage.UploadAsync(request.BackIdPhoto, _storageService)
+                Task<string?> backIdTask = request.BackIdPhoto != null
+                    ? UploadToStorage.UploadAsync(request.BackIdPhoto, _storageService).ContinueWith(t => (string?)t.Result)
                     : Task.FromResult<string?>(null);
 
                 await Task.WhenAll(avatarTask, frontIdTask, backIdTask);

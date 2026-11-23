@@ -97,7 +97,8 @@ public sealed class DevelopmentLocalStorageService : IStorageService
         }
 
         // Next prefer an explicit configuration value
-        var configured = _configuration["DevelopmentBaseUrl"];
+        var configured = _configuration["DevelopmentBaseUrl"]
+            ?? _configuration["Storage:Local:PublicBaseUrl"];
         if (!string.IsNullOrWhiteSpace(configured))
             return configured.Split(';')[0].TrimEnd('/');
 

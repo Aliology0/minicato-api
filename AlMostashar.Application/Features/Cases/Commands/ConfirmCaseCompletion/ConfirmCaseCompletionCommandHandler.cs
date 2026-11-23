@@ -24,13 +24,15 @@ public class ConfirmCaseCompletionCommandHandler : IRequestHandler<ConfirmCaseCo
         ICurrentUserService currentUser,
         INotificationService notificationService,
         IEscrowSettlementService settlementService,
-        ILogger<ConfirmCaseCompletionCommandHandler> logger)
+        ILogger<ConfirmCaseCompletionCommandHandler> logger,
+        AlMostashar.Application.Common.Interfaces.IStorageService storageService)
     {
         _db = db;
         _currentUser = currentUser;
         _notificationService = notificationService;
         _settlementService = settlementService;
         _logger = logger;
+        _storageService = storageService;
     }
 
     public async Task<Result<string>> Handle(ConfirmCaseCompletionCommand request, CancellationToken cancellationToken)

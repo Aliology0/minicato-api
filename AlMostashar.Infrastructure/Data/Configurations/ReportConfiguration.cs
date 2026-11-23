@@ -35,9 +35,11 @@ public class ReportConfiguration : IEntityTypeConfiguration<Report>
         builder.Property(r => r.AttachedMessages)
             .HasMaxLength(8000);
 
-        // JSON-serialized list of S3 file keys for uploaded evidence attachments (nullable)
-        builder.Property(r => r.AttachmentUrls)
-            .HasMaxLength(4000);
+        // 1:N — Report → CaseDocuments (Attachments)
+        builder.HasMany(r => r.Attachments)
+            .WithOne(d => d.Report)
+            .HasForeignKey(d => d.ReportId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         // ─── Indexes ───
         builder.HasIndex(r => r.ReporterId);

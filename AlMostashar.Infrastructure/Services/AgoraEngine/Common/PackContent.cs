@@ -2,10 +2,10 @@
 {
     public class PackContent : IPackable
     {
-        public byte[] signature;
+        public byte[]? signature;
         public uint crcChannelName;
         public uint crcUid;
-        public byte[] rawMessage;
+        public byte[]? rawMessage;
 
         public PackContent()
         {
@@ -22,7 +22,7 @@
 
         public ByteBuf marshal(ByteBuf outBuf)
         {
-            return outBuf.put(signature).put(crcChannelName).put(crcUid).put(rawMessage);
+            return outBuf.put(signature!).put(crcChannelName).put(crcUid).put(rawMessage!);
         }
 
 

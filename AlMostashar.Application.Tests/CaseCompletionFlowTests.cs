@@ -217,7 +217,8 @@ public class CaseCompletionFlowTests
             new FixedCurrentUserService(seed.Client.Id),
             Mock.Of<INotificationService>(),
             new EscrowSettlementService(scope.DbContext, NullLogger<EscrowSettlementService>.Instance),
-            Mock.Of<ILogger<ConfirmCaseCompletionCommandHandler>>());
+            Mock.Of<ILogger<ConfirmCaseCompletionCommandHandler>>(),
+            Mock.Of<IStorageService>());
 
         var result = await handler.Handle(
             new ConfirmCaseCompletionCommand(seed.Case.Id),

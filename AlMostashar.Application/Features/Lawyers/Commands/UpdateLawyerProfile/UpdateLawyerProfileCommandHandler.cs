@@ -87,7 +87,7 @@ public class UpdateLawyerProfileCommandHandler
                 documentReplaced = true;
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             // If any upload failed, attempt to delete any files we already uploaded during this request.
             foreach (var k in uploadedKeys)

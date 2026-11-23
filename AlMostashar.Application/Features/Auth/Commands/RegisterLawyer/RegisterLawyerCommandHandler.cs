@@ -76,20 +76,20 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterLawyer
             try
             {
                 // Upload private documents to private storage and avatar to public storage
-                var ssnTask = (request.SSNPhoto != null && _storageService != null)
-                    ? UploadToStorage.UploadAsync(request.SSNPhoto, _storageService)
+                Task<string?> ssnTask = (request.SSNPhoto != null && _storageService != null)
+                    ? UploadToStorage.UploadAsync(request.SSNPhoto, _storageService).ContinueWith(t => (string?)t.Result)
                     : Task.FromResult<string?>(null);
 
-                var syndicateTask = (request.SyndicateCardPhoto != null && _storageService != null)
-                    ? UploadToStorage.UploadAsync(request.SyndicateCardPhoto, _storageService)
+                Task<string?> syndicateTask = (request.SyndicateCardPhoto != null && _storageService != null)
+                    ? UploadToStorage.UploadAsync(request.SyndicateCardPhoto, _storageService).ContinueWith(t => (string?)t.Result)
                     : Task.FromResult<string?>(null);
 
-                var practiceTask = (request.PracticeCertificatesPhoto != null && _storageService != null)
-                    ? UploadToStorage.UploadAsync(request.PracticeCertificatesPhoto, _storageService)
+                Task<string?> practiceTask = (request.PracticeCertificatesPhoto != null && _storageService != null)
+                    ? UploadToStorage.UploadAsync(request.PracticeCertificatesPhoto, _storageService).ContinueWith(t => (string?)t.Result)
                     : Task.FromResult<string?>(null);
 
-                var avatarTask = (request.AvatarPhoto != null && _storageService != null)
-                    ? UploadToStorage.UploadPublicAsync(request.AvatarPhoto, _storageService)
+                Task<string?> avatarTask = (request.AvatarPhoto != null && _storageService != null)
+                    ? UploadToStorage.UploadPublicAsync(request.AvatarPhoto, _storageService).ContinueWith(t => (string?)t.Result)
                     : Task.FromResult<string?>(null);
 
                 await Task.WhenAll(ssnTask, syndicateTask, practiceTask, avatarTask);

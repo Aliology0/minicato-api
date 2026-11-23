@@ -24,10 +24,10 @@ public class GetRecentCaseUpdatesQueryHandler : IRequestHandler<GetRecentCaseUpd
         var recentUpdates = await _context.CaseTimelines
             .Include(t => t.Case)
                 .ThenInclude(c => c.CaseClientRequest)
-                    .ThenInclude(ccr => ccr.ClientRequest)
-            .Where(t => t.Case.CaseClientRequest != null 
-                        && t.Case.CaseClientRequest.ClientRequest != null 
-                        && t.Case.CaseClientRequest.ClientRequest.ClientId == clientId)
+                    .ThenInclude(ccr => ccr!.ClientRequest)
+            .Where(t => t.Case!.CaseClientRequest != null 
+                        && t.Case!.CaseClientRequest.ClientRequest != null 
+                        && t.Case!.CaseClientRequest.ClientRequest!.ClientId == clientId)
             .OrderByDescending(t => t.CreatedAt)
             .Take(request.Limit)
             .Select(t => new RecentCaseUpdateDto
@@ -37,7 +37,7 @@ public class GetRecentCaseUpdatesQueryHandler : IRequestHandler<GetRecentCaseUpd
                 UpdateType = t.Title,
                 Message = t.Content,
                 CreatedAt = t.CreatedAt,
-                Status = t.Case.Status.ToString()
+                Status = t.Case!.Status.ToString()
             })
             .ToListAsync(cancellationToken);
 

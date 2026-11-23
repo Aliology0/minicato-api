@@ -37,7 +37,7 @@ namespace AlMostashar.Application.Features.Documents.Commands.UploadDocument
                 DocumentUrl = fileKey,
                 // Some FormFile test fixtures may not populate Headers.ContentType; safely read it
                 DocumentType = request.File?.Headers?.ContentType ?? string.Empty,
-                SizeInBytes = request.File.Length,
+                SizeInBytes = request.File!.Length,
                 // Legacy column name; currently represents the authenticated upload owner.
                 UploadedByUserId = _currentUser.UserId,
                 ClientRequestId = null,
@@ -60,7 +60,7 @@ namespace AlMostashar.Application.Features.Documents.Commands.UploadDocument
             {
                 DocumentId = document.Id,
                 DocumentName = document.DocumentName,
-                Type = document.DocumentType,
+                Type = document.DocumentType ?? string.Empty,
                 SizeInBytes= document.SizeInBytes,
                 CreatedAt = document.CreatedAt
 

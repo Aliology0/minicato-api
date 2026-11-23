@@ -37,7 +37,7 @@ public sealed class GetPresignedUrlCommandHandler
             DocumentName = document.DocumentName,
             Url = url,
             SizeInBytes = document.SizeInBytes,
-            Type = document.DocumentType,
+            Type = document.DocumentType ?? string.Empty,
             ExpirationMinutes = expiration,
             ExpiresAt = DateTime.UtcNow.AddMinutes(expiration)
         });

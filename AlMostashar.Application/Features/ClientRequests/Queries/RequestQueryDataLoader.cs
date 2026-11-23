@@ -21,12 +21,12 @@ internal static class RequestQueryDataLoader
             .OrderBy(d => d.CreatedAt)
             .Select(d => new
             {
-                RequestId = d.ClientRequestId!.Value,
+                RequestId = d.ClientRequestId.GetValueOrDefault(),
                 Document = new DocumentDto
                 {
                     Id = d.Id,
                     DocumentName = d.DocumentName,
-                    Type = d.DocumentType,
+                    Type = d.DocumentType ?? string.Empty,
                     SizeInBytes = d.SizeInBytes,
                     CreatedAt = d.CreatedAt
 

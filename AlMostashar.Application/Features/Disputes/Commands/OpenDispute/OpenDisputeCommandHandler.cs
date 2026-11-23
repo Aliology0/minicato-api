@@ -28,7 +28,7 @@ public class OpenDisputeCommandHandler : IRequestHandler<OpenDisputeCommand, Res
         var currentUserId = _currentUser.UserId;
 
         var caseEntity = await _context.Cases
-            .Include(c => c.CaseClientRequest).ThenInclude(ccr => ccr.ClientRequest)
+            .Include(c => c.CaseClientRequest).ThenInclude(ccr => ccr!.ClientRequest)
             .FirstOrDefaultAsync(c => c.Id == request.CaseId, cancellationToken);
 
         if (caseEntity == null)
@@ -41,25 +41,26 @@ public class OpenDisputeCommandHandler : IRequestHandler<OpenDisputeCommand, Res
             return Result<int>.Failure(new Error("Dispute.Unauthorized", "You must be a participant in the case to open a dispute.", null, "يجب أن تكون طرفًا في القضية لفتح منازعة."));
 
         // Automatically fetch and validate the Escrow associated with this case's request
-        int? escrowId = null;
-        if (caseEntity.CaseClientRequest != null)
-        {
-            var escrow = await _context.Escrows
-                .FirstOrDefaultAsync(e => e.RequestId == caseEntity.CaseClientRequest.ClientRequestId, cancellationToken);
-            
-            if (escrow != null)
+            int? escrowId = null;
+            var clientRequestId = caseEntity.CaseClientRequest?.ClientRequestId;
+            if (clientRequestId.HasValue)
             {
-                if (escrow.Status != EscrowStatus.Funded)
+                var escrow = await _context.Escrows
+                    .FirstOrDefaultAsync(e => e.RequestId == clientRequestId.Value, cancellationToken);
+                
+                if (escrow != null)
                 {
-                    return Result<int>.Failure(new Error("Escrow.InvalidStatus", $"Only funded escrows can be marked as disputed. Current status is {escrow.Status}."));
-                }
+                    if (escrow.Status != EscrowStatus.Funded)
+                    {
+                        return Result<int>.Failure(new Error("Escrow.InvalidStatus", $"Only funded escrows can be marked as disputed. Current status is {escrow.Status}."));
+                    }
 
-                escrowId = escrow.Id;
-                escrow.Status = EscrowStatus.Disputed;
-                escrow.EscrowDisputedAt = DateTime.UtcNow;
-                caseEntity.Status = CaseStatus.OnHold;
+                    escrowId = escrow.Id;
+                    escrow.Status = EscrowStatus.Disputed;
+                    escrow.EscrowDisputedAt = DateTime.UtcNow;
+                    caseEntity.Status = CaseStatus.OnHold;
+                }
             }
-        }
 
         var uploadedAttachments = new List<DisputeAttachment>();
         if (request.Attachments != null && request.Attachments.Any())

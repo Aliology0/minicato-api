@@ -30,8 +30,8 @@ namespace AlMostashar.Infrastructure.Services.AgoraEngine.Common
         //当前Pop指针位置
         private int CURRENT_POSITION = 0;
 
-        //最后返回数组
-        private byte[] RETURN_ARRAY;
+    //最后返回数组
+    private byte[]? RETURN_ARRAY;
 
         /// <summary>
         /// 默认构造函数

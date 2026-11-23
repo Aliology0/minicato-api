@@ -48,7 +48,7 @@ public class CreateFeedbackCommandHandler : IRequestHandler<CreateFeedbackComman
         var feedback = new Feedback
         {
             Rate = request.Rating,
-            Content = request.Content,
+            Content = request.Content ?? string.Empty,
             ClientRequestId = request.ClientRequestId,
             LawyerServiceLawyerId = request.LawyerId,
             LawyerServiceLegalServiceId = request.ServiceId
