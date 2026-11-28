@@ -1,122 +1,126 @@
+using System.Text.Json;
 using AlMostashar.Application.Common.Interfaces;
 using AlMostashar.Domain.Entities;
 using AlMostashar.Domain.Shared;
+using AlMostashar.Domain.ValueObject.Enum;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace AlMostashar.Application.Features.Admin.Commands.VerifyLawyer
+namespace AlMostashar.Application.Features.Admin.Commands.VerifyLawyer;
+
+public sealed class VerifyLawyerCommandHandler : IRequestHandler<VerifyLawyerCommand, Result<string>>
 {
-    public class VerifyLawyerCommandHandler : IRequestHandler<VerifyLawyerCommand, Result<string>>
+    private readonly IAppDbContext _db;
+    private readonly IEmailService _emailService;
+    private readonly ICurrentUserService _currentUserService;
+    private readonly ILogger<VerifyLawyerCommandHandler> _logger;
+
+    public VerifyLawyerCommandHandler(IAppDbContext db, IEmailService emailService, ICurrentUserService currentUserService, ILogger<VerifyLawyerCommandHandler> logger)
     {
-        private readonly IAppDbContext _db;
-        private readonly IEmailService _emailService;
-        private readonly ICurrentUserService _currentUserService;
+        _db = db;
+        _emailService = emailService;
+        _currentUserService = currentUserService;
+        _logger = logger;
+    }
 
-        private readonly ILogger<VerifyLawyerCommandHandler> _logger;
+    public async Task<Result<string>> Handle(VerifyLawyerCommand request, CancellationToken cancellationToken)
+    {
+        var lawyer = await _db.Lawyers
+            .Include(l => l.LawyerSpecializations)
+            .Include(l => l.PendingProfileChange)
+            .FirstOrDefaultAsync(l => l.Id == request.LawyerId, cancellationToken);
+        if (lawyer is null)
+            return Result<string>.Failure(new Error("Admin.NotFound", "Lawyer not found.", null, "لم يتم العثور على المحامي."));
 
-        public VerifyLawyerCommandHandler(IAppDbContext db, IEmailService emailService, ICurrentUserService currentUserService, ILogger<VerifyLawyerCommandHandler> logger)
+        var status = lawyer.AccountStatus;
+        var isPendingProfileChange = status == AccountStatus.PendingChangesReview;
+        var isPendingApplication = status is AccountStatus.PendingReview or AccountStatus.PendingReverification;
+        if (!isPendingProfileChange && !isPendingApplication)
+            return Result<string>.Failure(new Error("Admin.NotPendingReview", "This lawyer has no pending review."));
+        if (isPendingProfileChange && lawyer.PendingProfileChange is null)
+            return Result<string>.Failure(new Error("Admin.PendingProfileMissing", "The pending profile change could not be found."));
+
+        string subject;
+        string body;
+        string resultMessage;
+        if (request.IsAccepted)
         {
-            _db                 = db;
-            _emailService       = emailService;
-            _currentUserService = currentUserService;
-            _logger             = logger;
+            if (lawyer.PendingProfileChange is { } change)
+            {
+                lawyer.FirstName = change.FirstName;
+                lawyer.LastName = change.LastName;
+                lawyer.FullName = $"{change.FirstName} {change.LastName}";
+                lawyer.AvatarUrl = change.AvatarUrl;
+                lawyer.YearsOfExperience = change.YearsOfExperience;
+                lawyer.SSN_Url = change.SSN_Url;
+                lawyer.SyndicateCardUrl = change.SyndicateCardUrl;
+                lawyer.PhoneNo = change.PhoneNo;
+                lawyer.GovernorateId = change.GovernorateId;
+                lawyer.Governorate = change.Governorate;
+                lawyer.CityId = change.CityId;
+                lawyer.City = change.City;
+                lawyer.SyndicateId = change.SyndicateId;
+                lawyer.Bio = change.Bio;
+                lawyer.About = change.About;
+                var specializationIds = JsonSerializer.Deserialize<int[]>(change.SpecializationIdsJson) ?? Array.Empty<int>();
+                var specializations = await _db.LawyerSpecializations
+                    .Where(s => specializationIds.Contains(s.Id))
+                    .ToListAsync(cancellationToken);
+                if (specializations.Count != specializationIds.Length)
+                    return Result<string>.Failure(new Error("Admin.PendingSpecializationMissing", "A proposed specialization no longer exists."));
+                lawyer.LawyerSpecializations = specializations;
+                _db.LawyerProfileChanges.Remove(change);
+                lawyer.PendingProfileChange = null;
+            }
+
+            lawyer.IsVerified = true;
+            lawyer.VerifiedByAdminId = _currentUserService.UserId;
+            lawyer.AccountStatus = AccountStatus.Verified;
+            lawyer.RejectionReason = null;
+            subject = "المستشار - تم قبول حسابك!";
+            body = $"<p>مرحباً {lawyer.FullName}، تمت مراجعة وقبول معلومات حسابك.</p>";
+            resultMessage = isPendingProfileChange
+                ? $"Lawyer '{lawyer.FullName}' profile changes have been approved."
+                : $"Lawyer '{lawyer.FullName}' has been verified successfully.";
+
+            if (!await _db.Wallets.AnyAsync(w => w.LawyerId == lawyer.Id, cancellationToken))
+            {
+                _db.Wallets.Add(new Wallet { LawyerId = lawyer.Id, AvailableBalance = 0, Total = 0 });
+            }
+        }
+        else if (isPendingProfileChange)
+        {
+            _db.LawyerProfileChanges.Remove(lawyer.PendingProfileChange!);
+            lawyer.PendingProfileChange = null;
+            lawyer.AccountStatus = AccountStatus.Verified;
+            lawyer.IsVerified = true;
+            subject = "المستشار - لم تتم الموافقة على التعديلات";
+            body = $"<p>مرحباً {lawyer.FullName}، لم تتم الموافقة على التعديلات المقترحة على ملفك الشخصي. ستظل معلوماتك المعتمدة كما هي.</p>";
+            resultMessage = $"Lawyer '{lawyer.FullName}' profile changes have been rejected; the approved profile was retained.";
+        }
+        else
+        {
+            lawyer.AccountStatus = AccountStatus.Rejected;
+            lawyer.IsVerified = false;
+            lawyer.RejectionReason = string.IsNullOrWhiteSpace(request.RejectionReason) ? null : request.RejectionReason.Trim();
+            subject = "المستشار - إجراء مطلوب: تحديث بيانات التحقق";
+            body = $"<p>مرحباً {lawyer.FullName}، تم رفض طلب التحقق. يرجى تحديث بياناتك وإعادة الإرسال.</p>";
+            resultMessage = $"Lawyer '{lawyer.FullName}' has been rejected successfully.";
         }
 
-        public async Task<Result<string>> Handle(VerifyLawyerCommand request, CancellationToken cancellationToken)
+        lawyer.NotifiedAt = DateTime.UtcNow;
+        await _db.SaveChangesAsync(cancellationToken);
+        try
         {
-            // 1. Find the lawyer
-            var lawyer = await _db.Lawyers
-                .FirstOrDefaultAsync(l => l.Id == request.LawyerId, cancellationToken);
-
-            if (lawyer is null)
-                return Result<string>.Failure(new Error("Admin.NotFound", "Lawyer not found.", null, "لم يتم العثور على المحامي."));
-
-            // 2. Check if already verified
-            if (lawyer.IsVerified)
-                return Result<string>.Failure(new Error("Admin.AlreadyVerified", "This lawyer is already verified.", null, "هذا المحامي موثق بالفعل."));
-
-            string subject;
-            string body;
-            string resultMessage;
-            if (request.IsAccepted)
-            {
-                // 3. Verify the lawyer
-                lawyer.IsVerified = true;
-                lawyer.VerifiedByAdminId = _currentUserService.UserId;
-                lawyer.AccountStatus = Domain.ValueObject.Enum.AccountStatus.Active;
-                // Clear any previous rejection reason if the property exists on the Lawyer entity
-                var _rejectionProp = lawyer.GetType().GetProperty("RejectionReason");
-                if (_rejectionProp != null)
-                {
-                    _rejectionProp.SetValue(lawyer, null);
-                }
-
-                if (!await _db.Wallets.AnyAsync(w => w.LawyerId == lawyer.Id, cancellationToken))
-                {
-                    _db.Wallets.Add(new Wallet
-                    {
-                        LawyerId = lawyer.Id,
-                        AvailableBalance = 0,
-                        Total = 0
-                    });
-                }
-
-                subject = "المستشار - تم قبول حسابك! 🎉";
-                body = $@"
-                <div style='font-family: Arial, sans-serif; direction: rtl; text-align: center; padding: 20px;'>
-                    <h2 style='color: #27ae60;'>تهانينا! تم قبول حسابك</h2>
-                    <p>مرحباً <strong>{lawyer.FullName}</strong>،</p>
-                    <p>تم مراجعة وقبول حسابك على منصة المستشار.</p>
-                    <p>يمكنك الآن تسجيل الدخول والبدء في استقبال القضايا.</p>
-                    <p style='color: #888; font-size: 12px; margin-top: 20px;'>فريق المستشار</p>
-                </div>";
-                resultMessage = $"Lawyer '{lawyer.FullName}' has been verified successfully.";
-            }
-            else
-            {
-                lawyer.AccountStatus = Domain.ValueObject.Enum.AccountStatus.Suspended;
-                // Persist rejection reason if provided and the property exists on the Lawyer entity
-                var _rejectionProp = lawyer.GetType().GetProperty("RejectionReason");
-                if (_rejectionProp != null)
-                {
-                    var reason = string.IsNullOrWhiteSpace(request.RejectionReason) ? null : request.RejectionReason.Trim();
-                    _rejectionProp.SetValue(lawyer, reason);
-                }
-                // Email subject for document rejection / account suspension
-                subject = "المستشار - إجراء مطلوب: تحديث مستندات التحقق";
-
-                // Email body explaining the suspension and required action
-                body = $@"
-                    <div style='font-family: Arial, sans-serif; direction: rtl; text-align: center; padding: 20px;'>
-                        <h2 style='color: #e74c3c;'>تحديث بخصوص حالة حسابك</h2>
-                        <p>مرحباً <strong>{lawyer.FullName}</strong>،</p>
-                        <p>بعد مراجعة طلب انضمامك لمنصة المستشار، تبين أن ملفات التحقق المرفقة غير مكتملة أو غير واضحة.</p>
-                        <p>بناءً على ذلك، سيظل حسابك <strong>معلقاً مؤقتاً</strong>.</p>
-                        <p>يرجى تسجيل الدخول إلى حسابك وإعادة رفع المستندات المطلوبة بوضوح حتى نتمكن من استكمال عملية المراجعة وتفعيل الحساب.</p>
-                        <p style='color: #888; font-size: 12px; margin-top: 20px;'>فريق المستشار</p>
-                    </div>";
-                resultMessage = $"Lawyer '{lawyer.FullName}' has been rejected successfully.";
-            }
-            lawyer.NotifiedAt = DateTime.UtcNow;
-
-            await _db.SaveChangesAsync(cancellationToken);
-
-            // 4. Notify the lawyer via email
-
-            try
-            {
-                await _emailService.SendEmailAsync(lawyer.Email, subject, body, cancellationToken);
-            }
-            catch(Exception ex)
-            {
-                // Email failure should not block verification
-                // The lawyer is already verified in DB
-                _logger.LogError(ex, "Failed to send verification email to lawyer {LawyerEmail}", lawyer.Email);
-                return Result<string>.Success(resultMessage + " (Note: Notification email failed to send)");
-            }
-
-            return Result<string>.Success(resultMessage);
+            await _emailService.SendEmailAsync(lawyer.Email, subject, body, cancellationToken);
         }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send verification email to lawyer {LawyerId}", lawyer.Id);
+            return Result<string>.Success(resultMessage + " (Notification email failed to send)");
+        }
+
+        return Result<string>.Success(resultMessage);
     }
 }

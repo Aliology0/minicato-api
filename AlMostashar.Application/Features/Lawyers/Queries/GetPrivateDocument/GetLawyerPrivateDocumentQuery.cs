@@ -6,10 +6,10 @@ namespace AlMostashar.Application.Features.Lawyers.Queries.GetPrivateDocument;
 public enum LawyerPrivateDocumentType
 {
     Ssn,
-    SyndicateCard,
-    PracticeCertificates
+    SyndicateCard
 }
 
 public sealed record GetLawyerPrivateDocumentQuery(
     int LawyerId,
-    LawyerPrivateDocumentType DocumentType) : IRequest<Result<string>>;
+    LawyerPrivateDocumentType DocumentType,
+    bool UsePendingProfileChange = false) : IRequest<Result<string>>;

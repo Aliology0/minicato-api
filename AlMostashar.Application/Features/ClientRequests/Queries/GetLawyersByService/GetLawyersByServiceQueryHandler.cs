@@ -36,7 +36,7 @@ public class GetLawyersByServiceQueryHandler
         var query = _db.LawyerServices
             .AsNoTracking()
             .Where(ls => ls.LegalServiceId == request.LegalServiceId && ls.IsActive)
-            .Where(ls => ls.Lawyer.AccountStatus == AlMostashar.Domain.ValueObject.Enum.AccountStatus.Active);
+            .Where(ls => ls.Lawyer.AccountStatus == AlMostashar.Domain.ValueObject.Enum.AccountStatus.Verified);
 
         if (locationFilter.GovernorateName is not null)
         {

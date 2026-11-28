@@ -873,6 +873,86 @@ namespace AlMostashar.Infrastructure.Migrations
                     b.ToTable("LawsuitRequestDetails");
                 });
 
+            modelBuilder.Entity("AlMostashar.Domain.Entities.LawyerProfileChange", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("About")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("AvatarUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Bio")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("CityId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Governorate")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("GovernorateId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("LawyerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PhoneNo")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("SSN_Url")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("SpecializationIdsJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SyndicateCardUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("SyndicateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("YearsOfExperience")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LawyerId")
+                        .IsUnique();
+
+                    b.ToTable("LawyerProfileChanges", (string)null);
+                });
+
             modelBuilder.Entity("AlMostashar.Domain.Entities.LawyerService", b =>
                 {
                     b.Property<int>("LawyerId")
@@ -914,6 +994,11 @@ namespace AlMostashar.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar");
 
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -928,114 +1013,133 @@ namespace AlMostashar.Infrastructure.Migrations
                         {
                             Id = 1,
                             ArabicTitle = "محامي الأحوال الشخصية الإسلامية",
+                            IsActive = true,
                             Title = "Islamic Family Law Attorney"
                         },
                         new
                         {
                             Id = 2,
                             ArabicTitle = "محامي الأحوال الشخصية غير الإسلامية",
+                            IsActive = true,
                             Title = "Non-Muslim Family Law Attorney"
                         },
                         new
                         {
                             Id = 3,
                             ArabicTitle = "محامي الوصايا والتركات",
+                            IsActive = true,
                             Title = "Inheritance and Estate Attorney"
                         },
                         new
                         {
                             Id = 4,
                             ArabicTitle = "محامي القانون الجنائي",
+                            IsActive = true,
                             Title = "Criminal Law Attorney"
                         },
                         new
                         {
                             Id = 5,
                             ArabicTitle = "محامي الأموال العامة والمكاسب غير المشروعة",
+                            IsActive = true,
                             Title = "Public Funds & Illicit Gains Attorney"
                         },
                         new
                         {
                             Id = 6,
                             ArabicTitle = "محامي المخدرات والأسلحة",
+                            IsActive = true,
                             Title = "Narcotics and Weapons Attorney"
                         },
                         new
                         {
                             Id = 7,
                             ArabicTitle = "محامي جرائم الإنترنت",
+                            IsActive = true,
                             Title = "Cybercrime Attorney"
                         },
                         new
                         {
                             Id = 8,
                             ArabicTitle = "محامي القانون المدني (العقود والتعويضات)",
+                            IsActive = true,
                             Title = "Civil Law Attorney (Contracts & Compensation)"
                         },
                         new
                         {
                             Id = 9,
                             ArabicTitle = "محامي العقارات والملكية",
+                            IsActive = true,
                             Title = "Real Estate and Property Attorney"
                         },
                         new
                         {
                             Id = 10,
                             ArabicTitle = "محامي تأسيس الشركات",
+                            IsActive = true,
                             Title = "Corporate Formation Attorney"
                         },
                         new
                         {
                             Id = 11,
                             ArabicTitle = "محامي المحاكم الاقتصادية",
+                            IsActive = true,
                             Title = "Economic Courts Attorney"
                         },
                         new
                         {
                             Id = 12,
                             ArabicTitle = "محامي أسواق رأس المال والبورصة",
+                            IsActive = true,
                             Title = "Capital Markets & Stock Exchange Attorney"
                         },
                         new
                         {
                             Id = 13,
                             ArabicTitle = "محامي القانون الإداري (مجلس الدولة)",
+                            IsActive = true,
                             Title = "Administrative Law Attorney (State Council)"
                         },
                         new
                         {
                             Id = 14,
                             ArabicTitle = "محامي الشؤون العسكرية والشرطة",
+                            IsActive = true,
                             Title = "Military & Police Affairs Attorney"
                         },
                         new
                         {
                             Id = 15,
                             ArabicTitle = "محامي الملكية الفكرية",
+                            IsActive = true,
                             Title = "Intellectual Property Attorney"
                         },
                         new
                         {
                             Id = 16,
                             ArabicTitle = "محامي العمل والتوظيف",
+                            IsActive = true,
                             Title = "Labor & Employment Attorney"
                         },
                         new
                         {
                             Id = 17,
                             ArabicTitle = "محامي التأمين الاجتماعي والمعاشات",
+                            IsActive = true,
                             Title = "Social Insurance & Pensions Attorney"
                         },
                         new
                         {
                             Id = 18,
                             ArabicTitle = "محامي شؤون الأجانب والهجرة",
+                            IsActive = true,
                             Title = "Foreigners Affairs & Immigration Attorney"
                         },
                         new
                         {
                             Id = 19,
                             ArabicTitle = "محامي القانون الدولي والتحكيم",
+                            IsActive = true,
                             Title = "International Law & Arbitration Attorney"
                         });
                 });
@@ -2076,10 +2180,6 @@ namespace AlMostashar.Infrastructure.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("PracticeCertificatesUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
                     b.Property<string>("RejectionReason")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
@@ -2473,6 +2573,17 @@ namespace AlMostashar.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("ClientRequest");
+                });
+
+            modelBuilder.Entity("AlMostashar.Domain.Entities.LawyerProfileChange", b =>
+                {
+                    b.HasOne("AlMostashar.Domain.Entities.Lawyer", "Lawyer")
+                        .WithOne("PendingProfileChange")
+                        .HasForeignKey("AlMostashar.Domain.Entities.LawyerProfileChange", "LawyerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Lawyer");
                 });
 
             modelBuilder.Entity("AlMostashar.Domain.Entities.LawyerService", b =>
@@ -2876,6 +2987,8 @@ namespace AlMostashar.Infrastructure.Migrations
                     b.Navigation("LawyerServices");
 
                     b.Navigation("Offers");
+
+                    b.Navigation("PendingProfileChange");
 
                     b.Navigation("Wallet")
                         .IsRequired();

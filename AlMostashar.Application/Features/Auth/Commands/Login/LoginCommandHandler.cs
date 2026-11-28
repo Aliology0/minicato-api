@@ -53,14 +53,14 @@ namespace AlMostashar.Application.Features.Auth.Commands.Login
                                   TODO: restore original check when re-enabling verification */
                                   // c.IsEmailVerified ? AccountStatus.Active : AccountStatus.EmailVerificationRequired,
                                   AccountStatus.Active,
-                Lawyer l    => l.AccountStatus,
+                Lawyer l    => l.IsVerified && l.AccountStatus == AccountStatus.Active ? AccountStatus.Verified : l.AccountStatus,
                 AdminEntity => AccountStatus.Active,
                 _           => AccountStatus.Active
             };
 
             var authUser = CreateAuthUserDto(user, role, accountStatus);
 
-            // If the user is a lawyer in PendingReview or Suspended state, issue a restricted token
+            // Unverified lawyers may use only restricted profile/review operations.
             if (ShouldReturnUserWithoutTokens(user, accountStatus))
             {
                 // Create a restricted-scoped JWT that grants only profile/read/edit/resubmit abilities
@@ -84,17 +84,17 @@ namespace AlMostashar.Application.Features.Auth.Commands.Login
                 });
             }
 
-            // 4. Non-lawyer inactive accounts remain blocked
-            if (accountStatus != AccountStatus.Active)
+            // Non-lawyer inactive accounts remain blocked; Verified is the active lawyer state.
+            if (user is not Lawyer && accountStatus != AccountStatus.Active)
             {
                 var statusError = accountStatus switch
                 {
                     AccountStatus.EmailVerificationRequired
                         => new Error("Auth.EmailNotVerified", Messages.Auth.EmailNotVerified),
-                    AccountStatus.PendingReview
+                    AccountStatus.PendingReview or AccountStatus.PendingReverification or AccountStatus.PendingChangesReview
                         => new Error("Auth.PendingReview", "حسابك قيد المراجعة. يرجى الانتظار حتى يتم التحقق من حسابك."),
-                    AccountStatus.Suspended
-                        => new Error("Auth.Suspended", "تم تعليق حسابك. يرجى التواصل مع الدعم."),
+                    AccountStatus.Rejected or AccountStatus.Suspended
+                        => new Error("Auth.Rejected", "تم رفض طلب التحقق. يرجى تحديث بياناتك وإعادة الإرسال."),
                     _ => new Error("Auth.AccountInactive", "الحساب غير مفعل."),
                 };
                 return Result<AuthResponseDto>.Failure(statusError);
@@ -128,7 +128,7 @@ namespace AlMostashar.Application.Features.Auth.Commands.Login
         }
 
         private static bool ShouldReturnUserWithoutTokens(User user, AccountStatus accountStatus)
-            => user is Lawyer && (accountStatus == AccountStatus.PendingReview || accountStatus == AccountStatus.Suspended);
+            => user is Lawyer && accountStatus != AccountStatus.Verified;
 
         private static AuthUserDto CreateAuthUserDto(User user, UserRole role, AccountStatus accountStatus)
         {

@@ -101,6 +101,7 @@ namespace AlMostashar.Api
             app.UseCors("AllowAll");
 
             app.UseAuthentication();
+            app.UseMiddleware<LawyerVerificationMiddleware>();
             app.UseAuthorization();
 
             app.MapControllers();

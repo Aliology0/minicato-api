@@ -71,53 +71,40 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterLawyer
             // 2. If files provided, upload them and set URLs. Registration must fail on any supplied-file upload failure.
             string? ssnKey = null;
             string? syndicateKey = null;
-            string? practiceKey = null;
             string? avatarKey = null;
+            var uploadedKeys = new List<string>();
             try
             {
-                // Upload private documents to private storage and avatar to public storage
-                var ssnTask = (request.SSNPhoto != null && _storageService != null)
-                    ? UploadToStorage.UploadAsync(request.SSNPhoto, _storageService)
-                    : Task.FromResult<string?>(null);
-
-                var syndicateTask = (request.SyndicateCardPhoto != null && _storageService != null)
-                    ? UploadToStorage.UploadAsync(request.SyndicateCardPhoto, _storageService)
-                    : Task.FromResult<string?>(null);
-
-                var practiceTask = (request.PracticeCertificatesPhoto != null && _storageService != null)
-                    ? UploadToStorage.UploadAsync(request.PracticeCertificatesPhoto, _storageService)
-                    : Task.FromResult<string?>(null);
-
-                var avatarTask = (request.AvatarPhoto != null && _storageService != null)
-                    ? UploadToStorage.UploadPublicAsync(request.AvatarPhoto, _storageService)
-                    : Task.FromResult<string?>(null);
-
-                await Task.WhenAll(ssnTask, syndicateTask, practiceTask, avatarTask);
-
-                ssnKey = await ssnTask;
-                syndicateKey = await syndicateTask;
-                practiceKey = await practiceTask;
-                avatarKey = await avatarTask;
-
-                // If any file was supplied but its upload returned null, treat as failure.
-                if ((request.SSNPhoto != null && ssnKey == null) ||
-                    (request.SyndicateCardPhoto != null && syndicateKey == null) ||
-                    (request.PracticeCertificatesPhoto != null && practiceKey == null) ||
-                    (request.AvatarPhoto != null && avatarKey == null))
+                if (request.SSNPhoto is not null)
                 {
-                    // Return a non-auth error code so the API maps to 400 Bad Request instead of 401 Unauthorized
-                    return Result<RegisterLawyerResponseDto>.Failure(
-                        new Error("Upload.Failed", "Failed to upload required documents. Please try again."));
+                    ssnKey = await UploadOptionalAsync(request.SSNPhoto, false);
+                    if (ssnKey is null)
+                        throw new InvalidOperationException("SSN upload did not return a storage key.");
+                    uploadedKeys.Add(ssnKey);
+                }
+                if (request.SyndicateCardPhoto is not null)
+                {
+                    syndicateKey = await UploadOptionalAsync(request.SyndicateCardPhoto, false);
+                    if (syndicateKey is null)
+                        throw new InvalidOperationException("Syndicate card upload did not return a storage key.");
+                    uploadedKeys.Add(syndicateKey);
+                }
+                if (request.AvatarPhoto is not null)
+                {
+                    avatarKey = await UploadOptionalAsync(request.AvatarPhoto, true);
+                    if (avatarKey is null)
+                        throw new InvalidOperationException("Avatar upload did not return a storage key.");
+                    uploadedKeys.Add(avatarKey);
                 }
             }
             catch (Exception ex)
             {
-                // Log the underlying exception (S3/AWS SDK will be inner exception) for diagnostics; do not include internal details in API response
+                await CleanupUploadedKeysAsync(uploadedKeys);
                 _logger?.LogError(ex, "Failed to upload identity documents during lawyer registration for email {Email}", request.Email);
-
-                // Return a safe error to caller; the server logs contain detailed diagnostics (S3 error code/status/request id when available)
-                var err = new Error("Upload.Failed", "Failed to upload required documents. Please try again.");
-                return Result<RegisterLawyerResponseDto>.Failure(err);
+                if (ex is OperationCanceledException)
+                    throw;
+                return Result<RegisterLawyerResponseDto>.Failure(
+                    new Error("Upload.Failed", "Failed to upload required documents. Please try again."));
             }
 
             // 3. Build the Lawyer entity
@@ -138,8 +125,7 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterLawyer
                 YearsOfExperience       = request.YearsOfExperience,
                 SSN_Url                 = ssnKey is null ? null : ssnKey,
                 SyndicateCardUrl        = syndicateKey is null ? null : syndicateKey,
-                PracticeCertificatesUrl = practiceKey is null ? null : practiceKey,
-                AvatarUrl               = avatarKey is null ? null : avatarKey,
+                AvatarUrl               = avatarKey is null || _storageService is null ? null : _storageService.GetPublicUrl(avatarKey),
                 IsVerified              = false, // awaiting admin approval
                 AccountStatus           = AlMostashar.Domain.ValueObject.Enum.AccountStatus.PendingReview,
                 LawyerSpecializations   = selectedSpecializations ?? new List<Domain.Entities.LawyerSpecialization>()
@@ -148,8 +134,20 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterLawyer
             // 3. Persist lawyer to DB — NO tokens generated
             //    A pending lawyer cannot use the app until admin verifies them.
             //    They will receive tokens when they Login after verification.
-            await _db.Lawyers.AddAsync(lawyer, cancellationToken);
-            await _db.SaveChangesAsync(cancellationToken);
+            try
+            {
+                await _db.Lawyers.AddAsync(lawyer, cancellationToken);
+                await _db.SaveChangesAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                await CleanupUploadedKeysAsync(uploadedKeys);
+                _logger?.LogError(ex, "Failed to persist lawyer registration for email {Email}", request.Email);
+                if (ex is OperationCanceledException)
+                    throw;
+                return Result<RegisterLawyerResponseDto>.Failure(
+                    new Error("Lawyer.RegistrationFailed", "Failed to complete lawyer registration."));
+            }
 
             // 4. Return pending response — mobile navigates to "pending review" screen
             return Result<RegisterLawyerResponseDto>.Success(new RegisterLawyerResponseDto
@@ -159,6 +157,44 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterLawyer
                 AccountStatus      = AlMostashar.Domain.ValueObject.Enum.AccountStatus.PendingReview,
                 ExpectedReviewDays = 2,
             });
+        }
+
+        private Task<string?> UploadOptionalAsync(Microsoft.AspNetCore.Http.IFormFile? file, bool isPublic)
+        {
+            if (file is null || _storageService is null)
+                return Task.FromResult<string?>(null);
+
+            return UploadOptionalAsyncCore(file, _storageService, isPublic);
+        }
+
+        private static async Task<string?> UploadOptionalAsyncCore(
+            Microsoft.AspNetCore.Http.IFormFile file,
+            IStorageService storageService,
+            bool isPublic)
+        {
+            return isPublic
+                ? await UploadToStorage.UploadPublicAsync(file, storageService)
+                : await UploadToStorage.UploadAsync(file, storageService);
+        }
+
+        private async Task CleanupUploadedKeysAsync(IEnumerable<string> keys)
+        {
+            if (_storageService is null)
+                return;
+
+            foreach (var key in keys.Distinct(StringComparer.Ordinal))
+            {
+                try
+                {
+                    var result = await _storageService.DeleteFileAsync(key);
+                    if (!result.Success)
+                        _logger?.LogWarning("Failed to clean up uploaded registration file {StorageKey}: {Message}", key, result.Message);
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogError(ex, "Failed to clean up uploaded registration file {StorageKey}", key);
+                }
+            }
         }
     }
 }

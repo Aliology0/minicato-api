@@ -20,6 +20,10 @@ public class LawyerSpecializationConfiguration : IEntityTypeConfiguration<Lawyer
             .HasColumnType("nvarchar")
             .HasMaxLength(200);
 
+        builder.Property(s => s.IsActive)
+            .IsRequired()
+            .HasDefaultValue(true);
+
         // Seed 19 predefined specializations
         builder.HasData(
             // Islamic Family Law (1-3)

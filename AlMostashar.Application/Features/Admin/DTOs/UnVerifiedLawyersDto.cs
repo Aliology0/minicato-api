@@ -12,8 +12,9 @@ public record UnVerifiedLawyersDto(
     int SyndicateId,
     string? SSN_Url,
     string? SyndicateCardUrl,
-    string? PracticeCertificatesUrl,
     int YearsOfExperience,
-    IEnumerable<SpecializationLookupDto> Specializations);
+    IEnumerable<SpecializationLookupDto> Specializations,
+    AlMostashar.Domain.ValueObject.Enum.AccountStatus AccountStatus,
+    LawyerProfileReviewDto? PendingChanges);
 
 

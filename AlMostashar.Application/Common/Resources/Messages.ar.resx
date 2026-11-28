@@ -106,7 +106,6 @@
   <data name="Field_ExpectedDuration"><value>المدة المتوقعة</value></data>
   <data name="Field_SSN"><value>الرقم القومي</value></data>
   <data name="Field_SyndicateCard"><value>بطاقة القيد بالنقابة</value></data>
-  <data name="Field_PracticeCertificates"><value>شهادات مزاولة المهنة</value></data>
 
   <!-- Validation: File uploads -->
   <data name="Validation_AtLeastOneFileRequired"><value>يجب إرفاق ملف واحد على الأقل.</value></data>

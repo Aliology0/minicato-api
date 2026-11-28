@@ -67,7 +67,7 @@ public class CreateDirectRequestCommandHandler
                 new Error("Request.InvalidLegalService", Messages.Generic.NotFound("Active LegalService")));
 
         // 2. Validate lawyer is active
-        if (lawyerService.Lawyer.AccountStatus != AccountStatus.Active)
+        if (lawyerService.Lawyer.AccountStatus != AccountStatus.Verified)
             return Result<CreateRequestResponseDto>.Failure(
                 new Error("Request.LawyerNotVerified", Messages.Generic.NotVerified("Lawyer")));
 

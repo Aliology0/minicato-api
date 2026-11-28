@@ -22,7 +22,6 @@ namespace AlMostashar.Application.Features.Auth.Commands.RegisterLawyer
         // File uploads (multipart/form-data)
         public Microsoft.AspNetCore.Http.IFormFile? SSNPhoto { get; set; }
         public Microsoft.AspNetCore.Http.IFormFile? SyndicateCardPhoto { get; set; }
-        public Microsoft.AspNetCore.Http.IFormFile? PracticeCertificatesPhoto { get; set; }
         // Profile avatar is required for lawyer registration
         public Microsoft.AspNetCore.Http.IFormFile? AvatarPhoto { get; set; }
     }

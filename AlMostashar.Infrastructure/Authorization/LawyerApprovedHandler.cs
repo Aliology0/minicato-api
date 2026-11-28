@@ -39,7 +39,7 @@ public class LawyerApprovedHandler : AuthorizationHandler<LawyerApprovedRequirem
         if (lawyer == null)
             return Task.CompletedTask;
 
-        if (lawyer.AccountStatus == AccountStatus.Active && lawyer.IsVerified)
+        if (lawyer.AccountStatus == AccountStatus.Verified && lawyer.IsVerified)
         {
             context.Succeed(requirement);
         }

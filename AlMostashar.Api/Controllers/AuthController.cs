@@ -117,7 +117,7 @@ namespace AlMostashar.Api.Controllers
             return this.ToActionResult(result);
         }
 
-        /// <summary>Upload identity documents (SSN, Syndicate Card, Practice Certificates) to S3 storage.</summary>
+        /// <summary>Upload identity documents (SSN and Syndicate Card).</summary>
         [HttpPost("upload-identity-documents")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> UploadIdentityDocuments(

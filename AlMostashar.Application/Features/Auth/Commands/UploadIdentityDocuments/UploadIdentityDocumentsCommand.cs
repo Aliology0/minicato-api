@@ -9,6 +9,5 @@ namespace AlMostashar.Application.Features.Auth.Commands.UploadIdentityDocuments
     {
         public IFormFile? SSN { get; set; }
         public IFormFile? SyndicateCard { get; set; }
-        public IFormFile? PracticeCertificates { get; set; }
     }
 }

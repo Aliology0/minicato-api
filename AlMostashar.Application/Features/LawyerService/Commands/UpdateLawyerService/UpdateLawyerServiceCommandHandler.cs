@@ -24,7 +24,7 @@ namespace AlMostashar.Application.Features.LawyerService.Commands.UpdateLawyerSe
             var lawyerId = currentUserService.UserId;
 
             // Check if its valid and verified lawyer
-            if (!await _dbContext.Lawyers.AnyAsync(l => l.Id == lawyerId && l.AccountStatus == AlMostashar.Domain.ValueObject.Enum.AccountStatus.Active, cancellationToken))
+            if (!await _dbContext.Lawyers.AnyAsync(l => l.Id == lawyerId && l.AccountStatus == AlMostashar.Domain.ValueObject.Enum.AccountStatus.Verified, cancellationToken))
                 return Result<LawyerServiceResponse>.Failure(
                     new Error("Lawyer.NotVerified", Messages.Generic.NotVerified(Messages.Fields.Lawyer)));
 

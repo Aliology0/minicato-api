@@ -32,9 +32,6 @@ public class LawyerConfiguration : IEntityTypeConfiguration<Lawyer>
         builder.Property(l => l.SyndicateCardUrl)
             .HasMaxLength(500);
 
-        builder.Property(l => l.PracticeCertificatesUrl)
-            .HasMaxLength(500);
-
         builder.Property(l => l.RejectionReason)
             .HasMaxLength(1000);
 
@@ -59,5 +56,10 @@ public class LawyerConfiguration : IEntityTypeConfiguration<Lawyer>
         builder.HasMany(l => l.LawyerSpecializations)
             .WithMany(s => s.Lawyers)
             .UsingEntity(j => j.ToTable("LawyerSpecializationsMapping"));
+
+        builder.HasOne(l => l.PendingProfileChange)
+            .WithOne(change => change.Lawyer)
+            .HasForeignKey<LawyerProfileChange>(change => change.LawyerId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

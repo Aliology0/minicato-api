@@ -6,5 +6,9 @@ namespace AlMostashar.Domain.ValueObject.Enum
         PendingReview,
         EmailVerificationRequired,
         Suspended,
+        Verified,
+        Rejected,
+        PendingReverification,
+        PendingChangesReview,
     }
 }

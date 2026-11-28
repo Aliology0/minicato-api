@@ -54,7 +54,7 @@ public static class TestEntityFactory
             CreatedAt = DateTime.UtcNow,
             IsEmailVerified = true,
             IsVerified = isVerified,
-            AccountStatus = status ?? (isVerified ? AccountStatus.Active : AccountStatus.PendingReview),
+            AccountStatus = status ?? (isVerified ? AccountStatus.Verified : AccountStatus.PendingReview),
             PhoneNo = "01000000000",
             Governorate = "Cairo",
             City = "Nasr City",

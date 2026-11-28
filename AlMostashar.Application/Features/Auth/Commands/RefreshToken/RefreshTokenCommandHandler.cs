@@ -45,13 +45,16 @@ namespace AlMostashar.Application.Features.Auth.Commands.RefreshToken
             AccountStatus accountStatus = stored.User switch
             {
                 ClientEntity c => c.IsEmailVerified ? AccountStatus.Active : AccountStatus.EmailVerificationRequired,
-                Lawyer l       => l.IsVerified ? AccountStatus.Active : AccountStatus.PendingReview,
+                Lawyer l       => l.IsVerified && l.AccountStatus == AccountStatus.Active ? AccountStatus.Verified : l.AccountStatus,
                 AdminEntity    => AccountStatus.Active,
                 _              => AccountStatus.Active
             };
 
-            // 3. Explicitly block non-Active accounts from refreshing
-            if (accountStatus != AccountStatus.Active)
+            // 3. Only Verified lawyers and Active non-lawyers may refresh.
+            var mayRefresh = stored.User is Lawyer
+                ? accountStatus == AccountStatus.Verified
+                : accountStatus == AccountStatus.Active;
+            if (!mayRefresh)
             {
                 stored.IsRevoked = true;
                 await _db.SaveChangesAsync(cancellationToken);

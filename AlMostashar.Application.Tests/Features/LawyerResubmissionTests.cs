@@ -25,21 +25,19 @@ public class LawyerResubmissionTests
             db, new FixedCurrentUserService(lawyer.Id), storage);
         var command = new UpdateLawyerProfileCommand
         {
-            ProfileImage = CreateFormFile("avatar.jpg"),
+            AvatarPhoto = CreateFormFile("avatar.jpg"),
             SSNPhoto = CreateFormFile("ssn.jpg"),
-            SyndicateCardPhoto = CreateFormFile("syndicate.jpg"),
-            PracticeCertificatesPhoto = CreateFormFile("practice.jpg")
+            SyndicateCardPhoto = CreateFormFile("syndicate.jpg")
         };
 
         var result = await handler.Handle(command, CancellationToken.None);
 
         Assert.True(result.IsSuccess);
-        Assert.Equal(3, storage.PrivateUploadCount);
+        Assert.Equal(2, storage.PrivateUploadCount);
         Assert.Equal(1, storage.PublicUploadCount);
         var saved = await db.Lawyers.SingleAsync(l => l.Id == lawyer.Id);
         Assert.Equal(storage.UploadedKey, saved.SSN_Url);
         Assert.Equal(storage.UploadedKey, saved.SyndicateCardUrl);
-        Assert.Equal(storage.UploadedKey, saved.PracticeCertificatesUrl);
         Assert.Equal($"https://public.test/{storage.UploadedKey}", saved.AvatarUrl);
     }
 
@@ -60,7 +58,7 @@ public class LawyerResubmissionTests
         var db = scope.DbContext;
 
         // Arrange: create a rejected lawyer with a rejection reason
-        var lawyer = TestEntityFactory.CreateLawyer("rej", isVerified: false, status: AccountStatus.Suspended);
+        var lawyer = TestEntityFactory.CreateLawyer("rej", isVerified: false, status: AccountStatus.Rejected);
         lawyer.RejectionReason = "Docs blurry";
         await db.Lawyers.AddAsync(lawyer);
         await db.SaveChangesAsync();
@@ -75,7 +73,7 @@ public class LawyerResubmissionTests
         // Act: login
         var loginResult = await loginHandler.Handle(new LoginCommand { Email = lawyer.Email, Password = "password" }, CancellationToken.None);
         Assert.True(loginResult.IsSuccess);
-        Assert.Equal(AccountStatus.Suspended, loginResult.Value.User.AccountStatus);
+        Assert.Equal(AccountStatus.Rejected, loginResult.Value.User.AccountStatus);
         Assert.Equal("Docs blurry", loginResult.Value.User.UserDetails!.RejectionReason);
 
         // Now resubmit via UpdateLawyerProfileCommandHandler
@@ -92,7 +90,7 @@ public class LawyerResubmissionTests
         Assert.True(res.IsSuccess);
 
         var refreshed = await db.Lawyers.FindAsync(lawyer.Id);
-        Assert.Equal(AccountStatus.PendingReview, refreshed!.AccountStatus);
+        Assert.Equal(AccountStatus.PendingReverification, refreshed!.AccountStatus);
         Assert.Null(refreshed.RejectionReason);
     }
 
@@ -102,7 +100,7 @@ public class LawyerResubmissionTests
         await using var scope = await TestDbContextScope.CreateAsync();
         var db = scope.DbContext;
 
-        var lawyer = TestEntityFactory.CreateLawyer("rej2", isVerified: false, status: AccountStatus.Suspended);
+        var lawyer = TestEntityFactory.CreateLawyer("rej2", isVerified: false, status: AccountStatus.Rejected);
         lawyer.RejectionReason = "Missing cert";
         await db.Lawyers.AddAsync(lawyer);
         await db.SaveChangesAsync();
@@ -120,7 +118,7 @@ public class LawyerResubmissionTests
         Assert.True(res.IsSuccess);
 
         var refreshed = await db.Lawyers.FindAsync(lawyer.Id);
-        Assert.Equal(AccountStatus.Suspended, refreshed!.AccountStatus);
+        Assert.Equal(AccountStatus.Rejected, refreshed!.AccountStatus);
         Assert.Equal("Missing cert", refreshed.RejectionReason);
     }
 }

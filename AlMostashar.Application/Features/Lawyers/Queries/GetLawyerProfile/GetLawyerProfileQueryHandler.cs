@@ -24,7 +24,7 @@ public class GetLawyerProfileQueryHandler
         var profile = await _db.Lawyers
             .AsNoTracking()
             .Where(l => l.Id == lawyerId
-                     && l.AccountStatus == AccountStatus.Active
+                     && l.AccountStatus == AccountStatus.Verified
                      && l.IsVerified)
             .Select(l => new
             {

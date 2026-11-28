@@ -31,7 +31,7 @@ public class SendOfferCommandHandler : IRequestHandler<SendOfferCommand, Result<
         if (lawyer is null)
             return Result<RequestOfferDto>.Failure(new Error("Auth.Forbidden", Messages.Auth.OnlyLawyersCanSendOffers));
 
-        if (lawyer.AccountStatus != AccountStatus.Active)
+        if (lawyer.AccountStatus != AccountStatus.Verified)
             return Result<RequestOfferDto>.Failure(new Error("Lawyer.NotVerified", Messages.Generic.NotVerified("Lawyer")));
 
         var clientRequest = await _db.ClientRequests

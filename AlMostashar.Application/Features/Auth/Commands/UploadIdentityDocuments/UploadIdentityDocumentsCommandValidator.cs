@@ -13,7 +13,7 @@ namespace AlMostashar.Application.Features.Auth.Commands.UploadIdentityDocuments
         {
             // At least one file must be provided
             RuleFor(x => x)
-                .Must(x => x.SSN is not null || x.SyndicateCard is not null || x.PracticeCertificates is not null)
+                .Must(x => x.SSN is not null || x.SyndicateCard is not null)
                 .WithMessage(Messages.Validation.AtLeastOneFileRequired);
 
             When(x => x.SSN is not null, () =>
@@ -30,12 +30,6 @@ namespace AlMostashar.Application.Features.Auth.Commands.UploadIdentityDocuments
                     .Must(BeAllowedExtension).WithMessage(Messages.Validation.FileTypeNotAllowed);
             });
 
-            When(x => x.PracticeCertificates is not null, () =>
-            {
-                RuleFor(x => x.PracticeCertificates!)
-                    .Must(BeValidSize).WithMessage(Messages.Validation.FileTooLarge)
-                    .Must(BeAllowedExtension).WithMessage(Messages.Validation.FileTypeNotAllowed);
-            });
         }
 
         private static bool BeValidSize(IFormFile file) => file.Length <= MaxFileSizeBytes;

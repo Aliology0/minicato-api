@@ -21,10 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Middlewares\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\AlMostashar.Application\AlMostashar.Application.csproj" />
     <ProjectReference Include="..\AlMostashar.Infrastructure\AlMostashar.Infrastructure.csproj" />
   </ItemGroup>

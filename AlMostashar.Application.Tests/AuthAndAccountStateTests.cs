@@ -49,7 +49,7 @@ public class AuthAndAccountStateTests
         var db = scope.DbContext;
         var auth = new StubAuthService();
 
-        var lawyer = TestEntityFactory.CreateLawyer("14", isVerified: false, status: AccountStatus.Suspended);
+        var lawyer = TestEntityFactory.CreateLawyer("14", isVerified: false, status: AccountStatus.Rejected);
         lawyer.PasswordHash = auth.HashPassword("pass123");
 
         db.Lawyers.Add(lawyer);
@@ -65,7 +65,7 @@ public class AuthAndAccountStateTests
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Value);
         Assert.NotNull(result.Value!.User);
-        Assert.Equal(AccountStatus.Suspended, result.Value.User.AccountStatus);
+        Assert.Equal(AccountStatus.Rejected, result.Value.User.AccountStatus);
         Assert.Equal(UserRole.Lawyer, result.Value.User.Role);
         // Suspended lawyers now receive a restricted access token without refresh token
         Assert.NotNull(result.Value.Tokens);
@@ -81,7 +81,7 @@ public class AuthAndAccountStateTests
         var db = scope.DbContext;
         var auth = new StubAuthService();
 
-        var lawyer = TestEntityFactory.CreateLawyer("15", isVerified: true, status: AccountStatus.Active);
+        var lawyer = TestEntityFactory.CreateLawyer("15", isVerified: true, status: AccountStatus.Verified);
         lawyer.PasswordHash = auth.HashPassword("pass123");
 
         db.Lawyers.Add(lawyer);

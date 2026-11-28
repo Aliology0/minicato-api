@@ -9,6 +9,7 @@ namespace AlMostashar.Application.Common.Interfaces
         DbSet<User> Users { get; }
         DbSet<Client> Clients { get; }
         DbSet<Lawyer> Lawyers { get; }
+        DbSet<LawyerProfileChange> LawyerProfileChanges { get; }
         DbSet<LawyerSpecialization> LawyerSpecializations { get; }
         DbSet<RefreshToken> RefreshTokens { get; }
         DbSet<PasswordResetToken> PasswordResetTokens { get; }

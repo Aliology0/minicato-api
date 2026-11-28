@@ -21,7 +21,7 @@ namespace AlMostashar.Application.Features.Lawyers.Queries.GetLawyers
         {
             var query = _appDbContext.Lawyers
                 .Include(x=>x.LawyerServices)
-                .Where(l => l.IsVerified == true && l.AccountStatus == AccountStatus.Active);
+                .Where(l => l.IsVerified == true && l.AccountStatus == AccountStatus.Verified);
 
             if (request.ServiceId.HasValue)
             {

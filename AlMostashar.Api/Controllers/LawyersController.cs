@@ -1,5 +1,6 @@
 using AlMostashar.Api.Helpers;
 using AlMostashar.Application.Features.Lawyers.Commands.UpdateLawyerProfile;
+using AlMostashar.Application.Features.Lawyers.Commands.ChangePassword;
 using AlMostashar.Application.Features.Lawyers.Queries.GetLawyerProfile;
 using AlMostashar.Application.Features.Lawyers.Queries.GetLawyers;
 using AlMostashar.Application.Features.Lawyers.Queries.GetLawyerHomeAnalytics;
@@ -39,9 +40,17 @@ public class LawyersController : ControllerBase
 
     /// <summary>Lawyer updates their own profile information.</summary>
     [HttpPut("edit-profile")]
-    [Authorize] // allow lawyers including restricted; handler/validators will enforce ownership
     public async Task<IActionResult> UpdateLawyerProfile(
         [FromForm] UpdateLawyerProfileCommand command,
+        CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(command, cancellationToken);
+        return this.ToActionResult(result);
+    }
+
+    [HttpPut("change-password")]
+    public async Task<IActionResult> ChangePassword(
+        [FromBody] ChangeLawyerPasswordCommand command,
         CancellationToken cancellationToken)
     {
         var result = await _mediator.Send(command, cancellationToken);

@@ -20,6 +20,7 @@ public class GetLawyerSpecializationsQueryHandler
         GetLawyerSpecializationsQuery request, CancellationToken cancellationToken)
     {
         var specializations = await _db.LawyerSpecializations
+            .Where(s => s.IsActive)
             .Select(s => new LawyerSpecializationLookupDto
             {
                 Id = s.Id,

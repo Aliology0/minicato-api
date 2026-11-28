@@ -29,7 +29,8 @@ public sealed class GetLawyerPrivateDocumentQueryHandler
             {
                 l.SSN_Url,
                 l.SyndicateCardUrl,
-                l.PracticeCertificatesUrl
+                PendingSSN = l.PendingProfileChange == null ? null : l.PendingProfileChange.SSN_Url,
+                PendingSyndicateCard = l.PendingProfileChange == null ? null : l.PendingProfileChange.SyndicateCardUrl
             })
             .FirstOrDefaultAsync(cancellationToken);
 
@@ -39,11 +40,12 @@ public sealed class GetLawyerPrivateDocumentQueryHandler
                 new Error("Lawyer.NotFound", "Lawyer not found."));
         }
 
-        var key = request.DocumentType switch
+        var key = (request.DocumentType, request.UsePendingProfileChange) switch
         {
-            LawyerPrivateDocumentType.Ssn => lawyer.SSN_Url,
-            LawyerPrivateDocumentType.SyndicateCard => lawyer.SyndicateCardUrl,
-            LawyerPrivateDocumentType.PracticeCertificates => lawyer.PracticeCertificatesUrl,
+            (LawyerPrivateDocumentType.Ssn, false) => lawyer.SSN_Url,
+            (LawyerPrivateDocumentType.SyndicateCard, false) => lawyer.SyndicateCardUrl,
+            (LawyerPrivateDocumentType.Ssn, true) => lawyer.PendingSSN,
+            (LawyerPrivateDocumentType.SyndicateCard, true) => lawyer.PendingSyndicateCard,
             _ => null
         };
 

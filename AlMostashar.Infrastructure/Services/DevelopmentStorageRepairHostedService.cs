@@ -65,7 +65,7 @@ public class DevelopmentStorageRepairHostedService : IHostedService
             var lawyers = await db.Lawyers.ToListAsync(cancellationToken);
             foreach (var l in lawyers)
             {
-                foreach (var prop in new[] { nameof(l.SSN_Url), nameof(l.SyndicateCardUrl), nameof(l.PracticeCertificatesUrl), nameof(l.AvatarUrl) })
+                foreach (var prop in new[] { nameof(l.SSN_Url), nameof(l.SyndicateCardUrl), nameof(l.AvatarUrl) })
                 {
                     var val = (string?)typeof(Lawyer).GetProperty(prop)!.GetValue(l);
                     if (string.IsNullOrWhiteSpace(val)) continue;
@@ -75,8 +75,8 @@ public class DevelopmentStorageRepairHostedService : IHostedService
                     if (storage.TryResolveDownload(token, out var path))
                     {
                         var fileKey = Path.GetFileName(path);
-                        var newUrl = storage.GetPublicUrl(fileKey);
-                        typeof(Lawyer).GetProperty(prop)!.SetValue(l, newUrl);
+                        var newValue = prop == nameof(l.AvatarUrl) ? storage.GetPublicUrl(fileKey) : fileKey;
+                        typeof(Lawyer).GetProperty(prop)!.SetValue(l, newValue);
                         repaired++;
                     }
                     else

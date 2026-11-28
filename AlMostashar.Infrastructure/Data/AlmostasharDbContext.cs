@@ -22,6 +22,7 @@ namespace AlMostashar.Infrastructure.Data
         public DbSet<Admin> Admins { get; set; }
         public DbSet<Client> Clients { get; set; }
         public DbSet<Lawyer> Lawyers { get; set; }
+        public DbSet<LawyerProfileChange> LawyerProfileChanges { get; set; }
         public DbSet<LawyerSpecialization> LawyerSpecializations { get; set; }
         public DbSet<Case> Cases { get; set; }
         public DbSet<CaseDocuments> CaseDocuments { get; set; }

@@ -28,7 +28,7 @@ public class GetLawyerHomeAnalyticsQueryHandler
         var lawyerExists = await _db.Lawyers
             .AsNoTracking()
             .AnyAsync(l => l.Id == lawyerId
-                        && l.AccountStatus == AccountStatus.Active
+                        && l.AccountStatus == AccountStatus.Verified
                         && l.IsVerified, cancellationToken);
 
         if (!lawyerExists)

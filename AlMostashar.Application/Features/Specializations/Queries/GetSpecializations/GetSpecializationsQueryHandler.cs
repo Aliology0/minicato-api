@@ -19,6 +19,7 @@ public class GetSpecializationsQueryHandler
     {
         var specializations = await _db.LawyerSpecializations
             .AsNoTracking()
+            .Where(s => s.IsActive)
             .OrderBy(s => s.Id)
             .Select(s => new SpecializationLookupDto
             {

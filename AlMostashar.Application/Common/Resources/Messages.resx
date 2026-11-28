@@ -106,7 +106,6 @@
   <data name="Field_ExpectedDuration"><value>Expected Duration</value></data>
   <data name="Field_SSN"><value>SSN</value></data>
   <data name="Field_SyndicateCard"><value>Syndicate Card</value></data>
-  <data name="Field_PracticeCertificates"><value>Practice Certificates</value></data>
 
   <!-- Validation: File uploads -->
   <data name="Validation_AtLeastOneFileRequired"><value>At least one file must be provided.</value></data>

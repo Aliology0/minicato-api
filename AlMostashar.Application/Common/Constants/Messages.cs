@@ -241,7 +241,6 @@ namespace AlMostashar.Application.Common.Constants
             public static string ExpectedDuration        => Get("Field_ExpectedDuration");
             public static string SSN                     => Get("Field_SSN");
             public static string SyndicateCard            => Get("Field_SyndicateCard");
-            public static string PracticeCertificates     => Get("Field_PracticeCertificates");
             public static string FilePath                 => Get("Field_FilePath");
             public static string CaseId                  => Get("Field_CaseId");
             public static string CaseTitle               => Get("Field_CaseTitle");

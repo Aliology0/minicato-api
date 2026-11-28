@@ -31,7 +31,8 @@ public sealed class LawyerPrivateDocumentsController : ControllerBase
     public async Task<IActionResult> Download(
         int lawyerId,
         LawyerPrivateDocumentType documentType,
-        CancellationToken cancellationToken)
+        [FromQuery] bool pendingChanges = false,
+        CancellationToken cancellationToken = default)
     {
         if (!Enum.IsDefined(documentType))
             return BadRequest(new { message = "Invalid document type." });
@@ -40,7 +41,7 @@ public sealed class LawyerPrivateDocumentsController : ControllerBase
             return Forbid();
 
         var result = await _mediator.Send(
-            new GetLawyerPrivateDocumentQuery(lawyerId, documentType),
+            new GetLawyerPrivateDocumentQuery(lawyerId, documentType, pendingChanges),
             cancellationToken);
 
         if (!result.IsSuccess)
