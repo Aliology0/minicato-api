@@ -16,14 +16,22 @@ public sealed class RecordingStorageService : IStorageService
     public string? LastPresignedKey { get; private set; }
     public int? LastExpirationMinutes { get; private set; }
     public string? LastDeletedKey { get; private set; }
+    public int PrivateUploadCount { get; private set; }
+    public int PublicUploadCount { get; private set; }
     public bool DeleteSucceeds { get; set; } = true;
     public Action<string>? OnDelete { get; set; }
 
     public Task<string> UploadFileAsync(Stream fileStream, string fileName, FileContentType contentType)
-        => Task.FromResult(UploadedKey);
+    {
+        PrivateUploadCount++;
+        return Task.FromResult(UploadedKey);
+    }
 
     public Task<string> UploadPublicFileAsync(Stream fileStream, string fileName, FileContentType contentType)
-        => Task.FromResult(UploadedKey);
+    {
+        PublicUploadCount++;
+        return Task.FromResult(UploadedKey);
+    }
 
     public string GetPresignedUrl(string filePath, int expirationMinutes = 60)
     {

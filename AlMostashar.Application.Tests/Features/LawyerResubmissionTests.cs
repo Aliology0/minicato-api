@@ -12,6 +12,48 @@ namespace AlMostashar.Application.Tests.Features;
 public class LawyerResubmissionTests
 {
     [Fact]
+    public async Task ProfileUpdate_StoresIdentityDocumentsPrivately_AndAvatarPublicly()
+    {
+        await using var scope = await TestDbContextScope.CreateAsync();
+        var db = scope.DbContext;
+        var lawyer = TestEntityFactory.CreateLawyer("private-docs", isVerified: false, status: AccountStatus.PendingReview);
+        await db.Lawyers.AddAsync(lawyer);
+        await db.SaveChangesAsync();
+
+        var storage = new RecordingStorageService { UploadedKey = "0123456789abcdef0123456789abcdef.jpg" };
+        var handler = new AlMostashar.Application.Features.Lawyers.Commands.UpdateLawyerProfile.UpdateLawyerProfileCommandHandler(
+            db, new FixedCurrentUserService(lawyer.Id), storage);
+        var command = new UpdateLawyerProfileCommand
+        {
+            ProfileImage = CreateFormFile("avatar.jpg"),
+            SSNPhoto = CreateFormFile("ssn.jpg"),
+            SyndicateCardPhoto = CreateFormFile("syndicate.jpg"),
+            PracticeCertificatesPhoto = CreateFormFile("practice.jpg")
+        };
+
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(3, storage.PrivateUploadCount);
+        Assert.Equal(1, storage.PublicUploadCount);
+        var saved = await db.Lawyers.SingleAsync(l => l.Id == lawyer.Id);
+        Assert.Equal(storage.UploadedKey, saved.SSN_Url);
+        Assert.Equal(storage.UploadedKey, saved.SyndicateCardUrl);
+        Assert.Equal(storage.UploadedKey, saved.PracticeCertificatesUrl);
+        Assert.Equal($"https://public.test/{storage.UploadedKey}", saved.AvatarUrl);
+    }
+
+    private static IFormFile CreateFormFile(string fileName)
+    {
+        var stream = new MemoryStream(new byte[] { 1, 2, 3 });
+        return new FormFile(stream, 0, stream.Length, "file", fileName)
+        {
+            Headers = new HeaderDictionary(),
+            ContentType = "image/jpeg"
+        };
+    }
+
+    [Fact]
     public async Task RejectedLawyer_SeesRejectionReasonOnLogin_AndCanResubmit()
     {
         await using var scope = await TestDbContextScope.CreateAsync();

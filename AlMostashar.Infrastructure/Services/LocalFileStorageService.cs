@@ -1,4 +1,5 @@
 using AlMostashar.Application.Common.Enums;
+using AlMostashar.Application.Common.Helpers;
 using AlMostashar.Application.Common.Interfaces;
 using AlMostashar.Infrastructure.Helpers;
 using Microsoft.AspNetCore.StaticFiles;
@@ -6,12 +7,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Concurrent;
+using System.Security.Claims;
 
 namespace AlMostashar.Infrastructure.Services;
 
 public sealed class LocalFileStorageService : IStorageService
 {
-    private sealed record DownloadGrant(string FileKey, DateTime ExpiresAtUtc);
+    private sealed record DownloadGrant(string FileKey, string UserId, DateTime ExpiresAtUtc);
 
     private readonly string _publicRoot;
     private readonly string _privateRoot;
@@ -108,15 +110,56 @@ public sealed class LocalFileStorageService : IStorageService
         }
     }
 
+    private static void ValidateStorageKey(string fileKey)
+    {
+        if (string.IsNullOrWhiteSpace(fileKey) || fileKey.Contains('/') || fileKey.Contains('\\') ||
+            !string.Equals(Path.GetFileName(fileKey), fileKey, StringComparison.Ordinal))
+        {
+            throw new ArgumentException("Invalid storage key.", nameof(fileKey));
+        }
+
+        var extension = Path.GetExtension(fileKey);
+        var fileName = Path.GetFileNameWithoutExtension(fileKey);
+        if (!Guid.TryParseExact(fileName, "N", out _) ||
+            !FileContentTypeHelper.AllowedExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase))
+        {
+            throw new ArgumentException("Invalid storage key.", nameof(fileKey));
+        }
+    }
+
+    public string ResolvePrivateFilePath(string fileKey)
+    {
+        ValidateStorageKey(fileKey);
+        var path = ResolvePrivatePath(fileKey);
+        EnsureInsideRoot(path, _privateRoot);
+        if (!File.Exists(path))
+            throw new FileNotFoundException("Private document not found.");
+
+        return path;
+    }
+
     public string GetPresignedUrl(string filePath, int expirationMinutes = 60)
     {
-        var token = Convert.ToHexString(Guid.NewGuid().ToByteArray());
-        _grants[token] = new DownloadGrant(filePath, DateTime.UtcNow.AddMinutes(expirationMinutes));
+        var context = _httpContextAccessor?.HttpContext;
+        var userId = context?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? context?.User.FindFirst("sub")?.Value;
+        if (string.IsNullOrWhiteSpace(userId))
+            throw new UnauthorizedAccessException("An authenticated user is required to create a download link.");
 
         var baseUrl = BuildBaseUrl();
         if (string.IsNullOrWhiteSpace(baseUrl))
             throw new InvalidOperationException("Unable to determine base URL for presigned links.");
 
+        ValidateStorageKey(filePath);
+        var privatePath = ResolvePrivatePath(filePath);
+        EnsureInsideRoot(privatePath, _privateRoot);
+        var publicPath = ResolvePublicPath(filePath);
+        EnsureInsideRoot(publicPath, _publicRoot);
+        if (!File.Exists(privatePath) && !File.Exists(publicPath))
+            throw new FileNotFoundException("Stored file not found.");
+
+        var token = Convert.ToHexString(Guid.NewGuid().ToByteArray());
+        _grants[token] = new DownloadGrant(filePath, userId, DateTime.UtcNow.AddMinutes(expirationMinutes));
         return $"{baseUrl}/api/storage/download/{token}";
     }
 
@@ -152,10 +195,17 @@ public sealed class LocalFileStorageService : IStorageService
         }
     }
 
-    public bool TryResolveDownload(string token, out string path)
+    public bool TryResolveDownload(string token, string userId, out string path)
     {
         path = string.Empty;
-        if (!_grants.TryRemove(token, out var grant) || grant.ExpiresAtUtc <= DateTime.UtcNow)
+        if (string.IsNullOrWhiteSpace(userId) || !_grants.TryGetValue(token, out var grant) ||
+            grant.ExpiresAtUtc <= DateTime.UtcNow ||
+            !string.Equals(grant.UserId, userId, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        if (!_grants.TryRemove(token, out grant))
             return false;
 
         var candidatePrivate = ResolvePrivatePath(grant.FileKey);

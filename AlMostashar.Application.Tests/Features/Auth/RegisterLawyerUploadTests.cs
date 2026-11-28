@@ -73,6 +73,9 @@ public class RegisterLawyerUploadTests
             CityId = 1,
             SyndicateId = 1,
             YearsOfExperience = 1,
+            SSNPhoto = CreateFormFile("ssn.jpg"),
+            SyndicateCardPhoto = CreateFormFile("syndicate.jpg"),
+            PracticeCertificatesPhoto = CreateFormFile("practice.jpg"),
             AvatarPhoto = CreateFormFile("a.jpg")
         };
 
@@ -81,6 +84,21 @@ public class RegisterLawyerUploadTests
 
         var saved = await db.Lawyers.SingleAsync(l => l.Email == "succeeds@example.test");
         Assert.Equal(storage.UploadedKey, saved.AvatarUrl);
+        Assert.Equal(storage.UploadedKey, saved.SSN_Url);
+        Assert.Equal(storage.UploadedKey, saved.SyndicateCardUrl);
+        Assert.Equal(storage.UploadedKey, saved.PracticeCertificatesUrl);
+        Assert.Equal(3, storage.PrivateUploadCount);
+        Assert.Equal(1, storage.PublicUploadCount);
+
+        var documentQuery = new AlMostashar.Application.Features.Lawyers.Queries.GetPrivateDocument.GetLawyerPrivateDocumentQueryHandler(db);
+        foreach (var documentType in Enum.GetValues<AlMostashar.Application.Features.Lawyers.Queries.GetPrivateDocument.LawyerPrivateDocumentType>())
+        {
+            var document = await documentQuery.Handle(
+                new AlMostashar.Application.Features.Lawyers.Queries.GetPrivateDocument.GetLawyerPrivateDocumentQuery(saved.Id, documentType),
+                CancellationToken.None);
+            Assert.True(document.IsSuccess);
+            Assert.Equal(storage.UploadedKey, document.Value);
+        }
     }
 }
 

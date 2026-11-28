@@ -62,28 +62,25 @@ public class UpdateLawyerProfileCommandHandler
 
             if (request.SSNPhoto is not null)
             {
-                var ssnKey = await UploadPublicAsync(request.SSNPhoto, _storageService);
+                var ssnKey = await UploadAsync(request.SSNPhoto, _storageService);
                 uploadedKeys.Add(ssnKey);
-                var ssnUrl = _storageService.GetPublicUrl(ssnKey);
-                lawyer.SSN_Url = ssnUrl;
+                lawyer.SSN_Url = ssnKey;
                 documentReplaced = true;
             }
 
             if (request.SyndicateCardPhoto is not null)
             {
-                var syndKey = await UploadPublicAsync(request.SyndicateCardPhoto, _storageService);
+                var syndKey = await UploadAsync(request.SyndicateCardPhoto, _storageService);
                 uploadedKeys.Add(syndKey);
-                var syndUrl = _storageService.GetPublicUrl(syndKey);
-                lawyer.SyndicateCardUrl = syndUrl;
+                lawyer.SyndicateCardUrl = syndKey;
                 documentReplaced = true;
             }
 
             if (request.PracticeCertificatesPhoto is not null)
             {
-                var pracKey = await UploadPublicAsync(request.PracticeCertificatesPhoto, _storageService);
+                var pracKey = await UploadAsync(request.PracticeCertificatesPhoto, _storageService);
                 uploadedKeys.Add(pracKey);
-                var pracUrl = _storageService.GetPublicUrl(pracKey);
-                lawyer.PracticeCertificatesUrl = pracUrl;
+                lawyer.PracticeCertificatesUrl = pracKey;
                 documentReplaced = true;
             }
         }
